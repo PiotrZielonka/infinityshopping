@@ -1,0 +1,8 @@
+{
+  "generator-jhipster:7.3.0": {
+    "promptValues": {
+      "packageName": "infinityshopping.online.app",
+      "nativeLanguage": "pl"
+    }
+  }
+}
