@@ -1,0 +1,9 @@
+{
+  "infinityshoppingApp": {
+    "ProductCategoryEnum": {
+      "null": "",
+      "Vitamins": "Witaminy",
+      "Minerals": "Minerały"
+    }
+  }
+}

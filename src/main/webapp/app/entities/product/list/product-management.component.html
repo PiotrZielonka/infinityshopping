@@ -1,0 +1,132 @@
+<div>
+  <div class="row">
+    <div class="col-md-auto">
+      <h2 class="lowercase" jhiTranslate="infinityshoppingApp.product.home.titleProductManagement">Product Management</h2>
+    </div>
+    <div class="col" class="managementRow">
+      <div class="form-inline my-2 my-lg-0">
+        <input type="search" class="form-control mr-sm-2" [(ngModel)]="filter" placeholder="Search" />
+      </div>
+    </div>
+    <div class="col">
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary float-right jh-create-entity create-product"
+        [routerLink]="['/product/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="infinityshoppingApp.product.home.createLabel"> Create a new Product </span>
+      </button>
+
+      <button class="btn btn-info mr-2 float-right" (click)="loadPage()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span jhiTranslate="infinityshoppingApp.product.home.refreshListLabel">Refresh List</span>
+      </button>
+    </div>
+  </div>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="products?.length === 0">
+    <span jhiTranslate="infinityshoppingApp.product.home.notFound">No products found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="products && products.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
+          <th scope="col" jhiSortBy="id">
+            <span jhiTranslate="infinityshoppingApp.product.numberOfproduct">Number</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="productCategoryEnum">
+            <span jhiTranslate="infinityshoppingApp.product.productCategoryEnum">Category</span>
+            <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="name">
+            <span jhiTranslate="infinityshoppingApp.product.name">Name </span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="priceNet">
+            <span jhiTranslate="infinityshoppingApp.product.priceNet">Net</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="vat">
+            <span jhiTranslate="infinityshoppingApp.product.vat">Vat</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="priceGross">
+            <span jhiTranslate="infinityshoppingApp.product.priceGross">Gross</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="stock">
+            <span jhiTranslate="infinityshoppingApp.product.stock">Stock</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="description">
+            <span jhiTranslate="infinityshoppingApp.product.description">Description</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="createTime">
+            <span jhiTranslate="infinityshoppingApp.product.createTime">Created</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="updateTime">
+            <span jhiTranslate="infinityshoppingApp.product.updateTime">Updated</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="image">
+            <span jhiTranslate="infinityshoppingApp.product.image">Image</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products | searchProduct: filter; trackBy: trackId" data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/product', product.id, 'view']">{{ product.id }}</a>
+          </td>
+          <td jhiTranslate="{{ 'infinityshoppingApp.ProductCategoryEnum.' + product.productCategoryEnum }}">
+            {{ product.productCategoryEnum }}
+          </td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.priceNet }}</td>
+          <td>{{ product.vat }}</td>
+          <td>{{ product.priceGross }}</td>
+          <td>{{ product.stock }}</td>
+          <td>{{ product.description }}</td>
+          <td>{{ product.createTime | formatMediumDatetime }}</td>
+          <td>{{ product.updateTime | formatMediumDatetime }}</td>
+          <td>
+            <a *ngIf="product.image" (click)="openFile(product.image, product.imageContentType)">
+              <img [src]="'data:' + product.imageContentType + ';base64,' + product.image" style="max-height: 30px" alt="product image" />
+            </a>
+            <span *ngIf="product.image">{{ product.imageContentType }}, {{ byteSize(product.image) }}</span>
+          </td>
+          <td class="text-right">
+            <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/product', product.id, 'view']"
+                class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </button>
+
+              <button
+                type="submit"
+                [routerLink]="['/product', product.id, 'edit']"
+                class="btn btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </button>
+
+              <button type="submit" (click)="delete(product)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

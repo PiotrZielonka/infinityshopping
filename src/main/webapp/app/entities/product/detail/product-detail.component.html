@@ -1,0 +1,79 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="product">
+      <h2 data-cy="productDetailsHeading"><span jhiTranslate="infinityshoppingApp.product.detail.title">Product</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="global.field.id">ID</span></dt>
+        <dd>
+          <span>{{ product.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.product.productCategoryEnum">Product Category Enum</span></dt>
+        <dd>
+          <span jhiTranslate="{{ 'infinityshoppingApp.ProductCategoryEnum.' + product.productCategoryEnum }}">{{
+            product.productCategoryEnum
+          }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.product.name">Name</span></dt>
+        <dd>
+          <span>{{ product.name }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.product.quantity">Quantity</span></dt>
+        <dd>
+          <span>{{ product.quantity }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.product.priceNet">Price Net</span></dt>
+        <dd>
+          <span>{{ product.priceNet }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.product.vat">Vat</span></dt>
+        <dd>
+          <span>{{ product.vat }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.product.priceGross">Price Gross</span></dt>
+        <dd>
+          <span>{{ product.priceGross }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.product.stock">Stock</span></dt>
+        <dd>
+          <span>{{ product.stock }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.product.description">Description</span></dt>
+        <dd>
+          <span>{{ product.description }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.product.createTime">Create Time</span></dt>
+        <dd>
+          <span>{{ product.createTime | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.product.updateTime">Update Time</span></dt>
+        <dd>
+          <span>{{ product.updateTime | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.product.image">Image</span></dt>
+        <dd>
+          <div *ngIf="product.image">
+            <a (click)="openFile(product.image, product.imageContentType)">
+              <img [src]="'data:' + product.imageContentType + ';base64,' + product.image" style="max-width: 100%" alt="product image" />
+            </a>
+            {{ product.imageContentType }}, {{ byteSize(product.image) }}
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/product', product.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

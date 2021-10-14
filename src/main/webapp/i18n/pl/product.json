@@ -1,0 +1,38 @@
+{
+  "infinityshoppingApp": {
+    "product": {
+      "home": {
+        "title": "Wszystkie produkty",
+        "titleProductManagement": "Zarządzaj produktem",
+        "refreshListLabel": "Odśwież liste",
+        "createLabel": "Dodaj Produkt",
+        "createOrEditLabel": "Dodaj lub edytuj: Produkt",
+        "notFound": "Nie znaleziono żadnych produktów"
+      },
+      "created": "Utworzono nowy obiekt typu Produkt z identyfikatorem {{ param }}",
+      "updated": "Uaktualniono obiekt typu Produkt z identyfikatorem {{ param }}",
+      "deleted": "Usunięto obiekt typu Produkt z identyfikatorem {{ param }}",
+      "delete": {
+        "question": "Czy na pewno chcesz usunąć Produkt {{ id }}?"
+      },
+      "detail": {
+        "title": "Produkt"
+      },
+      "numberOfproduct": "Numer",
+      "productCategoryEnum": "Kategoria",
+      "name": "Nazwa",
+      "quantity": "Ilość",
+      "priceNet": "Netto",
+      "vat": "Vat",
+      "priceGross": "Brutto",
+      "priceGrossFormForm": "Cena brutto (nie wymagane cena zostanie ustawiona automatycznie po zapisaniu)",
+      "stock": "Magazyn",
+      "description": "Opis",
+      "createTime": "Utworzono",
+      "updateTime": "Aktualizacja",
+      "image": "Zdjęcie",
+      "sortByPrice": "Sortuj po cenie",
+      "sortByName": "Sortuj po nazwie"
+    }
+  }
+}

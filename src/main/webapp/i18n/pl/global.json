@@ -7,6 +7,7 @@
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
       "entities": {
         "main": "Encje",
+        "product": "Wszystkie produkty",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {
@@ -28,6 +29,7 @@
         "logs": "Logi",
         "apidocs": "API",
         "database": "Baza danych",
+        "productManagement": "Zarządzaj produktem",
         "jhipster-needle-menu-add-admin-element": "JHipster will add additional menu entries here (do not translate!)"
       },
       "language": "Język"

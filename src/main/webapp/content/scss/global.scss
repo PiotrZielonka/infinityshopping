@@ -171,3 +171,23 @@ ui bootstrap tweaks
 }
 
 /* jhipster-needle-scss-add-main JHipster will add new css style */
+
+/* ==============================================================
+product-management
+===============================================================*/
+
+.managementRow {
+  padding-bottom: 10px;
+}
+
+/* ==============================================================
+product-management, product
+===============================================================*/
+
+.lowercase {
+  text-transform: lowercase;
+}
+
+h2::first-letter {
+  text-transform: uppercase;
+}

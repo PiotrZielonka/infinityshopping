@@ -26,6 +26,13 @@
           </span>
         </a>
       </li>
+      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <a class="nav-link" routerLink="product" (click)="collapseNavbar()">
+          <span>
+            <span jhiTranslate="global.menu.entities.product">All products</span>
+          </span>
+        </a>
+      </li>
       <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
       <li
         *ngSwitchCase="true"
@@ -101,6 +108,12 @@
             <a class="dropdown-item" href="./h2-console/" target="_tab" (click)="collapseNavbar()">
               <fa-icon icon="database" [fixedWidth]="true"></fa-icon>
               <span jhiTranslate="global.menu.admin.database">Database</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" routerLink="product/product-management" routerLinkActive="active" (click)="collapseNavbar()">
+              <fa-icon icon="cogs" [fixedWidth]="true"></fa-icon>
+              <span jhiTranslate="global.menu.admin.productManagement">Product management</span>
             </a>
           </li>
         </ul>

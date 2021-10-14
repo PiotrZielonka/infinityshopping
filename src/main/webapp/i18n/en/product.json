@@ -1,0 +1,38 @@
+{
+  "infinityshoppingApp": {
+    "product": {
+      "home": {
+        "title": "All products",
+        "titleProductManagement": "Product management",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Product",
+        "createOrEditLabel": "Create or edit a Product",
+        "notFound": "No Products found"
+      },
+      "created": "A new Product is created with identifier {{ param }}",
+      "updated": "A Product is updated with identifier {{ param }}",
+      "deleted": "A Product is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Product {{ id }}?"
+      },
+      "detail": {
+        "title": "Product"
+      },
+      "numberOfproduct": "Number",
+      "productCategoryEnum": "Category",
+      "name": "Name",
+      "quantity": "Quantity",
+      "priceNet": "Net",
+      "vat": "Vat",
+      "priceGross": "Gross",
+      "priceGrossFormForm": "Price Gross (Not required the price will be set automatically after saving)",
+      "stock": "Stock",
+      "description": "Description",
+      "createTime": "Created",
+      "updateTime": "Updated",
+      "image": "Image",
+      "sortByPrice": "Sort by price",
+      "sortByName": "Sort by name"
+    }
+  }
+}
