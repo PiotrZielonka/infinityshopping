@@ -8,13 +8,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import infinityshopping.online.app.IntegrationTest;
 import infinityshopping.online.app.domain.Authority;
+import infinityshopping.online.app.domain.Cart;
 import infinityshopping.online.app.domain.User;
+import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
 import infinityshopping.online.app.service.dto.AdminUserDTO;
 import infinityshopping.online.app.service.dto.UserDTO;
 import infinityshopping.online.app.service.mapper.UserMapper;
 import infinityshopping.online.app.web.rest.vm.ManagedUserVM;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Consumer;
@@ -75,6 +78,9 @@ class UserResourceIT {
 
     @Autowired
     private MockMvc restUserMockMvc;
+
+    @Autowired
+    private CartRepository cartRepository;
 
     private User user;
 
@@ -466,9 +472,23 @@ class UserResourceIT {
     @Test
     @Transactional
     void deleteUser() throws Exception {
+        // given Cart for User
+        Cart cart = new Cart();
+        cart.setUser(user);
+        cart.setAmountOfCartNet(BigDecimal.ZERO);
+        cart.setAmountOfCartGross(BigDecimal.ZERO);
+        cart.setAmountOfShipmentNet(BigDecimal.ZERO);
+        cart.setAmountOfShipmentGross(BigDecimal.ZERO);
+        cart.setAmountOfOrderNet(BigDecimal.ZERO);
+        cart.setAmountOfOrderGross(BigDecimal.ZERO);
+        cartRepository.save(cart);
+        user.setCart(cart);
+        userRepository.saveAndFlush(user);
+
         // Initialize the database
         userRepository.saveAndFlush(user);
         int databaseSizeBeforeDelete = userRepository.findAll().size();
+        int databaseCartSizeBeforeDelete = cartRepository.findAll().size();
 
         // Delete the user
         restUserMockMvc
@@ -479,6 +499,10 @@ class UserResourceIT {
 
         // Validate the database is empty
         assertPersistedUsers(users -> assertThat(users).hasSize(databaseSizeBeforeDelete - 1));
+
+        // Validate the Cart in the database
+        List<Cart> cartList = cartRepository.findAll();
+        assertThat(cartList).hasSize(databaseCartSizeBeforeDelete - 1);
     }
 
     @Test

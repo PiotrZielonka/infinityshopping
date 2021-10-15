@@ -1,11 +1,11 @@
 id;product_category_enum;name;quantity;price_net;vat;price_gross;stock;description;create_time;update_time;image;image_content_type
 1;Vitamins;Account;536764;314855;99;82284;742116;../fake-data/blob/hipster.txt;2021-10-12T01:59:50;2021-10-11T20:16:14;../fake-data/blob/hipster.png;image/png
 2;Minerals;Principal;350920;347904;82;69097;163163;../fake-data/blob/hipster.txt;2021-10-12T13:26:51;2021-10-11T21:29:32;../fake-data/blob/hipster.png;image/png
-3;VITAMINS;Dynamic Pound withdrawal;882091;649644;12;93728;445739;../fake-data/blob/hipster.txt;2021-10-12T14:15:57;2021-10-12T12:36:27;../fake-data/blob/hipster.png;image/png
-4;VITAMINS;Kina navigating;578535;432916;14;32061;947079;../fake-data/blob/hipster.txt;2021-10-12T02:38:54;2021-10-12T04:37:15;../fake-data/blob/hipster.png;image/png
+3;Vitamins;Dynamic Pound withdrawal;882091;649644;12;93728;445739;../fake-data/blob/hipster.txt;2021-10-12T14:15:57;2021-10-12T12:36:27;../fake-data/blob/hipster.png;image/png
+4;Vitamins;Kina navigating;578535;432916;14;32061;947079;../fake-data/blob/hipster.txt;2021-10-12T02:38:54;2021-10-12T04:37:15;../fake-data/blob/hipster.png;image/png
 5;Minerals;compressing withdrawal green;703161;512175;22;32770;542785;../fake-data/blob/hipster.txt;2021-10-12T04:14:34;2021-10-12T11:48:11;../fake-data/blob/hipster.png;image/png
-6;VITAMINS;Small digital Śląskie;376381;205200;33;94292;95488;../fake-data/blob/hipster.txt;2021-10-12T04:39:45;2021-10-11T16:58:34;../fake-data/blob/hipster.png;image/png
-7;VITAMINS;distributed indigo JSON;558695;614828;95;20809;120929;../fake-data/blob/hipster.txt;2021-10-12T14:31:24;2021-10-12T02:37:45;../fake-data/blob/hipster.png;image/png
+6;Vitamins;Small digital Śląskie;376381;205200;33;94292;95488;../fake-data/blob/hipster.txt;2021-10-12T04:39:45;2021-10-11T16:58:34;../fake-data/blob/hipster.png;image/png
+7;Vitamins;distributed indigo JSON;558695;614828;95;20809;120929;../fake-data/blob/hipster.txt;2021-10-12T14:31:24;2021-10-12T02:37:45;../fake-data/blob/hipster.png;image/png
 8;Minerals;intangible Prairie;145572;634538;88;17814;969209;../fake-data/blob/hipster.txt;2021-10-12T12:02:31;2021-10-12T10:23:08;../fake-data/blob/hipster.png;image/png
-9;VITAMINS;Tunnel;59027;87235;24;26845;882929;../fake-data/blob/hipster.txt;2021-10-11T22:31:58;2021-10-12T00:50:28;../fake-data/blob/hipster.png;image/png
+9;Vitamins;Tunnel;59027;87235;24;26845;882929;../fake-data/blob/hipster.txt;2021-10-11T22:31:58;2021-10-12T00:50:28;../fake-data/blob/hipster.png;image/png
 10;Minerals;Account;683199;169343;80;33734;990015;../fake-data/blob/hipster.txt;2021-10-11T21:02:40;2021-10-12T01:52:12;../fake-data/blob/hipster.png;image/png

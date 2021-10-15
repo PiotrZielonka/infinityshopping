@@ -44,6 +44,6 @@
     "languages": ["pl", "en"],
     "enableGradleEnterprise": false,
     "lastLiquibaseTimestamp": 1634053563000,
-    "entities": ["Product"]
+    "entities": ["Product", "Cart"]
   }
 }

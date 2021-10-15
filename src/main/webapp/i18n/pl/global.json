@@ -8,6 +8,7 @@
       "entities": {
         "main": "Encje",
         "product": "Wszystkie produkty",
+        "cart": "Koszyk",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {

@@ -1,0 +1,18 @@
+{
+  "infinityshoppingApp": {
+    "cart": {
+      "home": {
+        "title": "Cart",
+        "notFound": "No Carts found"
+      },
+      "id": "ID",
+      "amountOfCartNet": "Amount Of Cart Net",
+      "amountOfCartGross": "Amount Of Cart Gross",
+      "amountOfShipmentNet": "Amount Of Shipment Net",
+      "amountOfShipmentGross": "Amount Of Shipment Gross",
+      "amountOfOrderNet": "Amount Of Order Net",
+      "amountOfOrderGross": "Amount Of Order Gross",
+      "user": "User"
+    }
+  }
+}

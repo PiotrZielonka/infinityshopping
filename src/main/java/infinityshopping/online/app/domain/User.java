@@ -93,6 +93,22 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @BatchSize(size = 20)
     private Set<Authority> authorities = new HashSet<>();
 
+    @OneToOne(mappedBy = "user", orphanRemoval = true)
+    private Cart cart;
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public User cart(Cart cart) {
+        this.cart = cart;
+        return this;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
+
     public Long getId() {
         return id;
     }

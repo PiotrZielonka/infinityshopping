@@ -2,13 +2,16 @@ package infinityshopping.online.app.service;
 
 import infinityshopping.online.app.config.Constants;
 import infinityshopping.online.app.domain.Authority;
+import infinityshopping.online.app.domain.Cart;
 import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.AuthorityRepository;
+import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.dto.AdminUserDTO;
 import infinityshopping.online.app.service.dto.UserDTO;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -41,16 +44,20 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
+    private final CartRepository cartRepository;
+
     public UserService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         AuthorityRepository authorityRepository,
-        CacheManager cacheManager
+        CacheManager cacheManager,
+        CartRepository cartRepository
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
+        this.cartRepository = cartRepository;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -132,6 +139,9 @@ public class UserService {
         userRepository.save(newUser);
         this.clearUserCaches(newUser);
         log.debug("Created Information for User: {}", newUser);
+
+        newUser.setCart(createCartForNewUser(newUser));
+
         return newUser;
     }
 
@@ -321,5 +331,18 @@ public class UserService {
         if (user.getEmail() != null) {
             Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE)).evict(user.getEmail());
         }
+    }
+
+    public Cart createCartForNewUser(User newUser) {
+        Cart cart = new Cart();
+        cart.setUser(newUser);
+        cart.setAmountOfCartNet(BigDecimal.ZERO);
+        cart.setAmountOfCartGross(BigDecimal.ZERO);
+        cart.setAmountOfShipmentNet(BigDecimal.ZERO);
+        cart.setAmountOfShipmentGross(BigDecimal.ZERO);
+        cart.setAmountOfOrderNet(BigDecimal.ZERO);
+        cart.setAmountOfOrderGross(BigDecimal.ZERO);
+        cartRepository.save(cart);
+        return cart;
     }
 }

@@ -2,13 +2,16 @@ package infinityshopping.online.app.web.rest;
 
 import static infinityshopping.online.app.web.rest.AccountResourceIT.TEST_USER_LOGIN;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import infinityshopping.online.app.IntegrationTest;
 import infinityshopping.online.app.config.Constants;
+import infinityshopping.online.app.domain.Cart;
 import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.AuthorityRepository;
+import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
 import infinityshopping.online.app.service.UserService;
@@ -17,6 +20,7 @@ import infinityshopping.online.app.service.dto.PasswordChangeDTO;
 import infinityshopping.online.app.service.dto.UserDTO;
 import infinityshopping.online.app.web.rest.vm.KeyAndPasswordVM;
 import infinityshopping.online.app.web.rest.vm.ManagedUserVM;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -53,6 +57,9 @@ class AccountResourceIT {
 
     @Autowired
     private MockMvc restAccountMockMvc;
+
+    @Autowired
+    private CartRepository cartRepository;
 
     @Test
     @WithUnauthenticatedMockUser
@@ -756,5 +763,41 @@ class AccountResourceIT {
                     .content(TestUtil.convertObjectToJsonBytes(keyAndPassword))
             )
             .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @Transactional
+    public void afterRegisteringUserCartShouldBeCreatedAutomatic() throws Exception {
+        int databaseSizeBeforeCreate = cartRepository.findAll().size();
+
+        ManagedUserVM firstUser = new ManagedUserVM();
+        firstUser.setLogin("alice");
+        firstUser.setPassword("password");
+        firstUser.setFirstName("Alice");
+        firstUser.setLastName("Something");
+        firstUser.setEmail("alice@example.com");
+        firstUser.setImageUrl("http://placehold.it/50x50");
+        firstUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        firstUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
+        restAccountMockMvc
+            .perform(post("/api/register").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(firstUser)))
+            .andExpect(status().isCreated());
+
+        Optional<User> user = userRepository.findOneByLogin("alice");
+
+        List<Cart> cartList = cartRepository.findAll();
+        Cart testCart = cartList.get(cartList.size() - 1);
+
+        assertNotNull(testCart.getId());
+        assertThat(testCart.getUser().getId()).isEqualTo(user.get().getId());
+
+        assertThat(cartList).hasSize(databaseSizeBeforeCreate + 1);
+        assertThat(testCart.getAmountOfCartNet()).isEqualTo(BigDecimal.ZERO);
+        assertThat(testCart.getAmountOfCartGross()).isEqualTo(BigDecimal.ZERO);
+        assertThat(testCart.getAmountOfShipmentNet()).isEqualTo(BigDecimal.ZERO);
+        assertThat(testCart.getAmountOfShipmentGross()).isEqualTo(BigDecimal.ZERO);
+        assertThat(testCart.getAmountOfOrderNet()).isEqualTo(BigDecimal.ZERO);
+        assertThat(testCart.getAmountOfOrderGross()).isEqualTo(BigDecimal.ZERO);
     }
 }
