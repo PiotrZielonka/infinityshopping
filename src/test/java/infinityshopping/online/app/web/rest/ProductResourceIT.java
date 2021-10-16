@@ -686,3 +686,4 @@ class ProductResourceIT {
         assertThat(productList).hasSize(databaseSizeBeforeDelete - 1);
     }
 }
+// Test for this commit
