@@ -44,8 +44,11 @@ public class ProductResource {
 
     private final ProductService productService;
 
-    public ProductResource(ProductService productService) {
+    private final ProductRepository productRepository;
+
+    public ProductResource(ProductService productService, ProductRepository productRepository) {
         this.productService = productService;
+        this.productRepository = productRepository;
     }
 
     @PostMapping("/products")
@@ -61,12 +64,23 @@ public class ProductResource {
             .body(result);
     }
 
-    @PutMapping("/products")
-    public ResponseEntity<ProductDTO> updateProduct(@Valid @RequestBody ProductDTO productDto) throws URISyntaxException {
-        log.debug("REST request to update Product : {}", productDto);
+    @PutMapping("/products/{id}")
+    public ResponseEntity<ProductDTO> updateProduct(
+        @PathVariable(value = "id", required = false) final Long id,
+        @Valid @RequestBody ProductDTO productDto
+    ) throws URISyntaxException {
+        log.debug("REST request to update Product : {}, {}", id, productDto);
         if (productDto.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, productDto.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!productRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         ProductDTO result = productService.save(productDto);
         return ResponseEntity
             .ok()
@@ -76,48 +90,16 @@ public class ProductResource {
 
     @GetMapping("/products/all")
     public ResponseEntity<List<ProductDTO>> getAllProducts(Pageable pageable) {
-        log.debug("REST request to get all Products");
+        log.debug("REST request to get a page of Products");
         Page<ProductDTO> page = productService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    @GetMapping("/products/category/probiotics")
-    public ResponseEntity<List<ProductDTO>> getAllProductsByCategoryProbiotics(Pageable pageable) {
-        log.debug("REST request to get all Products by category probiotics");
-        Page<ProductDTO> page = productService.getAllProductsByCategoryProbiotics(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
-    }
-
-    @GetMapping("/products/category/vitamins")
-    public ResponseEntity<List<ProductDTO>> getAllProductsByCategoryVitamins(Pageable pageable) {
-        log.debug("REST request to get all Products by category probiotics");
-        Page<ProductDTO> page = productService.getAllProductsByCategoryVitamins(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
-    }
-
-    @GetMapping("/products/category/minerals")
-    public ResponseEntity<List<ProductDTO>> getAllProductsByCategoryMinerals(Pageable pageable) {
-        log.debug("REST request to get all Products by category minerals");
-        Page<ProductDTO> page = productService.getAllProductsByCategoryMinerals(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
-    }
-
-    @GetMapping("/products/category/aloes")
-    public ResponseEntity<List<ProductDTO>> getAllProductsByCategoryAloes(Pageable pageable) {
-        log.debug("REST request to get all Products by category aloes");
-        Page<ProductDTO> page = productService.getAllProductsByCategoryAloes(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
-    }
-
-    @GetMapping("/products/category/collagen")
-    public ResponseEntity<List<ProductDTO>> getAllProductsByCategoryCollagen(Pageable pageable) {
-        log.debug("REST request to get all Products by category collagen");
-        Page<ProductDTO> page = productService.getAllProductsByCategoryCollagen(pageable);
+    @GetMapping("/products/all/imageNamePriceGross")
+    public ResponseEntity<List<ProductDtoImageNamePriceGross>> getAllProductsOnlyWithImageNamePriceGross(Pageable pageable) {
+        log.debug("Request to get all Products only with Image Name PriceGross");
+        Page<ProductDtoImageNamePriceGross> page = productService.findAllImageNamePriceGross(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
