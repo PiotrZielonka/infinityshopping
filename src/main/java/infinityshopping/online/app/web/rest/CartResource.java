@@ -17,30 +17,31 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api")
 public class CartResource {
 
-    private final Logger log = LoggerFactory.getLogger(CartResource.class);
+  private final Logger log = LoggerFactory.getLogger(CartResource.class);
 
-    private static final String ENTITY_NAME = "cart";
+  private static final String ENTITY_NAME = "cart";
 
-    @Value("${jhipster.clientApp.name}")
-    private String applicationName;
+  @Value("${jhipster.clientApp.name}")
+  private String applicationName;
 
-    private final CartService cartService;
+  private final CartService cartService;
 
-    public CartResource(CartService cartService) {
-        this.cartService = cartService;
-    }
+  public CartResource(CartService cartService) {
+    this.cartService = cartService;
+  }
 
-    @GetMapping("/cart/userCart/amountsGross")
-    public ResponseEntity<CartDtoAmountsGross> getAllAmountsGrossOfCurrentLoggedUser() {
-        log.debug("REST request to get all the amounts gross of a current logged user");
-        Optional<CartDtoAmountsGross> cartDtoAmountsGross = cartService.findByUserIdAllAmountsGross();
-        return ResponseUtil.wrapOrNotFound(cartDtoAmountsGross);
-    }
+  @GetMapping("/cart/userCart/amountsGross")
+  public ResponseEntity<CartDtoAmountsGross> getAllAmountsGrossOfCurrentLoggedUser() {
+    log.debug("REST request to get all the amounts gross of a current logged user");
+    Optional<CartDtoAmountsGross> cartDtoAmountsGross = cartService.findByUserIdAllAmountsGross();
+    return ResponseUtil.wrapOrNotFound(cartDtoAmountsGross);
+  }
 
-    @GetMapping("/cart/userCart/amountOfCartGross")
-    public ResponseEntity<CartDtoAmountOfCartGross> getAmountOfCartGrossOfCurrentLoggedUser() {
-        log.debug("REST request to get the amount of cart gross of a current logged user");
-        Optional<CartDtoAmountOfCartGross> cartDtoAmountCartGross = cartService.findByUserIdAmountOfCartGross();
-        return ResponseUtil.wrapOrNotFound(cartDtoAmountCartGross);
-    }
+  @GetMapping("/cart/userCart/amountOfCartGross")
+  public ResponseEntity<CartDtoAmountOfCartGross> getAmountOfCartGrossOfCurrentLoggedUser() {
+    log.debug("REST request to get the amount of cart gross of a current logged user");
+    Optional<CartDtoAmountOfCartGross> cartDtoAmountCartGross
+        = cartService.findByUserIdAmountOfCartGross();
+    return ResponseUtil.wrapOrNotFound(cartDtoAmountCartGross);
+  }
 }
