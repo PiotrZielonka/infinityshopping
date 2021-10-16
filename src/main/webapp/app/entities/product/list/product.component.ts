@@ -38,7 +38,7 @@ export class ProductComponent implements OnInit {
     const pageToLoad: number = page ?? this.page ?? 1;
 
     this.productService
-      .query({
+      .queryAllProductsOnlyWithImageNamePriceGross({
         page: pageToLoad - 1,
         sort: this.sort(),
       })

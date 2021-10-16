@@ -43,7 +43,7 @@ public class CartDtoAmountOfCartGross implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof CartDTO)) {
+        if (!(o instanceof CartDtoAmountOfCartGross)) {
             return false;
         }
 

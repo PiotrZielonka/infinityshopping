@@ -301,6 +301,7 @@ class ProductResourceIT {
 
     @Test
     @Transactional
+    @WithMockUser(username = "admin", password = "admin", authorities = AuthoritiesConstants.ADMIN)
     void getAllProducts() throws Exception {
         // Initialize the database
         product.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
@@ -322,6 +323,56 @@ class ProductResourceIT {
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
             .andExpect(jsonPath("$.[*].createTime").exists())
             .andExpect(jsonPath("$.[*].updateTime").exists())
+            .andExpect(jsonPath("$.[*].imageContentType").value(hasItem(DEFAULT_IMAGE_CONTENT_TYPE)))
+            .andExpect(jsonPath("$.[*].image").value(hasItem(Base64Utils.encodeToString(DEFAULT_IMAGE))));
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(username = "user", password = "user", authorities = AuthoritiesConstants.USER)
+    void getAllProductsForProductManagementByUserShouldThrowStatusForbidden() throws Exception {
+        // Initialize the database
+        product.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+        productRepository.saveAndFlush(product);
+
+        // Get all the productList
+        restProductMockMvc.perform(get(ENTITY_API_URL + "/all" + "?sort=id,desc")).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsForProductManagementByAnyoneShouldThrowStatusUnauthorized() throws Exception {
+        // Initialize the database
+        product.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+        productRepository.saveAndFlush(product);
+
+        // Get all the productList
+        restProductMockMvc.perform(get(ENTITY_API_URL + "/all" + "?sort=id,desc")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @Transactional
+    void getAllProductsOnlyWithImageNamePriceGross() throws Exception {
+        // Initialize the database
+        product.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+        productRepository.saveAndFlush(product);
+
+        // Get all the productList
+        restProductMockMvc
+            .perform(get(ENTITY_API_URL + "/all/imageNamePriceGross" + "?sort=id,desc"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(product.getId().intValue())))
+            .andExpect(jsonPath("$.[*].productCategoryEnum").doesNotExist())
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].quantity").doesNotExist())
+            .andExpect(jsonPath("$.[*].priceNet").doesNotExist())
+            .andExpect(jsonPath("$.[*].vat").doesNotExist())
+            .andExpect(jsonPath("$.[*].priceGross").value(hasItem(sameNumber(DEFAULT_PROPER_PRICE_GROSS))))
+            .andExpect(jsonPath("$.[*].stock").doesNotExist())
+            .andExpect(jsonPath("$.[*].description").doesNotExist())
+            .andExpect(jsonPath("$.[*].createTime").doesNotExist())
+            .andExpect(jsonPath("$.[*].updateTime").doesNotExist())
             .andExpect(jsonPath("$.[*].imageContentType").value(hasItem(DEFAULT_IMAGE_CONTENT_TYPE)))
             .andExpect(jsonPath("$.[*].image").value(hasItem(Base64Utils.encodeToString(DEFAULT_IMAGE))));
     }

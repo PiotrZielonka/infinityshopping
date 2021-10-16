@@ -46,7 +46,7 @@ describe('Component Tests', () => {
       service = TestBed.inject(ProductService);
 
       const headers = new HttpHeaders().append('link', 'link;link');
-      jest.spyOn(service, 'query').mockReturnValue(
+      jest.spyOn(service, 'queryAllProductsOnlyWithImageNamePriceGross').mockReturnValue(
         of(
           new HttpResponse({
             body: [{ id: 123 }],
@@ -61,7 +61,7 @@ describe('Component Tests', () => {
       comp.ngOnInit();
 
       // THEN
-      expect(service.query).toHaveBeenCalled();
+      expect(service.queryAllProductsOnlyWithImageNamePriceGross).toHaveBeenCalled();
     });
 
     it('should load a page', () => {
@@ -69,7 +69,7 @@ describe('Component Tests', () => {
       comp.loadPage(1);
 
       // THEN
-      expect(service.query).toHaveBeenCalled();
+      expect(service.queryAllProductsOnlyWithImageNamePriceGross).toHaveBeenCalled();
     });
 
     it('should calculate the sort attribute for an id', () => {
@@ -77,10 +77,10 @@ describe('Component Tests', () => {
       comp.ngOnInit();
 
       // THEN
-      expect(service.query).toHaveBeenCalledWith(expect.objectContaining({ sort: ['id,desc'] }));
+      expect(service.queryAllProductsOnlyWithImageNamePriceGross).toHaveBeenCalledWith(expect.objectContaining({ sort: ['id,desc'] }));
     });
 
-    it('should calculate the sort attribute for a non-id attribute', () => {
+    it('should calculate the sort attribute for a name attribute', () => {
       // INIT
       comp.ngOnInit();
 
@@ -91,7 +91,25 @@ describe('Component Tests', () => {
       comp.loadPage(1);
 
       // THEN
-      expect(service.query).toHaveBeenLastCalledWith(expect.objectContaining({ sort: ['name,desc', 'id'] }));
+      expect(service.queryAllProductsOnlyWithImageNamePriceGross).toHaveBeenLastCalledWith(
+        expect.objectContaining({ sort: ['name,desc', 'id'] })
+      );
+    });
+
+    it('should calculate the sort attribute for a price gross attribute', () => {
+      // INIT
+      comp.ngOnInit();
+
+      // GIVEN
+      comp.predicate = 'priceGross';
+
+      // WHEN
+      comp.loadPage(1);
+
+      // THEN
+      expect(service.queryAllProductsOnlyWithImageNamePriceGross).toHaveBeenLastCalledWith(
+        expect.objectContaining({ sort: ['priceGross,desc', 'id'] })
+      );
     });
   });
 });

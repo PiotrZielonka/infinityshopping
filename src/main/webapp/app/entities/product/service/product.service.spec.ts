@@ -117,7 +117,7 @@ describe('Product Service', () => {
       expect(expectedResult).toMatchObject(expected);
     });
 
-    it('should return a list of Product', () => {
+    it('should return a list of all products', () => {
       const returnedFromService = Object.assign(
         {
           id: 1,
@@ -145,6 +145,27 @@ describe('Product Service', () => {
       );
 
       service.query().subscribe(resp => (expectedResult = resp.body));
+
+      const req = httpMock.expectOne({ method: 'GET' });
+      req.flush([returnedFromService]);
+      httpMock.verify();
+      expect(expectedResult).toContainEqual(expected);
+    });
+
+    it('should return a list of all product only with image name priceGross', () => {
+      const returnedFromService = Object.assign(
+        {
+          id: 1,
+          name: 'BBBBBB',
+          priceGross: 1,
+          image: 'BBBBBB',
+        },
+        elemDefault
+      );
+
+      const expected = Object.assign({}, returnedFromService);
+
+      service.queryAllProductsOnlyWithImageNamePriceGross().subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);

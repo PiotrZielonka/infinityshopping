@@ -3,6 +3,7 @@ package infinityshopping.online.app.web.rest;
 import infinityshopping.online.app.repository.ProductRepository;
 import infinityshopping.online.app.service.ProductService;
 import infinityshopping.online.app.service.dto.ProductDTO;
+import infinityshopping.online.app.service.dto.ProductDtoImageNamePriceGross;
 import infinityshopping.online.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -10,7 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +20,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -93,6 +92,14 @@ public class ProductResource {
     public ResponseEntity<List<ProductDTO>> getAllProducts(Pageable pageable) {
         log.debug("REST request to get a page of Products");
         Page<ProductDTO> page = productService.findAll(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/products/all/imageNamePriceGross")
+    public ResponseEntity<List<ProductDtoImageNamePriceGross>> getAllProductsOnlyWithImageNamePriceGross(Pageable pageable) {
+        log.debug("Request to get all Products only with Image Name PriceGross");
+        Page<ProductDtoImageNamePriceGross> page = productService.findAllImageNamePriceGross(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
