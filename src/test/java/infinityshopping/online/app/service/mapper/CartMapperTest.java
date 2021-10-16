@@ -4,10 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 
 class CartMapperTest {
 
-    private CartMapper cartMapper;
+  private CartMapper cartMapper;
 
-    @BeforeEach
-    public void setUp() {
-        cartMapper = new CartMapperImpl();
-    }
+  @BeforeEach
+  public void setUp() {
+    cartMapper = new CartMapperImpl();
+  }
 }

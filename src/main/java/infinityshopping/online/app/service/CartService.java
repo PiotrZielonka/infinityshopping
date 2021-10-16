@@ -5,7 +5,8 @@ import infinityshopping.online.app.service.dto.CartDtoAmountsGross;
 import java.util.Optional;
 
 public interface CartService {
-    Optional<CartDtoAmountsGross> findByUserIdAllAmountsGross();
 
-    Optional<CartDtoAmountOfCartGross> findByUserIdAmountOfCartGross();
+  Optional<CartDtoAmountsGross> findByUserIdAllAmountsGross();
+
+  Optional<CartDtoAmountOfCartGross> findByUserIdAmountOfCartGross();
 }

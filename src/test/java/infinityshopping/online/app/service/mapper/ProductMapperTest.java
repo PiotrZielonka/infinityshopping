@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 
 class ProductMapperTest {
 
-    private ProductMapper productMapper;
+  private ProductMapper productMapper;
 
-    @BeforeEach
-    public void setUp() {
-        productMapper = new ProductMapperImpl();
-    }
+  @BeforeEach
+  public void setUp() {
+    productMapper = new ProductMapperImpl();
+  }
 }

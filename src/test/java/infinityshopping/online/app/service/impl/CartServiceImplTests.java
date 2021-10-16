@@ -28,151 +28,156 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(classes = InfinityshoppingApp.class)
 public class CartServiceImplTests {
 
-    private static final BigDecimal DEFAULT_AMOUNT_OF_CART_NET = new BigDecimal("100");
-    private static final BigDecimal DEFAULT_AMOUNT_OF_CART_GROSS = new BigDecimal("123");
+  private static final BigDecimal DEFAULT_AMOUNT_OF_CART_NET = new BigDecimal("100");
+  private static final BigDecimal DEFAULT_AMOUNT_OF_CART_GROSS = new BigDecimal("123");
 
-    private static final BigDecimal DEFAULT_AMOUNT_OF_SHIPMENT_NET = new BigDecimal("10");
-    private static final BigDecimal DEFAULT_AMOUNT_OF_SHIPMENT_GROSS = new BigDecimal("10.8");
+  private static final BigDecimal DEFAULT_AMOUNT_OF_SHIPMENT_NET = new BigDecimal("10");
+  private static final BigDecimal DEFAULT_AMOUNT_OF_SHIPMENT_GROSS = new BigDecimal("10.8");
 
-    private static final BigDecimal DEFAULT_AMOUNT_OF_ORDER_NET = new BigDecimal("110");
-    private static final BigDecimal DEFAULT_AMOUNT_OF_ORDER_GROSS = new BigDecimal("133.8");
+  private static final BigDecimal DEFAULT_AMOUNT_OF_ORDER_NET = new BigDecimal("110");
+  private static final BigDecimal DEFAULT_AMOUNT_OF_ORDER_GROSS = new BigDecimal("133.8");
 
-    @Autowired
-    private CartRepository cartRepository;
+  @Autowired
+  private CartRepository cartRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
-    @Autowired
-    private CartServiceImpl cartServiceImp;
+  @Autowired
+  private CartServiceImpl cartServiceImp;
 
-    private User currentLoggedUser;
+  private User currentLoggedUser;
 
-    @BeforeEach
-    public void initUsers() throws Exception {
-        // given
-        // given User
-        User user = new User();
-        user.setLogin("alice");
-        user.setPassword(RandomStringUtils.random(60));
-        user.setActivated(true);
-        user.setEmail("alice@example.com");
-        user.setFirstName("Alice");
-        user.setLastName("Something");
-        user.setImageUrl("http://placehold.it/50x50");
-        user.setLangKey(Constants.DEFAULT_LANGUAGE);
+  @BeforeEach
+  public void initUsers() throws Exception {
+    // given
+    // given User
+    User user = new User();
+    user.setLogin("alice");
+    user.setPassword(RandomStringUtils.random(60));
+    user.setActivated(true);
+    user.setEmail("alice@example.com");
+    user.setFirstName("Alice");
+    user.setLastName("Something");
+    user.setImageUrl("http://placehold.it/50x50");
+    user.setLangKey(Constants.DEFAULT_LANGUAGE);
 
-        // given Cart for User
-        Cart cart = new Cart();
-        cart.setUser(user);
-        cart.setAmountOfCartNet(DEFAULT_AMOUNT_OF_CART_NET);
-        cart.setAmountOfCartGross(DEFAULT_AMOUNT_OF_CART_GROSS);
-        cart.setAmountOfShipmentNet(DEFAULT_AMOUNT_OF_SHIPMENT_NET);
-        cart.setAmountOfShipmentGross(DEFAULT_AMOUNT_OF_SHIPMENT_GROSS);
-        cart.setAmountOfOrderNet(DEFAULT_AMOUNT_OF_ORDER_NET);
-        cart.setAmountOfOrderGross(DEFAULT_AMOUNT_OF_ORDER_GROSS);
-        cartRepository.save(cart);
-        user.setCart(cart);
-        userRepository.saveAndFlush(user);
+    // given Cart for User
+    Cart cart = new Cart();
+    cart.setUser(user);
+    cart.setAmountOfCartNet(DEFAULT_AMOUNT_OF_CART_NET);
+    cart.setAmountOfCartGross(DEFAULT_AMOUNT_OF_CART_GROSS);
+    cart.setAmountOfShipmentNet(DEFAULT_AMOUNT_OF_SHIPMENT_NET);
+    cart.setAmountOfShipmentGross(DEFAULT_AMOUNT_OF_SHIPMENT_GROSS);
+    cart.setAmountOfOrderNet(DEFAULT_AMOUNT_OF_ORDER_NET);
+    cart.setAmountOfOrderGross(DEFAULT_AMOUNT_OF_ORDER_GROSS);
+    cartRepository.save(cart);
+    user.setCart(cart);
+    userRepository.saveAndFlush(user);
 
-        // given User2
-        User user2 = new User();
-        user2.setLogin("caroline");
-        user2.setPassword(RandomStringUtils.random(60));
-        user2.setActivated(true);
-        user2.setEmail("caroline@example.com");
-        user2.setFirstName("Caroline");
-        user2.setLastName("Something");
-        user2.setImageUrl("http://placehold.it/50x50");
-        user2.setLangKey(Constants.DEFAULT_LANGUAGE);
+    // given User2
+    User user2 = new User();
+    user2.setLogin("caroline");
+    user2.setPassword(RandomStringUtils.random(60));
+    user2.setActivated(true);
+    user2.setEmail("caroline@example.com");
+    user2.setFirstName("Caroline");
+    user2.setLastName("Something");
+    user2.setImageUrl("http://placehold.it/50x50");
+    user2.setLangKey(Constants.DEFAULT_LANGUAGE);
 
-        // given Cart2 for User2
-        Cart cart2 = new Cart();
-        cart2.setUser(user2);
-        cart2.setAmountOfCartNet(BigDecimal.ZERO);
-        cart2.setAmountOfCartGross(BigDecimal.ZERO);
-        cart2.setAmountOfShipmentNet(BigDecimal.ZERO);
-        cart2.setAmountOfShipmentGross(BigDecimal.ZERO);
-        cart2.setAmountOfOrderNet(BigDecimal.ZERO);
-        cart2.setAmountOfOrderGross(BigDecimal.ZERO);
-        cartRepository.save(cart2);
-        user2.setCart(cart2);
-        userRepository.saveAndFlush(user2);
+    // given Cart2 for User2
+    Cart cart2 = new Cart();
+    cart2.setUser(user2);
+    cart2.setAmountOfCartNet(BigDecimal.ZERO);
+    cart2.setAmountOfCartGross(BigDecimal.ZERO);
+    cart2.setAmountOfShipmentNet(BigDecimal.ZERO);
+    cart2.setAmountOfShipmentGross(BigDecimal.ZERO);
+    cart2.setAmountOfOrderNet(BigDecimal.ZERO);
+    cart2.setAmountOfOrderGross(BigDecimal.ZERO);
+    cartRepository.save(cart2);
+    user2.setCart(cart2);
+    userRepository.saveAndFlush(user2);
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  public void shouldGetOnlyAmountsGrossOfCurrentUser() throws Exception {
+    // given
+    // @BeforeEach
+
+    // given logged user
+    currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
+
+    // when
+    Optional<CartDtoAmountsGross> dbCart = cartServiceImp.findByUserIdAllAmountsGross();
+
+    // then
+    assertThat(dbCart.get().getId()).isEqualTo(currentLoggedUser.getCart().getId());
+    assertThat(dbCart.get().getAmountOfCartGross()).isEqualTo(
+        currentLoggedUser.getCart().getAmountOfCartGross());
+    assertThat(dbCart.get().getAmountOfShipmentGross()).isEqualTo(
+        currentLoggedUser.getCart().getAmountOfShipmentGross());
+    assertThat(dbCart.get().getAmountOfOrderGross()).isEqualTo(
+        currentLoggedUser.getCart().getAmountOfOrderGross());
+    assertThat(dbCart.get().getUser().getId()).isEqualTo(currentLoggedUser.getId());
+    assertThat(dbCart.get().getUser().getLogin()).isEqualTo(currentLoggedUser.getLogin());
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  public void shouldGetOnlyAmountOfCartGrossOfCurrentUser() throws Exception {
+    // given
+    // @BeforeEach
+
+    // given logged user
+    currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
+
+    // when
+    Optional<CartDtoAmountOfCartGross> dbCart = cartServiceImp.findByUserIdAmountOfCartGross();
+
+    // then
+    assertThat(dbCart.get().getId()).isEqualTo(currentLoggedUser.getCart().getId());
+    assertThat(dbCart.get().getAmountOfCartGross()).isEqualTo(
+        currentLoggedUser.getCart().getAmountOfCartGross());
+    assertThat(dbCart.get().getUser().getId()).isEqualTo(currentLoggedUser.getId());
+    assertThat(dbCart.get().getUser().getLogin()).isEqualTo(currentLoggedUser.getLogin());
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  public void everyUserShouldHaveOnlyOneCart() throws Exception {
+    // given
+    // @BeforeEach
+
+    // given logged user
+    final int databaseSizeBeforeCreate = cartRepository.findAll().size();
+    currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
+
+    // when
+    cartRepository.save(currentLoggedUser.getCart());
+
+    // then
+    List<Cart> cartList = cartRepository.findAll();
+    assertThat(cartList).hasSize(databaseSizeBeforeCreate);
+  }
+
+  public String getCurrentUserLogin() {
+    org.springframework.security.core.context.SecurityContext securityContext
+        = SecurityContextHolder.getContext();
+    Authentication authentication = securityContext.getAuthentication();
+    String login = null;
+    if (authentication != null) {
+      if (authentication.getPrincipal() instanceof UserDetails) {
+        login = ((UserDetails) authentication.getPrincipal()).getUsername();
+      } else if (authentication.getPrincipal() instanceof String) {
+        login = (String) authentication.getPrincipal();
+      }
     }
 
-    @Test
-    @Transactional
-    @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-    public void shouldGetOnlyAmountsGrossOfCurrentUser() throws Exception {
-        // given
-        // @BeforeEach
-
-        // given logged user
-        currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
-
-        // when
-        Optional<CartDtoAmountsGross> dbCart = cartServiceImp.findByUserIdAllAmountsGross();
-
-        // then
-        assertThat(dbCart.get().getId()).isEqualTo(currentLoggedUser.getCart().getId());
-        assertThat(dbCart.get().getAmountOfCartGross()).isEqualTo(currentLoggedUser.getCart().getAmountOfCartGross());
-        assertThat(dbCart.get().getAmountOfShipmentGross()).isEqualTo(currentLoggedUser.getCart().getAmountOfShipmentGross());
-        assertThat(dbCart.get().getAmountOfOrderGross()).isEqualTo(currentLoggedUser.getCart().getAmountOfOrderGross());
-        assertThat(dbCart.get().getUser().getId()).isEqualTo(currentLoggedUser.getId());
-        assertThat(dbCart.get().getUser().getLogin()).isEqualTo(currentLoggedUser.getLogin());
-    }
-
-    @Test
-    @Transactional
-    @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-    public void shouldGetOnlyAmountOfCartGrossOfCurrentUser() throws Exception {
-        // given
-        // @BeforeEach
-
-        // given logged user
-        currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
-
-        // when
-        Optional<CartDtoAmountOfCartGross> dbCart = cartServiceImp.findByUserIdAmountOfCartGross();
-
-        // then
-        assertThat(dbCart.get().getId()).isEqualTo(currentLoggedUser.getCart().getId());
-        assertThat(dbCart.get().getAmountOfCartGross()).isEqualTo(currentLoggedUser.getCart().getAmountOfCartGross());
-        assertThat(dbCart.get().getUser().getId()).isEqualTo(currentLoggedUser.getId());
-        assertThat(dbCart.get().getUser().getLogin()).isEqualTo(currentLoggedUser.getLogin());
-    }
-
-    @Test
-    @Transactional
-    @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-    public void everyUserShouldHaveOnlyOneCart() throws Exception {
-        // given
-        // @BeforeEach
-
-        // given logged user
-        final int databaseSizeBeforeCreate = cartRepository.findAll().size();
-        currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
-
-        // when
-        cartRepository.save(currentLoggedUser.getCart());
-
-        // then
-        List<Cart> cartList = cartRepository.findAll();
-        assertThat(cartList).hasSize(databaseSizeBeforeCreate);
-    }
-
-    public String getCurrentUserLogin() {
-        org.springframework.security.core.context.SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = securityContext.getAuthentication();
-        String login = null;
-        if (authentication != null) {
-            if (authentication.getPrincipal() instanceof UserDetails) {
-                login = ((UserDetails) authentication.getPrincipal()).getUsername();
-            } else if (authentication.getPrincipal() instanceof String) {
-                login = (String) authentication.getPrincipal();
-            }
-        }
-
-        return login;
-    }
+    return login;
+  }
 }

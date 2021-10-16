@@ -7,13 +7,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ProductService {
-    ProductDTO save(ProductDTO productDto);
 
-    Page<ProductDTO> findAll(Pageable pageable);
+  ProductDTO save(ProductDTO productDto);
 
-    Page<ProductDtoImageNamePriceGross> findAllImageNamePriceGross(Pageable pageable);
+  Page<ProductDTO> findAll(Pageable pageable);
 
-    Optional<ProductDTO> findOne(Long id);
+  Page<ProductDtoImageNamePriceGross> findAllImageNamePriceGross(Pageable pageable);
 
-    void delete(Long id);
+  Optional<ProductDTO> findOne(Long id);
+
+  void delete(Long id);
 }

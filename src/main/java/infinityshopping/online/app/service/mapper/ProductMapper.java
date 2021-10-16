@@ -7,5 +7,6 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = {})
 public interface ProductMapper extends EntityMapper<ProductDTO, Product> {
-    ProductDtoImageNamePriceGross toDtoImageNamePriceGross(Product s);
+
+  ProductDtoImageNamePriceGross toDtoImageNamePriceGross(Product s);
 }
