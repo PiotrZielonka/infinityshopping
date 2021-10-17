@@ -1,0 +1,5 @@
+id;name;price_net;vat;price_gross;create_time;update_time
+1;DHL bank transfer;3.0;23;3.69;2021-10-12T01:59:50;2021-10-11T20:16:14
+2;DHL cash on delivery;3.5;23;4.30;2021-10-12T04:14:34;2021-10-12T11:48:11
+3;UPS bank transfer;2.5;23;3.08;2021-10-12T12:02:31;2021-10-12T10:23:08
+4;UPS cash on delivery;2.8;23;3.44;2021-10-11T21:02:40;2021-10-12T01:52:12

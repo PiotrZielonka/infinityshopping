@@ -1,0 +1,30 @@
+{
+  "infinityshoppingApp": {
+    "payment": {
+      "home": {
+        "title": "Payment management",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new kind of payment",
+        "createOrEditLabel": "Create or edit a Payment",
+        "notFound": "No kind of payments found"
+      },
+      "created": "A new kind of payment was added",
+      "updated": "A kind of payment was updated",
+      "deleted": "A kind of payment was deleted",
+      "delete": {
+        "question": "Are you sure you want to delete this kind of payment?"
+      },
+      "detail": {
+        "title": "Kind of payment"
+      },
+      "id": "ID",
+      "name": "Name",
+      "priceNet": "Price Net",
+      "vat": "Vat",
+      "priceGross": "Price Gross",
+      "priceGrossFormForm": "Price Gross (Not required the price will be set automatically after saving)",
+      "createTime": "Created",
+      "updateTime": "Updated"
+    }
+  }
+}

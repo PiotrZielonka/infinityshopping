@@ -1,0 +1,121 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-payment-heading" data-cy="PaymentCreateUpdateHeading" jhiTranslate="infinityshoppingApp.payment.home.createOrEditLabel">
+        Create or edit a Payment
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.payment.name" for="field_name">Name</label>
+          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
+          <div *ngIf="editForm.get('name')!.invalid && (editForm.get('name')!.dirty || editForm.get('name')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('name')?.errors?.required" jhiTranslate="entity.validation.required">
+              This field is required.
+            </small>
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('name')?.errors?.minlength"
+              jhiTranslate="entity.validation.minlength"
+              [translateValues]="{ min: 0 }"
+            >
+              This field is required to be at least 0 characters.
+            </small>
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('name')?.errors?.maxlength"
+              jhiTranslate="entity.validation.maxlength"
+              [translateValues]="{ max: 1000 }"
+            >
+              This field cannot be longer than 1000 characters.
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.payment.priceNet" for="field_priceNet">Price Net</label>
+          <input type="number" class="form-control" name="priceNet" id="field_priceNet" data-cy="priceNet" formControlName="priceNet" />
+          <div *ngIf="editForm.get('priceNet')!.invalid && (editForm.get('priceNet')!.dirty || editForm.get('priceNet')!.touched)">
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('priceNet')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
+              This field is required.
+            </small>
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('priceNet')?.errors?.min"
+              jhiTranslate="entity.validation.min"
+              [translateValues]="{ min: 0 }"
+            >
+              This field should be at least 0.
+            </small>
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('priceNet')?.errors?.max"
+              jhiTranslate="entity.validation.max"
+              [translateValues]="{ max: 10000 }"
+            >
+              This field cannot be more than 10000.
+            </small>
+            <small
+              class="form-text text-danger"
+              [hidden]="!editForm.get('priceNet')?.errors?.number"
+              jhiTranslate="entity.validation.number"
+            >
+              This field should be a number.
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.payment.vat" for="field_vat">Vat</label>
+          <select class="form-control" name="vat" formControlName="vat" id="field_vat">
+            <option>23</option>
+            <option>8</option>
+            <option>5</option>
+          </select>
+          <div *ngIf="editForm.get('vat')!.invalid && (editForm.get('vat')!.dirty || editForm.get('vat')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('vat')?.errors?.required" jhiTranslate="entity.validation.required">
+              This field is required.
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.payment.priceGrossFormForm" for="field_priceGross"
+            >(Not required the price will be set automatically after saving)</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            name="priceGross"
+            id="field_priceGross"
+            data-cy="priceGross"
+            formControlName="priceGross"
+            [readonly]="true"
+          />
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

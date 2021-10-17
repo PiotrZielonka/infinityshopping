@@ -1,0 +1,84 @@
+<div>
+  <h2 id="page-heading" data-cy="PaymentHeading">
+    <span jhiTranslate="infinityshoppingApp.payment.home.title">Payment management</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info mr-2" (click)="loadAll()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span jhiTranslate="infinityshoppingApp.payment.home.refreshListLabel">Refresh List</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-payment"
+        [routerLink]="['/payment/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="infinityshoppingApp.payment.home.createLabel"> Create a new Payment </span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="payments?.length === 0">
+    <span jhiTranslate="infinityshoppingApp.payment.home.notFound">No payments found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="payments && payments.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.payment.name">Name</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.payment.priceNet">Price Net</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.payment.vat">Vat</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.payment.priceGross">Price Gross</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.payment.createTime">Created</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.payment.updateTime">Updated</span></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let payment of payments; trackBy: trackId" data-cy="entityTable">
+          <td>{{ payment.name }}</td>
+          <td>{{ payment.priceNet }}</td>
+          <td>{{ payment.vat }}</td>
+          <td>{{ payment.priceGross }}</td>
+          <td>{{ payment.createTime | formatMediumDatetime }}</td>
+          <td>{{ payment.updateTime | formatMediumDatetime }}</td>
+          <td class="text-right">
+            <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/payment', payment.id, 'view']"
+                class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </button>
+
+              <button
+                type="submit"
+                [routerLink]="['/payment', payment.id, 'edit']"
+                class="btn btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </button>
+
+              <button type="submit" (click)="delete(payment)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

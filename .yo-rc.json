@@ -43,7 +43,7 @@
     "clientPackageManager": "npm",
     "languages": ["pl", "en"],
     "enableGradleEnterprise": false,
-    "lastLiquibaseTimestamp": 1634053563000,
-    "entities": ["Product", "Cart"]
+    "lastLiquibaseTimestamp": 1634464724000,
+    "entities": ["Product", "Cart", "Payment"]
   }
 }

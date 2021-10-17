@@ -9,6 +9,7 @@
         "main": "Entities",
         "product": "All products",
         "cart": "Cart",
+        "payment": "Payment",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {
@@ -31,6 +32,7 @@
         "apidocs": "API",
         "database": "Database",
         "productManagement": "Product management",
+        "paymentManagement": "Payment management",
         "jhipster-needle-menu-add-admin-element": "JHipster will add additional menu entries here (do not translate!)"
       },
       "language": "Language"

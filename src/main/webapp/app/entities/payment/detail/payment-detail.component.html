@@ -1,0 +1,40 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="payment">
+      <h2 data-cy="paymentDetailsHeading"><span jhiTranslate="infinityshoppingApp.payment.detail.title">Payment</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="infinityshoppingApp.payment.name">Name</span></dt>
+        <dd>
+          <span>{{ payment.name }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.payment.priceNet">Price Net</span></dt>
+        <dd>
+          <span>{{ payment.priceNet }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.payment.vat">Vat</span></dt>
+        <dd>
+          <span>{{ payment.vat }}</span>
+        </dd>
+        <dt><span jhiTranslate="infinityshoppingApp.payment.priceGross">Price Gross</span></dt>
+        <dd>
+          <span>{{ payment.priceGross }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/payment', payment.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

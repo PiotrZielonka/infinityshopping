@@ -116,6 +116,12 @@
               <span jhiTranslate="global.menu.admin.productManagement">Product management</span>
             </a>
           </li>
+          <li>
+            <a class="dropdown-item" routerLink="payment/payment-management" routerLinkActive="active" (click)="collapseNavbar()">
+              <fa-icon icon="cogs" [fixedWidth]="true"></fa-icon>
+              <span jhiTranslate="global.menu.admin.paymentManagement">Payment management</span>
+            </a>
+          </li>
         </ul>
       </li>
       <li ngbDropdown class="nav-item dropdown pointer" display="dynamic" *ngIf="languages && languages.length > 1">
