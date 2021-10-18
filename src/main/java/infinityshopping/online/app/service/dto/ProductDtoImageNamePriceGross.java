@@ -86,7 +86,7 @@ public class ProductDtoImageNamePriceGross implements Serializable {
   // prettier-ignore
   @Override
   public String toString() {
-    return "ProductDTO{"
+    return "ProductDtoImageNamePriceGross{"
         + "id=" + getId()
         + ", name='" + getName() + "'"
         + ", priceGross=" + getPriceGross()

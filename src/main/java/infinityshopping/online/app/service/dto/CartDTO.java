@@ -117,7 +117,7 @@ public class CartDTO implements Serializable {
   // prettier-ignore
   @Override
   public String toString() {
-    return "Cart{"
+    return "CartDTO{"
         + "id=" + getId()
         + ", amountOfCartNet=" + getAmountOfCartNet()
         + ", amountOfCartGross=" + getAmountOfCartGross()

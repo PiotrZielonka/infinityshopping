@@ -62,7 +62,7 @@ public class CartDtoAmountOfCartGross implements Serializable {
   // prettier-ignore
   @Override
   public String toString() {
-    return "Cart{"
+    return "CartDtoAmountOfCartGross{"
         + "id=" + getId()
         + ", amountOfCartGross=" + getAmountOfCartGross()
         + "}";
