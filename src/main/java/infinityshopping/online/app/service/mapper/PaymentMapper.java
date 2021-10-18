@@ -7,5 +7,6 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = {})
 public interface PaymentMapper extends EntityMapper<PaymentDTO, Payment> {
-    PaymentDtoNamePriceGross toDtoNamePriceGross(Payment s);
+
+  PaymentDtoNamePriceGross toDtoNamePriceGross(Payment s);
 }

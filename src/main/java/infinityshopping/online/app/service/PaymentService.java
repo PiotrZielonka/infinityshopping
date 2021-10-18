@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PaymentService {
-    PaymentDTO save(PaymentDTO paymentDto);
 
-    List<PaymentDTO> findAll();
+  PaymentDTO save(PaymentDTO paymentDto);
 
-    List<PaymentDtoNamePriceGross> findAllNamePriceGross();
+  List<PaymentDTO> findAll();
 
-    Optional<PaymentDTO> findOne(Long id);
+  List<PaymentDtoNamePriceGross> findAllNamePriceGross();
 
-    void delete(Long id);
+  Optional<PaymentDTO> findOne(Long id);
+
+  void delete(Long id);
 }

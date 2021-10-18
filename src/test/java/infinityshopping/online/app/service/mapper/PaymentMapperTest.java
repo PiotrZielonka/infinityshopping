@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 
 class PaymentMapperTest {
 
-    private PaymentMapper paymentMapper;
+  private PaymentMapper paymentMapper;
 
-    @BeforeEach
-    public void setUp() {
-        paymentMapper = new PaymentMapperImpl();
-    }
+  @BeforeEach
+  public void setUp() {
+    paymentMapper = new PaymentMapperImpl();
+  }
 }
