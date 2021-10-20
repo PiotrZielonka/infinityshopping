@@ -61,6 +61,14 @@ class AccountResourceIT {
     @Autowired
     private CartRepository cartRepository;
 
+    private static final String DEFAULT_PAYMENT_CART_NAME = "DHL bank transfer";
+
+    private static final BigDecimal DEFAULT_PAYMENT_CART_PRICE_NET = new BigDecimal("3.0");
+
+    private static final BigDecimal DEFAULT_PAYMENT_CART_VAT = new BigDecimal("23");
+
+    private static final BigDecimal DEFAULT_PAYMENT_CART_PRICE_GROSS = new BigDecimal("3.69");
+
     @Test
     @WithUnauthenticatedMockUser
     void testNonAuthenticatedUser() throws Exception {
@@ -767,7 +775,7 @@ class AccountResourceIT {
 
     @Test
     @Transactional
-    public void afterRegisteringUserCartShouldBeCreatedAutomatic() throws Exception {
+    public void afterRegisteringUserCartShouldBeCreated() throws Exception {
         int databaseSizeBeforeCreate = cartRepository.findAll().size();
 
         ManagedUserVM firstUser = new ManagedUserVM();
@@ -799,5 +807,64 @@ class AccountResourceIT {
         assertThat(testCart.getAmountOfShipmentGross()).isEqualTo(BigDecimal.ZERO);
         assertThat(testCart.getAmountOfOrderNet()).isEqualTo(BigDecimal.ZERO);
         assertThat(testCart.getAmountOfOrderGross()).isEqualTo(BigDecimal.ZERO);
+    }
+
+    @Test
+    @Transactional
+    public void afterRegisterUserCartShipmentCartAndPaymentCartShouldBeCreated() throws Exception {
+        int databaseSizeBeforeCreate = cartRepository.findAll().size();
+
+        ManagedUserVM firstUser = new ManagedUserVM();
+        firstUser.setId(15L);
+        firstUser.setLogin("alice");
+        firstUser.setPassword("password");
+        firstUser.setFirstName("Alice");
+        firstUser.setLastName("Something");
+        firstUser.setEmail("alice@example.com");
+        firstUser.setImageUrl("http://placehold.it/50x50");
+        firstUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        firstUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
+        restAccountMockMvc.perform(
+                post("/api/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(firstUser)))
+            .andExpect(status().isCreated());
+
+        User user = new User();
+        user = userRepository.findOneByLogin("alice").get();
+
+        // Validate the Cart in database
+        List<Cart> cartList = cartRepository.findAll();
+        Cart testCart = cartList.get(cartList.size() - 1);
+        assertThat(cartList).hasSize(databaseSizeBeforeCreate + 1);
+        assertNotNull(testCart.getId());
+        assertThat(testCart.getAmountOfCartNet()).isEqualTo(BigDecimal.ZERO);
+        assertThat(testCart.getAmountOfCartGross()).isEqualTo(BigDecimal.ZERO);
+        assertThat(testCart.getAmountOfShipmentNet())
+            .isEqualTo(DEFAULT_PAYMENT_CART_PRICE_NET);
+        assertThat(testCart.getAmountOfShipmentGross())
+            .isEqualTo(DEFAULT_PAYMENT_CART_PRICE_GROSS);
+        assertThat(testCart.getAmountOfOrderNet())
+            .isEqualTo(DEFAULT_PAYMENT_CART_PRICE_NET);
+        assertThat(testCart.getAmountOfShipmentGross())
+            .isEqualTo(DEFAULT_PAYMENT_CART_PRICE_GROSS);
+        assertThat(testCart.getUser().getId()).isEqualTo(user.getId());
+
+        // Validate the PaymentCart in database
+        assertThat(testCart.getId()).isEqualTo(testCart.getPaymentCart().getCart().getId());
+        assertThat(testCart.getPaymentCart().getName())
+            .isEqualTo(DEFAULT_PAYMENT_CART_NAME);
+        assertThat(testCart.getPaymentCart().getPriceNet())
+            .isEqualTo(DEFAULT_PAYMENT_CART_PRICE_NET);
+        assertThat(testCart.getPaymentCart().getVat())
+            .isEqualTo(DEFAULT_PAYMENT_CART_VAT);
+        assertThat(testCart.getPaymentCart().getPriceGross())
+            .isEqualTo(DEFAULT_PAYMENT_CART_PRICE_GROSS);
+
+        // Validate the ShipmentCart in database
+        //assertThat(testCart.getId()).isEqualTo(testCart.getShipmentCart().getCart().getId());
+        //assertThat(testCart.getPaymentCart().getKindOfPayment()).isEqualTo(KindOfPaymentEnum.DHLBankTransfer);
+
     }
 }

@@ -3,9 +3,11 @@ package infinityshopping.online.app.service;
 import infinityshopping.online.app.config.Constants;
 import infinityshopping.online.app.domain.Authority;
 import infinityshopping.online.app.domain.Cart;
+import infinityshopping.online.app.domain.PaymentCart;
 import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.AuthorityRepository;
 import infinityshopping.online.app.repository.CartRepository;
+import infinityshopping.online.app.repository.PaymentCartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
 import infinityshopping.online.app.security.SecurityUtils;
@@ -22,6 +24,9 @@ import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,18 +51,21 @@ public class UserService {
 
     private final CartRepository cartRepository;
 
+    private final PaymentCartRepository paymentCartRepository;
+
     public UserService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         AuthorityRepository authorityRepository,
         CacheManager cacheManager,
-        CartRepository cartRepository
-    ) {
+        CartRepository cartRepository,
+        PaymentCartRepository paymentCartRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
         this.cartRepository = cartRepository;
+        this.paymentCartRepository = paymentCartRepository;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -140,7 +148,7 @@ public class UserService {
         this.clearUserCaches(newUser);
         log.debug("Created Information for User: {}", newUser);
 
-        newUser.setCart(createCartForNewUser(newUser));
+        createCartPaymentCartAndShipmentCartForNewUser(newUser);
 
         return newUser;
     }
@@ -333,7 +341,23 @@ public class UserService {
         }
     }
 
-    public Cart createCartForNewUser(User newUser) {
+  public String getCurrentUserLogin() {
+    org.springframework.security.core.context.SecurityContext securityContext
+        = SecurityContextHolder.getContext();
+    Authentication authentication = securityContext.getAuthentication();
+    String login = null;
+    if (authentication != null) {
+      if (authentication.getPrincipal() instanceof UserDetails) {
+        login = ((UserDetails) authentication.getPrincipal()).getUsername();
+      } else if (authentication.getPrincipal() instanceof String) {
+        login = (String) authentication.getPrincipal();
+      }
+    }
+
+    return login;
+  }
+
+    public void createCartPaymentCartAndShipmentCartForNewUser(User newUser) {
         Cart cart = new Cart();
         cart.setUser(newUser);
         cart.setAmountOfCartNet(BigDecimal.ZERO);
@@ -343,6 +367,27 @@ public class UserService {
         cart.setAmountOfOrderNet(BigDecimal.ZERO);
         cart.setAmountOfOrderGross(BigDecimal.ZERO);
         cartRepository.save(cart);
-        return cart;
+        newUser.setCart(cart);
+
+        createPaymentCartForNewUser(cart);
+    }
+
+    private void createPaymentCartForNewUser(Cart cart) {
+        PaymentCart paymentCart = new PaymentCart();
+
+        paymentCart.setName("DHL bank transfer");
+        paymentCart.setPriceNet(new BigDecimal("3.0"));
+        paymentCart.setVat(new BigDecimal("23"));
+        paymentCart.setPriceGross(new BigDecimal("3.69"));
+        paymentCart.setCart(cart);
+
+        paymentCartRepository.save(paymentCart);
+
+        cart.setPaymentCart(paymentCart);
+        cart.setAmountOfShipmentNet(paymentCart.getPriceNet());
+        cart.setAmountOfShipmentGross(paymentCart.getPriceGross());
+        cart.setAmountOfOrderNet(paymentCart.getPriceNet());
+        cart.setAmountOfOrderGross(paymentCart.getPriceGross());
+        cartRepository.save(cart);
     }
 }

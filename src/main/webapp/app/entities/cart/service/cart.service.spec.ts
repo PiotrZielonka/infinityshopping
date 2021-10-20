@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
-import { ICart, Cart } from '../cart.model';
+import { ICart } from '../cart.model';
 
 import { CartService } from './cart.service';
 

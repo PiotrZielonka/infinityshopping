@@ -10,6 +10,7 @@
         "product": "Wszystkie produkty",
         "cart": "Koszyk",
         "payment": "Payment",
+        "paymentCart": "Sposób wysyłki",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {

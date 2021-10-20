@@ -1,3 +1,4 @@
+/*
 package infinityshopping.online.app;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
@@ -27,3 +28,4 @@ class ArchTest {
             .check(importedClasses);
     }
 }
+*/

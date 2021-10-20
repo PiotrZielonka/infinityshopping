@@ -10,6 +10,7 @@
         "product": "All products",
         "cart": "Cart",
         "payment": "Payment",
+        "paymentCart": "Kind of payment",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {

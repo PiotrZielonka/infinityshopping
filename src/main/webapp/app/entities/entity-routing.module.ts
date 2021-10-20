@@ -14,6 +14,11 @@ import { RouterModule } from '@angular/router';
         data: { pageTitle: 'infinityshoppingApp.payment.home.title' },
         loadChildren: () => import('./payment/payment.module').then(m => m.PaymentModule),
       },
+      {
+        path: 'payment-cart',
+        data: { pageTitle: 'infinityshoppingApp.paymentCart.home.title' },
+        loadChildren: () => import('./payment-cart/payment-cart.module').then(m => m.PaymentCartModule),
+      },
       /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
     ]),
   ],
