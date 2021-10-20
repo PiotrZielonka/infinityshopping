@@ -121,8 +121,6 @@ public class CartServiceImplTests {
         currentLoggedUser.getCart().getAmountOfShipmentGross());
     assertThat(dbCart.get().getAmountOfOrderGross()).isEqualTo(
         currentLoggedUser.getCart().getAmountOfOrderGross());
-    assertThat(dbCart.get().getUser().getId()).isEqualTo(currentLoggedUser.getId());
-    assertThat(dbCart.get().getUser().getLogin()).isEqualTo(currentLoggedUser.getLogin());
   }
 
   @Test

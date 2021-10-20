@@ -9,8 +9,6 @@ import { of, Subject } from 'rxjs';
 
 import { PaymentCartService } from '../service/payment-cart.service';
 import { IPaymentCart, PaymentCart } from '../payment-cart.model';
-import { ICart } from 'app/entities/cart/cart.model';
-import { CartService } from 'app/entities/cart/service/cart.service';
 
 import { PaymentCartUpdateComponent } from './payment-cart-update.component';
 
@@ -20,7 +18,6 @@ describe('Component Tests', () => {
     let fixture: ComponentFixture<PaymentCartUpdateComponent>;
     let activatedRoute: ActivatedRoute;
     let paymentCartService: PaymentCartService;
-    let cartService: CartService;
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -34,7 +31,6 @@ describe('Component Tests', () => {
       fixture = TestBed.createComponent(PaymentCartUpdateComponent);
       activatedRoute = TestBed.inject(ActivatedRoute);
       paymentCartService = TestBed.inject(PaymentCartService);
-      cartService = TestBed.inject(CartService);
 
       comp = fixture.componentInstance;
     });

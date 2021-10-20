@@ -12,8 +12,6 @@ public class CartDtoAmountOfCartGross implements Serializable {
   @NotNull
   private BigDecimal amountOfCartGross;
 
-  private UserDTO user;
-
   public Long getId() {
     return id;
   }
@@ -28,14 +26,6 @@ public class CartDtoAmountOfCartGross implements Serializable {
 
   public void setAmountOfCartGross(BigDecimal amountOfCartGross) {
     this.amountOfCartGross = amountOfCartGross;
-  }
-
-  public UserDTO getUser() {
-    return user;
-  }
-
-  public void setUser(UserDTO user) {
-    this.user = user;
   }
 
   @Override

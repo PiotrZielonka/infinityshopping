@@ -27,8 +27,6 @@ public class CartDTO implements Serializable {
   @NotNull
   private BigDecimal amountOfOrderGross;
 
-  private UserDTO user;
-
   public Long getId() {
     return id;
   }
@@ -83,14 +81,6 @@ public class CartDTO implements Serializable {
 
   public void setAmountOfOrderGross(BigDecimal amountOfOrderGross) {
     this.amountOfOrderGross = amountOfOrderGross;
-  }
-
-  public UserDTO getUser() {
-    return user;
-  }
-
-  public void setUser(UserDTO user) {
-    this.user = user;
   }
 
   @Override

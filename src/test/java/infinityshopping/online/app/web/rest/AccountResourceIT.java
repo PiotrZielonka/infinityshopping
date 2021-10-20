@@ -775,43 +775,7 @@ class AccountResourceIT {
 
     @Test
     @Transactional
-    public void afterRegisteringUserCartShouldBeCreated() throws Exception {
-        int databaseSizeBeforeCreate = cartRepository.findAll().size();
-
-        ManagedUserVM firstUser = new ManagedUserVM();
-        firstUser.setLogin("alice");
-        firstUser.setPassword("password");
-        firstUser.setFirstName("Alice");
-        firstUser.setLastName("Something");
-        firstUser.setEmail("alice@example.com");
-        firstUser.setImageUrl("http://placehold.it/50x50");
-        firstUser.setLangKey(Constants.DEFAULT_LANGUAGE);
-        firstUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-
-        restAccountMockMvc
-            .perform(post("/api/register").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(firstUser)))
-            .andExpect(status().isCreated());
-
-        Optional<User> user = userRepository.findOneByLogin("alice");
-
-        List<Cart> cartList = cartRepository.findAll();
-        Cart testCart = cartList.get(cartList.size() - 1);
-
-        assertNotNull(testCart.getId());
-        assertThat(testCart.getUser().getId()).isEqualTo(user.get().getId());
-
-        assertThat(cartList).hasSize(databaseSizeBeforeCreate + 1);
-        assertThat(testCart.getAmountOfCartNet()).isEqualTo(BigDecimal.ZERO);
-        assertThat(testCart.getAmountOfCartGross()).isEqualTo(BigDecimal.ZERO);
-        assertThat(testCart.getAmountOfShipmentNet()).isEqualTo(BigDecimal.ZERO);
-        assertThat(testCart.getAmountOfShipmentGross()).isEqualTo(BigDecimal.ZERO);
-        assertThat(testCart.getAmountOfOrderNet()).isEqualTo(BigDecimal.ZERO);
-        assertThat(testCart.getAmountOfOrderGross()).isEqualTo(BigDecimal.ZERO);
-    }
-
-    @Test
-    @Transactional
-    public void afterRegisterUserCartShipmentCartAndPaymentCartShouldBeCreated() throws Exception {
+    public void afterRegisteringUserCartShipmentCartAndPaymentCartShouldBeCreated() throws Exception {
         int databaseSizeBeforeCreate = cartRepository.findAll().size();
 
         ManagedUserVM firstUser = new ManagedUserVM();

@@ -63,6 +63,8 @@ public class PaymentCartServiceImplTests {
 
   private PaymentCart paymentCart2;
 
+  User currentLoggedUser = new User();
+
 
   @Autowired
   private PaymentCartServiceImpl paymentCartServiceImpl;
@@ -331,10 +333,28 @@ public class PaymentCartServiceImplTests {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  public void everyUserShouldHaveOnlyOnePaymentCart() throws Exception {
+    // given
+    // @BeforeEach
+
+    // given logged user
+    final int databaseSizeBeforeCreate = paymentCartRepository.findAll().size();
+    currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
+
+    // when
+    paymentCartRepository.save(currentLoggedUser.getCart().getPaymentCart());
+
+    // then
+    List<PaymentCart> paymentCartList = paymentCartRepository.findAll();
+    assertThat(paymentCartList).hasSize(databaseSizeBeforeCreate);
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void loggedUserShouldGetOnlyOneOwnPaymentCart() throws Exception {
     // given
     // @BeforeEach
-    User currentLoggedUser = new User();
     currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
 
     // when
