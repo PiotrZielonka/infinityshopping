@@ -5,17 +5,17 @@ import { ApplicationConfigService } from 'app/core/config/application-config.ser
 import { IPaymentCart } from '../payment-cart.model';
 
 export type EntityResponseType = HttpResponse<IPaymentCart>;
-export type EntityArrayResponseType = HttpResponse<IPaymentCart[]>;
 
 @Injectable({ providedIn: 'root' })
 export class PaymentCartService {
-  public resourceUrl = SERVER_API_URL + 'api/payment-cart';
-  public userPaymentCartUrl = SERVER_API_URL + 'api/payment-cart/userPaymentCart';
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/payment-cart');
 
-  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
+  constructor(protected http: HttpClient, 
+    protected applicationConfigService: ApplicationConfigService) {}
 
   update(paymentCart: IPaymentCart): Observable<EntityResponseType> {
-    return this.http.put<IPaymentCart>(this.resourceUrl, paymentCart, {observe: 'response'});
+    return this.http.put<IPaymentCart>(`${this.resourceUrl}`,
+    paymentCart, {observe: 'response'});
   }
 
   find(id: number): Observable<EntityResponseType> {
@@ -23,6 +23,6 @@ export class PaymentCartService {
   }
 
   queryPaymentCartOfCurrentLoggedUser(): Observable<EntityResponseType> {
-    return this.http.get<IPaymentCart>(this.userPaymentCartUrl, { observe: 'response' });
+    return this.http.get<IPaymentCart>(`${this.resourceUrl}/userPaymentCart`, { observe: 'response' });
   }
 }

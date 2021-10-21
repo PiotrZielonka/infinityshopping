@@ -6,11 +6,15 @@ import infinityshopping.online.app.InfinityshoppingApp;
 import infinityshopping.online.app.config.Constants;
 import infinityshopping.online.app.domain.Cart;
 import infinityshopping.online.app.domain.PaymentCart;
+import infinityshopping.online.app.domain.ShipmentCart;
 import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.PaymentCartRepository;
+import infinityshopping.online.app.repository.ShipmentCartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
+import infinityshopping.online.app.security.SecurityUtils;
+import infinityshopping.online.app.service.UserNotFoundException;
 import infinityshopping.online.app.service.dto.PaymentCartDTO;
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,12 +25,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @SpringBootTest(classes = InfinityshoppingApp.class)
 public class PaymentCartServiceImplTests {
@@ -59,9 +59,32 @@ public class PaymentCartServiceImplTests {
   private static final BigDecimal DEFAULT_AMOUNT_OF_ORDER_NET = new BigDecimal("110");
   private static final BigDecimal DEFAULT_AMOUNT_OF_ORDER_GROSS = new BigDecimal("133.8");
 
+  // ShipmentCart
+  private static final String DEFAULT_FIRST_NAME = "AAAAAAAAAA";
+
+  private static final String DEFAULT_LAST_NAME = "AAAAAAAAAA";
+
+  private static final String DEFAULT_STREET = "AAAAAAAAAA";
+
+  private static final String DEFAULT_POSTAL_CODE = "AAAAAAAAAA";
+
+  private static final String DEFAULT_CITY = "AAAAAAAAAA";
+
+  private static final String DEFAULT_COUNTRY = "AAAAAAAAAA";
+
+  private static final String DEFAULT_PHONE_TO_THE_RECEIVER = "AAAAAAAAAA";
+
+  private static final String DEFAULT_FIRM = "AAAAAAAAAA";
+
+  private static final String DEFAULT_TAX_NUMBER = "AAAAAAAAAA";
+
   private PaymentCart paymentCart;
 
   private PaymentCart paymentCart2;
+
+  private ShipmentCart shipmentCart;
+
+  private ShipmentCart shipmentCart2;
 
   User currentLoggedUser = new User();
 
@@ -73,6 +96,9 @@ public class PaymentCartServiceImplTests {
   private PaymentCartRepository paymentCartRepository;
 
   @Autowired
+  private ShipmentCartRepository shipmentCartRepository;
+
+  @Autowired
   private UserRepository userRepository;
 
   @Autowired
@@ -80,6 +106,7 @@ public class PaymentCartServiceImplTests {
 
   @Autowired
   private EntityManager em;
+
 
   public static PaymentCart createEntity(EntityManager em) {
     PaymentCart paymentCart = new PaymentCart()
@@ -97,6 +124,20 @@ public class PaymentCartServiceImplTests {
         .vat(DEFAULT_VAT_2)
         .priceGross(DEFAULT_PRICE_GROSS_2);
     return paymentCart2;
+  }
+
+  public static ShipmentCart createEntityShipmentCart(EntityManager em) {
+    ShipmentCart shipmentCart = new ShipmentCart()
+        .firstName(DEFAULT_FIRST_NAME)
+        .lastName(DEFAULT_LAST_NAME)
+        .street(DEFAULT_STREET)
+        .postalCode(DEFAULT_POSTAL_CODE)
+        .city(DEFAULT_CITY)
+        .country(DEFAULT_COUNTRY)
+        .phoneToTheReceiver(DEFAULT_PHONE_TO_THE_RECEIVER)
+        .firm(DEFAULT_FIRM)
+        .taxNumber(DEFAULT_TAX_NUMBER);
+    return shipmentCart;
   }
 
   @BeforeEach
@@ -133,6 +174,13 @@ public class PaymentCartServiceImplTests {
     cart.setPaymentCart(paymentCart);
     cartRepository.save(cart);
 
+    // given ShipmentCart for User
+    shipmentCart = createEntityShipmentCart(em);
+    shipmentCart.setCart(cart);
+    shipmentCartRepository.save(shipmentCart);
+    cart.setShipmentCart(shipmentCart);
+    cartRepository.save(cart);
+
     // given
     // given User2
     User user2 = new User();
@@ -164,14 +212,18 @@ public class PaymentCartServiceImplTests {
     paymentCartRepository.save(paymentCart2);
     cart2.setPaymentCart(paymentCart2);
     cartRepository.save(cart2);
+
+    // given ShipmentCart2
+    shipmentCart2 = createEntityShipmentCart(em);
+    shipmentCart2.setCart(cart2);
+    shipmentCartRepository.save(shipmentCart2);
+    cart2.setShipmentCart(shipmentCart2);
+    cartRepository.save(cart2);
   }
 
   @Test
   @Transactional
   public void shouldFindPaymentCartById() throws Exception {
-    // given
-    // @BeforeEach
-
     // when
     Optional<PaymentCartDTO> testPaymentCart
         = paymentCartServiceImpl.findOne(paymentCart.getId());
@@ -188,7 +240,7 @@ public class PaymentCartServiceImplTests {
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void shouldUpdateExistPaymentCart() throws Exception {
-    // given ShipmentCartDto
+    // given
     PaymentCartDTO paymentCartDto = new PaymentCartDTO();
     paymentCartDto.setId(paymentCart.getId());
     paymentCartDto.setName(UPDATED_NAME);
@@ -196,15 +248,17 @@ public class PaymentCartServiceImplTests {
     paymentCartDto.setVat(UPDATED_VAT);
     paymentCartDto.setPriceGross(UPDATED_PRICE_GROSS);
 
-    final int databaseSizeBeforeSave = paymentCartRepository.findAll().size();
+    final int paymentCartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
+    final int cartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
 
     // when
     paymentCartServiceImpl.save(paymentCartDto);
 
     // then
+    assertThat(paymentCartDatabaseSizeBeforeSave).isEqualTo(paymentCartDatabaseSizeBeforeSave);
+    assertThat(cartDatabaseSizeBeforeSave).isEqualTo(cartDatabaseSizeBeforeSave);
     List<PaymentCart> paymentCartList = paymentCartRepository.findAll();
     PaymentCart testPaymentCart = paymentCartList.get(paymentCartList.size() - 2);
-    assertThat(databaseSizeBeforeSave).isEqualTo(databaseSizeBeforeSave);
     assertThat(testPaymentCart.getId()).isEqualTo(paymentCart.getId());
     assertThat(testPaymentCart.getName()).isEqualTo(UPDATED_NAME);
     assertThat(testPaymentCart.getPriceNet()).isEqualTo(UPDATED_PRICE_NET);
@@ -216,7 +270,7 @@ public class PaymentCartServiceImplTests {
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void shouldSaveCartIdInPaymentCartAfterSavingPaymentCart() throws Exception {
-    // given ShipmentCartDto
+    // given
     PaymentCartDTO paymentCartDto = new PaymentCartDTO();
     paymentCartDto.setId(paymentCart.getId());
     paymentCartDto.setName(UPDATED_NAME);
@@ -224,12 +278,15 @@ public class PaymentCartServiceImplTests {
     paymentCartDto.setVat(UPDATED_VAT);
     paymentCartDto.setPriceGross(UPDATED_PRICE_GROSS);
 
-    final int databaseSizeBeforeSave = paymentCartRepository.findAll().size();
+    final int paymentCartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
+    final int cartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
 
     // when
     paymentCartServiceImpl.save(paymentCartDto);
 
-    // Validate if the CartId exist after saving PaymentCart
+    // then
+    assertThat(paymentCartDatabaseSizeBeforeSave).isEqualTo(paymentCartDatabaseSizeBeforeSave);
+    assertThat(cartDatabaseSizeBeforeSave).isEqualTo(cartDatabaseSizeBeforeSave);
     List<Cart> cartList = cartRepository.findAll();
     Cart testCart = cartList.get(cartList.size() - 2);
     assertThat(testCart.getPaymentCart().getCart()).isEqualTo(paymentCart.getCart());
@@ -240,7 +297,7 @@ public class PaymentCartServiceImplTests {
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void shouldSetAmountOfShipmentToToProperCartAfterSavingPaymentCart()
       throws Exception {
-    // given PaymentCartDto
+    // given
     PaymentCartDTO paymentCartDto = new PaymentCartDTO();
     paymentCartDto.setId(paymentCart.getId());
     paymentCartDto.setName(UPDATED_NAME);
@@ -248,12 +305,15 @@ public class PaymentCartServiceImplTests {
     paymentCartDto.setVat(UPDATED_VAT);
     paymentCartDto.setPriceGross(UPDATED_PRICE_GROSS);
 
-    final int databaseSizeBeforeSave = paymentCartRepository.findAll().size();
+    final int paymentCartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
+    final int cartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
 
     // when
     paymentCartServiceImpl.save(paymentCartDto);
 
     // then
+    assertThat(paymentCartDatabaseSizeBeforeSave).isEqualTo(paymentCartDatabaseSizeBeforeSave);
+    assertThat(cartDatabaseSizeBeforeSave).isEqualTo(cartDatabaseSizeBeforeSave);
     List<Cart> cartList = cartRepository.findAll();
     Cart testCart = cartList.get(cartList.size() - 2);
     assertThat(testCart.getId()).isEqualTo(paymentCart.getCart().getId());
@@ -268,7 +328,7 @@ public class PaymentCartServiceImplTests {
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void shouldSetAmountOfOrderToToProperCartAfterSavingPaymentCart()
       throws Exception {
-    // given PaymentCartDto
+    // given
     PaymentCartDTO paymentCartDto = new PaymentCartDTO();
     paymentCartDto.setId(paymentCart.getId());
     paymentCartDto.setName(UPDATED_NAME);
@@ -276,12 +336,15 @@ public class PaymentCartServiceImplTests {
     paymentCartDto.setVat(UPDATED_VAT);
     paymentCartDto.setPriceGross(UPDATED_PRICE_GROSS);
 
-    final int databaseSizeBeforeSave = paymentCartRepository.findAll().size();
+    final int paymentCartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
+    final int cartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
 
     // when
     paymentCartServiceImpl.save(paymentCartDto);
 
     // then
+    assertThat(paymentCartDatabaseSizeBeforeSave).isEqualTo(paymentCartDatabaseSizeBeforeSave);
+    assertThat(cartDatabaseSizeBeforeSave).isEqualTo(cartDatabaseSizeBeforeSave);
     List<Cart> cartList = cartRepository.findAll();
     Cart testCart = cartList.get(cartList.size() - 2);
     assertThat(testCart.getId()).isEqualTo(paymentCart.getCart().getId());
@@ -301,7 +364,7 @@ public class PaymentCartServiceImplTests {
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void afterSavingPaymentCartTwiceAmountsShouldBeCountProperWithoutDuplicate()
       throws Exception {
-    // given PaymentCartDto
+    // given
     PaymentCartDTO paymentCartDto = new PaymentCartDTO();
     paymentCartDto.setId(paymentCart.getId());
     paymentCartDto.setName(UPDATED_NAME);
@@ -309,13 +372,16 @@ public class PaymentCartServiceImplTests {
     paymentCartDto.setVat(UPDATED_VAT);
     paymentCartDto.setPriceGross(UPDATED_PRICE_GROSS);
 
-    final int databaseSizeBeforeSave = paymentCartRepository.findAll().size();
+    final int paymentCartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
+    final int cartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
 
     // when
     paymentCartServiceImpl.save(paymentCartDto);
     paymentCartServiceImpl.save(paymentCartDto);
 
     // then
+    assertThat(paymentCartDatabaseSizeBeforeSave).isEqualTo(paymentCartDatabaseSizeBeforeSave);
+    assertThat(cartDatabaseSizeBeforeSave).isEqualTo(cartDatabaseSizeBeforeSave);
     List<Cart> cartList = cartRepository.findAll();
     Cart testCart = cartList.get(cartList.size() - 2);
     assertThat(testCart.getId()).isEqualTo(paymentCart.getCart().getId());
@@ -335,18 +401,18 @@ public class PaymentCartServiceImplTests {
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void everyUserShouldHaveOnlyOnePaymentCart() throws Exception {
     // given
-    // @BeforeEach
+    final int paymentCartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
+    final int cartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
+    currentLoggedUser = checkIfUserExist();
 
-    // given logged user
-    final int databaseSizeBeforeCreate = paymentCartRepository.findAll().size();
-    currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
 
     // when
     paymentCartRepository.save(currentLoggedUser.getCart().getPaymentCart());
 
     // then
-    List<PaymentCart> paymentCartList = paymentCartRepository.findAll();
-    assertThat(paymentCartList).hasSize(databaseSizeBeforeCreate);
+    assertThat(paymentCartDatabaseSizeBeforeSave).isEqualTo(paymentCartDatabaseSizeBeforeSave);
+    assertThat(cartDatabaseSizeBeforeSave).isEqualTo(cartDatabaseSizeBeforeSave);
+    List<PaymentCart> cartList = paymentCartRepository.findAll();
   }
 
   @Test
@@ -354,8 +420,7 @@ public class PaymentCartServiceImplTests {
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void loggedUserShouldGetOnlyOneOwnPaymentCart() throws Exception {
     // given
-    // @BeforeEach
-    currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
+    currentLoggedUser = checkIfUserExist();
 
     // when
     Optional<PaymentCartDTO> dbPaymentCart = paymentCartServiceImpl.findByCartId();
@@ -369,20 +434,10 @@ public class PaymentCartServiceImplTests {
     assertThat(dbPaymentCart.get().getPriceGross()).isEqualTo(paymentCart.getPriceGross());
   }
 
-  public String getCurrentUserLogin() {
-    org.springframework.security.core.context.SecurityContext securityContext
-        = SecurityContextHolder.getContext();
-    Authentication authentication = securityContext.getAuthentication();
-    String login = null;
-    if (authentication != null) {
-      if (authentication.getPrincipal() instanceof UserDetails) {
-        login = ((UserDetails) authentication.getPrincipal()).getUsername();
-      } else if (authentication.getPrincipal() instanceof String) {
-        login = (String) authentication.getPrincipal();
-      }
-    }
-
-    return login;
-
+  private User checkIfUserExist() {
+    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new UserNotFoundException()))
+        .orElseThrow(() -> new UserNotFoundException());
+    return currentLoggedUser;
   }
 }

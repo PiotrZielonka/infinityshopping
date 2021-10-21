@@ -1,0 +1,22 @@
+{
+  "infinityshoppingApp": {
+    "shipmentCart": {
+      "home": {
+        "title": "Address of shipment",
+        "editLabel": "Edit address of shipment",
+        "notFound": "The page of address of shipment was not found"
+      },
+      "updated": "Address of shipment was updated",
+      "editAddressOfShipment": "Edit address of shipment",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "street": "Street",
+      "postalCode": "Postal Code",
+      "city": "City",
+      "country": "Country",
+      "phoneToTheReceiver": "Phone To The Receiver",
+      "firm": "Firm (The field isn't required if you don't have a company or if you don't want an invoice for your company)",
+      "taxNumber": "Tax Number (The field isn't required if you don't have a company or if you don't want an invoice for your company)"
+    }
+  }
+}

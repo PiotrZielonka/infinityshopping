@@ -51,7 +51,8 @@ describe('PaymentCart Service', () => {
 
       const expected = Object.assign({}, returnedFromService);
 
-      service.update(expected).subscribe(resp => (expectedResult = resp.body));
+      service.update(expected).subscribe(resp => (
+        expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'PUT' });
       req.flush(returnedFromService);
@@ -61,7 +62,8 @@ describe('PaymentCart Service', () => {
     it('should return a PaymentCart of currentUser', () => {
       const returnedFromService = Object.assign({}, elemDefault);
 
-      service.queryPaymentCartOfCurrentLoggedUser().subscribe(resp => expectedResult = resp.body);
+      service.queryPaymentCartOfCurrentLoggedUser().subscribe(
+        resp => expectedResult = resp.body);
 
       const expected = Object.assign({}, returnedFromService);      
 

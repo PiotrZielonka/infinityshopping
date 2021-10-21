@@ -4,10 +4,12 @@ import infinityshopping.online.app.config.Constants;
 import infinityshopping.online.app.domain.Authority;
 import infinityshopping.online.app.domain.Cart;
 import infinityshopping.online.app.domain.PaymentCart;
+import infinityshopping.online.app.domain.ShipmentCart;
 import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.AuthorityRepository;
 import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.PaymentCartRepository;
+import infinityshopping.online.app.repository.ShipmentCartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
 import infinityshopping.online.app.security.SecurityUtils;
@@ -53,19 +55,23 @@ public class UserService {
 
     private final PaymentCartRepository paymentCartRepository;
 
+    private final ShipmentCartRepository shipmentCartRepository;
+
     public UserService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         AuthorityRepository authorityRepository,
         CacheManager cacheManager,
         CartRepository cartRepository,
-        PaymentCartRepository paymentCartRepository) {
+        PaymentCartRepository paymentCartRepository,
+        ShipmentCartRepository shipmentCartRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
         this.cartRepository = cartRepository;
         this.paymentCartRepository = paymentCartRepository;
+        this.shipmentCartRepository = shipmentCartRepository;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -389,5 +395,26 @@ public class UserService {
         cart.setAmountOfOrderNet(paymentCart.getPriceNet());
         cart.setAmountOfOrderGross(paymentCart.getPriceGross());
         cartRepository.save(cart);
+
+        createShipmentCartForNewUser(cart);
     }
+
+    public void createShipmentCartForNewUser(Cart cart) {
+       ShipmentCart shipmentCart = new ShipmentCart();
+
+       shipmentCart.setFirstName("");
+       shipmentCart.setLastName("");
+       shipmentCart.setFirm("");
+       shipmentCart.setStreet("");
+       shipmentCart.setPostalCode("");
+       shipmentCart.setCity("");
+       shipmentCart.setCountry("");
+       shipmentCart.setPhoneToTheReceiver("");
+
+       shipmentCart.setCart(cart);
+       shipmentCartRepository.save(shipmentCart);
+
+       cart.setShipmentCart(shipmentCart);
+       cartRepository.save(cart);
+  }
 }

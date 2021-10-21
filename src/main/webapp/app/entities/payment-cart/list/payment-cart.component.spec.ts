@@ -35,7 +35,7 @@ describe('Component Tests', () => {
       );
     });
 
-    it('Should call load all on init', () => {
+    it('Should call load a paymentCart of currentLoggedUser on init', () => {
       // WHEN
       comp.ngOnInit();
 

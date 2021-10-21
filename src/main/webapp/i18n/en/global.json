@@ -11,6 +11,7 @@
         "cart": "Cart",
         "payment": "Payment",
         "paymentCart": "Kind of payment",
+        "shipmentCart": "Address of shipment",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {

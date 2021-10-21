@@ -1,0 +1,22 @@
+{
+  "infinityshoppingApp": {
+    "shipmentCart": {
+      "home": {
+        "title": "Adres wysyłki",
+        "editLabel": "Edytuj adres wysyłki",
+        "notFound": "Nie znaleziono strony adresu wysyłki"
+      },
+      "updated": "Uaktualniono obiekt typu Shipment Cart z identyfikatorem {{ param }}",
+      "editAddressOfShipment": "Edytuj adres wysyłki",
+      "firstName": "Imię",
+      "lastName": "Nazwisko",
+      "street": "Ulica",
+      "postalCode": "Kod pocztowy",
+      "city": "Miasto",
+      "country": "Państwo",
+      "phoneToTheReceiver": "Telefon do odbierającego",
+      "firm": "Firma (Pole nie jest wymagane jeśli nie posiadasz firmy lub nie chcesz faktury na twoją firme)",
+      "taxNumber": "NIP (Pole nie jest wymagane jeśli nie posiadasz firmy lub nie chcesz faktury na twoją firme)"
+    }
+  }
+}

@@ -6,12 +6,12 @@ import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.PaymentCartRepository;
 import infinityshopping.online.app.repository.UserRepository;
+import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.PaymentCartService;
 import infinityshopping.online.app.service.UserNotFoundException;
 import infinityshopping.online.app.service.UserService;
 import infinityshopping.online.app.service.dto.PaymentCartDTO;
 import infinityshopping.online.app.service.mapper.PaymentCartMapper;
-import infinityshopping.online.app.web.rest.errors.BadRequestAlertException;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +23,6 @@ public class PaymentCartServiceImpl implements PaymentCartService {
 
   private final Logger log = LoggerFactory.getLogger(PaymentCartServiceImpl.class);
 
-  private static final String ENTITY_NAME = "Payment Cart ";
-
   private final PaymentCartRepository paymentCartRepository;
 
   private final UserRepository userRepository;
@@ -33,7 +31,7 @@ public class PaymentCartServiceImpl implements PaymentCartService {
 
   private final PaymentCartMapper paymentCartMapper;
 
-  private final UserService userService;
+  private User currentLoggedUser;
 
   private Cart cart;
 
@@ -45,7 +43,6 @@ public class PaymentCartServiceImpl implements PaymentCartService {
     this.paymentCartRepository = paymentCartRepository;
     this.paymentCartMapper = paymentCartMapper;
     this.userRepository = userRepository;
-    this.userService = userService;
     this.cartRepository = cartRepository;
   }
 
@@ -53,31 +50,19 @@ public class PaymentCartServiceImpl implements PaymentCartService {
   @Transactional
   public PaymentCartDTO save(PaymentCartDTO paymentCartDto) {
     log.debug("Request to save only update PaymentCart : {}", paymentCartDto);
+    PaymentCart paymentCart = paymentCartMapper.toEntity(paymentCartDto);
 
-    PaymentCart paymentCartOfLoggedUser = new PaymentCart();
-
-    User currentLoggedUser = new User();
-
-    currentLoggedUser =
-        userRepository.findOneByLogin(userService.getCurrentUserLogin())
-        .orElseThrow(() -> new UserNotFoundException());
-
-    paymentCartOfLoggedUser =
-        paymentCartRepository.findByCartId(currentLoggedUser.getCart().getId())
-        .orElseThrow(() ->
-            new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
-
-    paymentCartOfLoggedUser = paymentCartMapper.toEntity(paymentCartDto);
+    currentLoggedUser = checkIfUserExist();
 
     setCartIdToPaymentCartOfLoggedUserBecauseItIsNotInDto(
-        paymentCartOfLoggedUser, currentLoggedUser);
+        paymentCart, currentLoggedUser);
 
-    setAmountOfShipmentToProperCartOfUser(paymentCartOfLoggedUser);
-    setAmountOfOrderToProperCartOfUser(paymentCartOfLoggedUser);
+    setAmountOfShipmentToProperCartOfUser(paymentCart);
+    setAmountOfOrderToProperCartOfUser(paymentCart);
 
-    paymentCartOfLoggedUser = paymentCartRepository.save(paymentCartOfLoggedUser);
+    paymentCart = paymentCartRepository.save(paymentCart);
 
-    return paymentCartMapper.toDto(paymentCartOfLoggedUser);
+    return paymentCartMapper.toDto(paymentCart);
   }
 
   private void setCartIdToPaymentCartOfLoggedUserBecauseItIsNotInDto(
@@ -114,12 +99,17 @@ public class PaymentCartServiceImpl implements PaymentCartService {
   @Transactional(readOnly = true)
   public Optional<PaymentCartDTO> findByCartId() {
     log.debug("Request to get payment of cart of current logged user ");
-    User currentLoggedUser = new User();
 
-    currentLoggedUser = userRepository.findOneByLogin(userService.getCurrentUserLogin())
-        .orElseThrow(() -> new UserNotFoundException());
+    currentLoggedUser = checkIfUserExist();
 
     return paymentCartRepository.findByCartId(currentLoggedUser.getCart().getId())
         .map(paymentCartMapper::toDto);
+  }
+
+  private User checkIfUserExist() {
+    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new UserNotFoundException()))
+        .orElseThrow(() -> new UserNotFoundException());
+    return currentLoggedUser;
   }
 }

@@ -9,8 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import infinityshopping.online.app.IntegrationTest;
 import infinityshopping.online.app.domain.Authority;
 import infinityshopping.online.app.domain.Cart;
+import infinityshopping.online.app.domain.PaymentCart;
+import infinityshopping.online.app.domain.ShipmentCart;
 import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.CartRepository;
+import infinityshopping.online.app.repository.PaymentCartRepository;
+import infinityshopping.online.app.repository.ShipmentCartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
 import infinityshopping.online.app.service.dto.AdminUserDTO;
@@ -81,6 +85,12 @@ class UserResourceIT {
 
     @Autowired
     private CartRepository cartRepository;
+
+    @Autowired
+    private PaymentCartRepository paymentCartRepository;
+
+    @Autowired
+    private ShipmentCartRepository shipmentCartRepository;
 
     private User user;
 
@@ -471,7 +481,7 @@ class UserResourceIT {
 
     @Test
     @Transactional
-    void deleteUser() throws Exception {
+    void deleteUserCartPaymentCartShipmentCart() throws Exception {
         // given Cart for User
         Cart cart = new Cart();
         cart.setUser(user);
@@ -485,11 +495,40 @@ class UserResourceIT {
         user.setCart(cart);
         userRepository.saveAndFlush(user);
 
+        // given PaymentCart
+        PaymentCart paymentCart = new PaymentCart();
+        paymentCart.setName("DHL bank transfer");
+        paymentCart.setPriceNet(new BigDecimal("3.0"));
+        paymentCart.setVat(new BigDecimal("23"));
+        paymentCart.setPriceGross(new BigDecimal("3.69"));
+        paymentCart.setCart(cart);
+        cart.setPaymentCart(paymentCart);
+        cartRepository.save(cart);
+        paymentCartRepository.save(paymentCart);
+
+        // given ShipmentCart
+        ShipmentCart shipmentCart = new ShipmentCart();
+        shipmentCart.setFirstName("AAAAAAAAAA");
+        shipmentCart.setLastName("AAAAAAAAAA");
+        shipmentCart.setFirm("AAAAAAAAAA");
+        shipmentCart.setStreet("AAAAAAAAAA");
+        shipmentCart.setPostalCode("AAAAAAAAAA");
+        shipmentCart.setCity("AAAAAAAAAA");
+        shipmentCart.setCountry("AAAAAAAAAA");
+        shipmentCart.setPhoneToTheReceiver("AAAAAAAAAA");
+        shipmentCart.setCart(cart);
+        shipmentCartRepository.save(shipmentCart);
+        cart.setShipmentCart(shipmentCart);
+        cartRepository.save(cart);
+
         // Initialize the database
         userRepository.saveAndFlush(user);
         int databaseSizeBeforeDelete = userRepository.findAll().size();
         int databaseCartSizeBeforeDelete = cartRepository.findAll().size();
+        int databasePaymentCartSizeBeforeDelete = paymentCartRepository.findAll().size();
+        int databaseShipmentCartSizeBeforeDelete = shipmentCartRepository.findAll().size();
 
+        // when
         // Delete the user
         restUserMockMvc
             .perform(delete("/api/admin/users/{login}", user.getLogin()).accept(MediaType.APPLICATION_JSON))
@@ -497,12 +536,21 @@ class UserResourceIT {
 
         assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin())).isNull();
 
+        // then
         // Validate the database is empty
         assertPersistedUsers(users -> assertThat(users).hasSize(databaseSizeBeforeDelete - 1));
 
         // Validate the Cart in the database
         List<Cart> cartList = cartRepository.findAll();
         assertThat(cartList).hasSize(databaseCartSizeBeforeDelete - 1);
+
+        // Validate the PaymentCart in the database
+        List<PaymentCart> paymentCartList = paymentCartRepository.findAll();
+        assertThat(paymentCartList).hasSize(databasePaymentCartSizeBeforeDelete - 1);
+
+        // Validate the ShipmentCart in the database
+        List<ShipmentCart> shipmentCartList = shipmentCartRepository.findAll();
+        assertThat(shipmentCartList).hasSize(databaseShipmentCartSizeBeforeDelete - 1);
     }
 
     @Test

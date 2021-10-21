@@ -1,0 +1,26 @@
+<div class="col">
+  <div class="card mb-3" style="max-width: 24rem;">
+      <h3 class="card-header"><span class="lowercase" jhiTranslate="infinityshoppingApp.shipmentCart.home.title">Address
+              of
+              shipment</span>
+      </h3>
+      <div class="card-body" *ngIf = "shipmentCart">
+          <p><span>{{ shipmentCart.firstName }}</span>
+              <span>{{ shipmentCart.lastName }}</span>
+          </p>
+          <p><span>{{ shipmentCart.firm }}</span></p>
+          <p><span>{{ shipmentCart.street }}</span></p>
+          <p><span>{{ shipmentCart.postalCode }}</span> <span>{{ shipmentCart.city }}</span>
+          </p>
+          <p><span>{{ shipmentCart.country }}</span></p>
+          <p><span>{{ shipmentCart.phoneToTheReceiver }}</span></p>
+          <div class="row justify-content-center">
+              <button type="button" [routerLink]="['/shipment-cart', shipmentCart.id, 'edit']"
+                  class="btn btn-primary">
+                  <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span
+                      jhiTranslate="infinityshoppingApp.shipmentCart.editAddressOfShipment">Edit</span>
+              </button>
+          </div>
+      </div>
+  </div>
+</div>

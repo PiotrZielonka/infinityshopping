@@ -15,8 +15,8 @@ export class PaymentCartComponent implements OnInit {
   constructor(protected paymentCartService: PaymentCartService, protected modalService: NgbModal) {}
 
   ngOnInit(): void {
-    this.paymentCartService.queryPaymentCartOfCurrentLoggedUser().subscribe((paymentCart: any) => {
-      this.paymentCart = paymentCart.body;
+    this.paymentCartService.queryPaymentCartOfCurrentLoggedUser().subscribe(
+      (paymentCart: any) => {this.paymentCart = paymentCart.body;
     });
   }
 

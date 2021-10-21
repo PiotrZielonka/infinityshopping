@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        Added the entity ShipmentCart.
+    -->
+    <changeSet id="20211020120835-1" author="jhipster">
+        <createTable tableName="shipment_cart">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(500)">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_name" type="varchar(500)">
+                <constraints nullable="false" />
+            </column>
+            <column name="street" type="varchar(500)">
+                <constraints nullable="false" />
+            </column>
+            <column name="postal_code" type="varchar(20)">
+                <constraints nullable="false" />
+            </column>
+            <column name="city" type="varchar(500)">
+                <constraints nullable="false" />
+            </column>
+            <column name="country" type="varchar(500)">
+                <constraints nullable="false" />
+            </column>
+            <column name="phone_to_the_receiver" type="varchar(30)">
+                <constraints nullable="false" />
+            </column>
+            <column name="firm" type="varchar(10000)">
+                <constraints nullable="true" />
+            </column>
+            <column name="tax_number" type="varchar(50)">
+                <constraints nullable="true" />
+            </column>
+            <column name="cart_id" type="bigint">
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_shipment_cart__cart_id" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+    </changeSet>
+
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
+
+    <!--
+        Load sample data generated with Faker.js
+        - This data can be easily edited using a CSV editor (or even MS Excel) and
+          is located in the 'src/main/resources/config/liquibase/fake-data' directory
+        - By default this data is applied when running with the JHipster 'dev' profile.
+          This can be customized by adding or removing 'faker' in the 'spring.liquibase.contexts'
+          Spring Boot configuration key.
+    -->
+    <changeSet id="20211020120835-1-data" author="jhipster" context="faker">
+        <loadData
+                  file="config/liquibase/fake-data/shipment_cart.csv"
+                  separator=";"
+                  tableName="shipment_cart"
+                  usePreparedStatements="true">
+            <column name="id" type="numeric"/>
+            <column name="first_name" type="string"/>
+            <column name="last_name" type="string"/>
+            <column name="street" type="string"/>
+            <column name="postal_code" type="string"/>
+            <column name="city" type="string"/>
+            <column name="country" type="string"/>
+            <column name="phone_to_the_receiver" type="string"/>
+            <column name="firm" type="string"/>
+            <column name="tax_number" type="string"/>
+            <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
+        </loadData>
+    </changeSet>
+</databaseChangeLog>

@@ -1,7 +1,12 @@
 package infinityshopping.online.app.web.rest;
 
+import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.PaymentCartRepository;
+import infinityshopping.online.app.repository.UserRepository;
+import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.PaymentCartService;
+import infinityshopping.online.app.service.UserNotFoundException;
+import infinityshopping.online.app.service.UserService;
 import infinityshopping.online.app.service.dto.PaymentCartDTO;
 import infinityshopping.online.app.web.rest.errors.BadRequestAlertException;
 import java.net.URISyntaxException;
@@ -35,18 +40,32 @@ public class PaymentCartResource {
 
   private final PaymentCartRepository paymentCartRepository;
 
-  public PaymentCartResource(PaymentCartService paymentCartService,
-      PaymentCartRepository paymentCartRepository) {
+  private final UserRepository userRepository;
+
+  private User currentLoggedUser;
+
+  public PaymentCartResource(
+      PaymentCartService paymentCartService,
+      PaymentCartRepository paymentCartRepository,
+      UserRepository userRepository, UserService userService) {
     this.paymentCartService = paymentCartService;
     this.paymentCartRepository = paymentCartRepository;
+    this.userRepository = userRepository;
   }
 
   @PutMapping("/payment-cart")
   public ResponseEntity<PaymentCartDTO> updatePaymentCart(
       @Valid @RequestBody PaymentCartDTO paymentCartDto) throws URISyntaxException {
     log.debug("REST request to update PaymentCart : {}", paymentCartDto);
-    if (paymentCartDto.getId() == null) {
+    if (paymentCartDtoIdIsEqualNull(paymentCartDto)) {
       throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+    }
+    if (paymentCartDtoDoesNotExistInTheDatabase(paymentCartDto)) {
+      throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+    }
+    if (paymentCartDtoDoesNotEqualWithPaymentCartOfLogggedUserInTheDatabase(paymentCartDto)) {
+      throw new BadRequestAlertException("Entity not found", ENTITY_NAME,
+          "doesNotBelongToProperUser");
     }
     PaymentCartDTO result = paymentCartService.save(paymentCartDto);
     return ResponseEntity.ok()
@@ -67,5 +86,25 @@ public class PaymentCartResource {
     log.debug("REST request to get PaymentCart of current logged user");
     Optional<PaymentCartDTO> paymentCartDto = paymentCartService.findByCartId();
     return ResponseUtil.wrapOrNotFound(paymentCartDto);
+  }
+
+  private boolean paymentCartDtoIdIsEqualNull(PaymentCartDTO paymentCartDto) {
+    return (paymentCartDto.getId() == null);
+  }
+
+  private boolean paymentCartDtoDoesNotExistInTheDatabase(PaymentCartDTO paymentCartDto) {
+    return (!paymentCartRepository.existsById(paymentCartDto.getId()));
+  }
+
+  private boolean paymentCartDtoDoesNotEqualWithPaymentCartOfLogggedUserInTheDatabase(
+      PaymentCartDTO paymentCartDto) {
+    return (!paymentCartDto.getId().equals(checkIfUserExist().getCart().getPaymentCart().getId()));
+  }
+
+  private User checkIfUserExist() {
+    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new UserNotFoundException()))
+        .orElseThrow(() -> new UserNotFoundException());
+    return currentLoggedUser;
   }
 }

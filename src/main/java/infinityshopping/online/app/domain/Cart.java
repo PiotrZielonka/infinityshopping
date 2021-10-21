@@ -59,6 +59,9 @@ public class Cart implements Serializable {
   @OneToOne(mappedBy = "cart", orphanRemoval = true)
   private PaymentCart paymentCart;
 
+  @OneToOne(mappedBy = "cart", orphanRemoval = true)
+  private ShipmentCart shipmentCart;
+
   // jhipster-needle-entity-add-field - JHipster will add fields here
 
   public Long getId() {
@@ -176,6 +179,19 @@ public class Cart implements Serializable {
 
   public void setPaymentCart(PaymentCart paymentCart) {
     this.paymentCart = paymentCart;
+  }
+
+  public ShipmentCart getShipmentCart() {
+    return shipmentCart;
+  }
+
+  public Cart shipmentCart(ShipmentCart shipmentCart) {
+    this.shipmentCart = shipmentCart;
+    return this;
+  }
+
+  public void setShipmentCart(ShipmentCart shipmentCart) {
+    this.shipmentCart = shipmentCart;
   }
 
   // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

@@ -12,9 +12,11 @@ import infinityshopping.online.app.IntegrationTest;
 import infinityshopping.online.app.config.Constants;
 import infinityshopping.online.app.domain.Cart;
 import infinityshopping.online.app.domain.PaymentCart;
+import infinityshopping.online.app.domain.ShipmentCart;
 import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.PaymentCartRepository;
+import infinityshopping.online.app.repository.ShipmentCartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
 import infinityshopping.online.app.service.dto.PaymentCartDTO;
@@ -66,6 +68,25 @@ class PaymentCartResourceIT {
   private static final BigDecimal DEFAULT_AMOUNT_OF_ORDER_NET = new BigDecimal("110");
   private static final BigDecimal DEFAULT_AMOUNT_OF_ORDER_GROSS = new BigDecimal("133.8");
 
+  // ShipmentCart
+  private static final String DEFAULT_FIRST_NAME = "AAAAAAAAAA";
+
+  private static final String DEFAULT_LAST_NAME = "AAAAAAAAAA";
+
+  private static final String DEFAULT_STREET = "AAAAAAAAAA";
+
+  private static final String DEFAULT_POSTAL_CODE = "AAAAAAAAAA";
+
+  private static final String DEFAULT_CITY = "AAAAAAAAAA";
+
+  private static final String DEFAULT_COUNTRY = "AAAAAAAAAA";
+
+  private static final String DEFAULT_PHONE_TO_THE_RECEIVER = "AAAAAAAAAA";
+
+  private static final String DEFAULT_FIRM = "AAAAAAAAAA";
+
+  private static final String DEFAULT_TAX_NUMBER = "AAAAAAAAAA";
+
 
   private static final String ENTITY_API_URL = "/api/payment-cart";
   private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -75,6 +96,9 @@ class PaymentCartResourceIT {
 
   @Autowired
   private PaymentCartRepository paymentCartRepository;
+
+  @Autowired
+  private ShipmentCartRepository shipmentCartRepository;
 
   @Autowired
   private CartRepository cartRepository;
@@ -95,6 +119,10 @@ class PaymentCartResourceIT {
 
   private PaymentCart paymentCart2;
 
+  private ShipmentCart shipmentCart;
+
+  private ShipmentCart shipmentCart2;
+
 
   public static PaymentCart createEntity(EntityManager em) {
     PaymentCart paymentCart = new PaymentCart()
@@ -114,13 +142,18 @@ class PaymentCartResourceIT {
     return paymentCart2;
   }
 
-  public static PaymentCart createUpdatedEntity(EntityManager em) {
-    PaymentCart paymentCart = new PaymentCart()
-        .name(UPDATED_NAME)
-        .priceNet(UPDATED_PRICE_NET)
-        .vat(UPDATED_VAT)
-        .priceGross(UPDATED_PRICE_GROSS);
-    return paymentCart;
+  public static ShipmentCart createEntityShipmentCart(EntityManager em) {
+    ShipmentCart shipmentCart = new ShipmentCart()
+        .firstName(DEFAULT_FIRST_NAME)
+        .lastName(DEFAULT_LAST_NAME)
+        .street(DEFAULT_STREET)
+        .postalCode(DEFAULT_POSTAL_CODE)
+        .city(DEFAULT_CITY)
+        .country(DEFAULT_COUNTRY)
+        .phoneToTheReceiver(DEFAULT_PHONE_TO_THE_RECEIVER)
+        .firm(DEFAULT_FIRM)
+        .taxNumber(DEFAULT_TAX_NUMBER);
+    return shipmentCart;
   }
 
   @BeforeEach
@@ -157,6 +190,13 @@ class PaymentCartResourceIT {
     cart.setPaymentCart(paymentCart);
     cartRepository.save(cart);
 
+    // given ShipmentCart for User
+    shipmentCart = createEntityShipmentCart(em);
+    shipmentCart.setCart(cart);
+    shipmentCartRepository.save(shipmentCart);
+    cart.setShipmentCart(shipmentCart);
+    cartRepository.save(cart);
+
     // given
     // given User2
     User user2 = new User();
@@ -187,6 +227,13 @@ class PaymentCartResourceIT {
     paymentCart2.setCart(cart2);
     paymentCartRepository.save(paymentCart2);
     cart2.setPaymentCart(paymentCart2);
+    cartRepository.save(cart2);
+
+    // given ShipmentCart2
+    shipmentCart2 = createEntityShipmentCart(em);
+    shipmentCart2.setCart(cart2);
+    shipmentCartRepository.save(shipmentCart2);
+    cart2.setShipmentCart(shipmentCart2);
     cartRepository.save(cart2);
   }
 
@@ -234,39 +281,67 @@ class PaymentCartResourceIT {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  void putNewPaymentCart() throws Exception {
-
+  public void userShouldNotEditAnotherPaymentCartOfAnotherUser() throws Exception {
     final int databaseSizeBeforeUpdate = paymentCartRepository.findAll().size();
-
-    // Update the paymentCart
     PaymentCart updatedPaymentCart = paymentCartRepository.findById(paymentCart.getId()).get();
-    // Disconnect from session so that the
-    // updates on updatedPaymentCart are not directly saved in db
-    em.detach(updatedPaymentCart);
-    updatedPaymentCart
-        .id(paymentCart.getId())
-        .name(UPDATED_NAME)
-        .priceNet(UPDATED_PRICE_NET)
-        .vat(UPDATED_VAT)
-        .priceGross(UPDATED_PRICE_GROSS);
+    updatedPaymentCart.setName("VVVVVVVVV");
+    PaymentCartDTO paymentCartDto = paymentCartMapper.toDto(updatedPaymentCart);
+    paymentCartDto.setId(paymentCart2.getId());
+
+    restPaymentCartMockMvc.perform(put(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(paymentCartDto)))
+        .andExpect(status().isBadRequest());
+
+    // Validate the PaymentCart in the database
+    List<PaymentCart> paymentCartList = paymentCartRepository.findAll();
+    assertThat(paymentCartList).hasSize(databaseSizeBeforeUpdate);
+    PaymentCart testPaymentCart = paymentCartList.get(paymentCartList.size() - 1);
+    assertThat(testPaymentCart.getName()).isEqualTo(DEFAULT_NAME_2);
+    assertThat(testPaymentCart.getPriceNet()).isEqualTo(DEFAULT_PRICE_NET_2);
+    assertThat(testPaymentCart.getVat()).isEqualTo(DEFAULT_VAT_2);
+    assertThat(testPaymentCart.getPriceGross()).isEqualTo(DEFAULT_PRICE_GROSS_2);
+
+    // Validate the all amounts in the Cart in the database
+    List<Cart> cartList = cartRepository.findAll();
+    Cart testCart = cartList.get(cartList.size() - 1);
+    assertThat(testCart.getId()).isEqualTo(paymentCart2.getCart().getId());
+    assertThat(testCart.getAmountOfCartNet()).isEqualTo(BigDecimal.ZERO);
+    assertThat(testCart.getAmountOfCartGross()).isEqualTo(BigDecimal.ZERO);
+    assertThat(testCart.getAmountOfShipmentNet()).isEqualTo(BigDecimal.ZERO);
+    assertThat(testCart.getAmountOfShipmentGross()).isEqualTo(BigDecimal.ZERO);
+    assertThat(testCart.getAmountOfOrderNet()).isEqualTo(BigDecimal.ZERO);
+    assertThat(testCart.getAmountOfOrderGross()).isEqualTo(BigDecimal.ZERO);
+    assertThat(testCart.getPaymentCart().getId()).isEqualTo(paymentCart2.getId());
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  void putNewPaymentCart() throws Exception {
+    final int databaseSizeBeforeUpdate = paymentCartRepository.findAll().size();
+    PaymentCart updatedPaymentCart = paymentCartRepository.findById(paymentCart.getId()).get();
+    updatedPaymentCart.setName(UPDATED_NAME);
+    updatedPaymentCart.setPriceNet(UPDATED_PRICE_NET);
+    updatedPaymentCart.setVat(UPDATED_VAT);
+    updatedPaymentCart.setPriceGross(UPDATED_PRICE_GROSS);
     PaymentCartDTO paymentCartDto = paymentCartMapper.toDto(updatedPaymentCart);
 
-    restPaymentCartMockMvc
-        .perform(
-            put(ENTITY_API_URL)
+    restPaymentCartMockMvc.perform(put(ENTITY_API_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtil.convertObjectToJsonBytes(paymentCartDto))
-        )
+                .content(TestUtil.convertObjectToJsonBytes(paymentCartDto)))
         .andExpect(status().isOk());
 
     // Validate the PaymentCart in the database
     List<PaymentCart> paymentCartList = paymentCartRepository.findAll();
     assertThat(paymentCartList).hasSize(databaseSizeBeforeUpdate);
     PaymentCart testPaymentCart = paymentCartList.get(paymentCartList.size() - 2);
+    assertThat(testPaymentCart.getId()).isEqualTo(paymentCart.getId());
     assertThat(testPaymentCart.getName()).isEqualTo(UPDATED_NAME);
     assertThat(testPaymentCart.getPriceNet()).isEqualTo(UPDATED_PRICE_NET);
     assertThat(testPaymentCart.getVat()).isEqualTo(UPDATED_VAT);
     assertThat(testPaymentCart.getPriceGross()).isEqualTo(UPDATED_PRICE_GROSS);
+    assertThat(testPaymentCart.getCart().getId()).isEqualTo(shipmentCart.getCart().getId());
 
     // Validate the all amounts in the Cart in the database
     List<Cart> cartList = cartRepository.findAll();
@@ -281,62 +356,5 @@ class PaymentCartResourceIT {
     assertThat(testCart.getAmountOfOrderGross()).isEqualTo(
         DEFAULT_AMOUNT_OF_CART_GROSS.add(UPDATED_PRICE_GROSS));
     assertThat(testCart.getPaymentCart().getId()).isEqualTo(paymentCart.getId());
-  }
-
-  @Test
-  @Transactional
-  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  void putNonExistingPaymentCart() throws Exception {
-    int databaseSizeBeforeUpdate = paymentCartRepository.findAll().size();
-    paymentCart.setId(count.incrementAndGet());
-
-    // Create the PaymentCart
-    PaymentCartDTO paymentCartDto = paymentCartMapper.toDto(paymentCart);
-
-    // If the entity doesn't have an ID, it will throw BadRequestAlertException
-    restPaymentCartMockMvc
-        .perform(
-            put(ENTITY_API_URL_ID, paymentCartDto.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtil.convertObjectToJsonBytes(paymentCartDto))
-        )
-        .andExpect(status().isMethodNotAllowed());
-  }
-
-  @Test
-  @Transactional
-  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  void putWithIdMismatchPaymentCart() throws Exception {
-    int databaseSizeBeforeUpdate = paymentCartRepository.findAll().size();
-    paymentCart.setId(count.incrementAndGet());
-
-    // Create the PaymentCart
-    PaymentCartDTO paymentCartDto = paymentCartMapper.toDto(paymentCart);
-
-    // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-    restPaymentCartMockMvc
-        .perform(
-            put(ENTITY_API_URL_ID, count.incrementAndGet())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtil.convertObjectToJsonBytes(paymentCartDto))
-        )
-        .andExpect(status().isMethodNotAllowed());
-  }
-
-  @Test
-  @Transactional
-  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  void putWithMissingIdPathParamPaymentCart() throws Exception {
-    int databaseSizeBeforeUpdate = paymentCartRepository.findAll().size();
-    paymentCart.setId(count.incrementAndGet());
-
-    // Create the PaymentCart
-    PaymentCartDTO paymentCartDto = paymentCartMapper.toDto(paymentCart);
-
-    // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-    restPaymentCartMockMvc
-        .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(paymentCartDto)))
-        .andExpect(status().isInternalServerError());
   }
 }

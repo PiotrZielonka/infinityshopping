@@ -776,6 +776,8 @@ class AccountResourceIT {
     @Test
     @Transactional
     public void afterRegisteringUserCartShipmentCartAndPaymentCartShouldBeCreated() throws Exception {
+        // given
+
         int databaseSizeBeforeCreate = cartRepository.findAll().size();
 
         ManagedUserVM firstUser = new ManagedUserVM();
@@ -789,12 +791,14 @@ class AccountResourceIT {
         firstUser.setLangKey(Constants.DEFAULT_LANGUAGE);
         firstUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
 
+        // when
         restAccountMockMvc.perform(
                 post("/api/register")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(TestUtil.convertObjectToJsonBytes(firstUser)))
             .andExpect(status().isCreated());
 
+        // then
         User user = new User();
         user = userRepository.findOneByLogin("alice").get();
 
@@ -827,8 +831,6 @@ class AccountResourceIT {
             .isEqualTo(DEFAULT_PAYMENT_CART_PRICE_GROSS);
 
         // Validate the ShipmentCart in database
-        //assertThat(testCart.getId()).isEqualTo(testCart.getShipmentCart().getCart().getId());
-        //assertThat(testCart.getPaymentCart().getKindOfPayment()).isEqualTo(KindOfPaymentEnum.DHLBankTransfer);
-
+        assertThat(testCart.getId()).isEqualTo(testCart.getShipmentCart().getCart().getId());
     }
 }
