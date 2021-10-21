@@ -3,9 +3,9 @@ package infinityshopping.online.app.service.impl;
 import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.UserRepository;
+import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.CartService;
 import infinityshopping.online.app.service.UserNotFoundException;
-import infinityshopping.online.app.service.UserService;
 import infinityshopping.online.app.service.dto.CartDtoAmountOfCartGross;
 import infinityshopping.online.app.service.dto.CartDtoAmountsGross;
 import infinityshopping.online.app.service.mapper.CartMapper;
@@ -24,15 +24,14 @@ public class CartServiceImpl implements CartService {
 
   private final UserRepository userRepository;
 
-  private final UserService userService;
-
   private final CartMapper cartMapper;
 
+  private User currentLoggedUser;
+
   public CartServiceImpl(CartRepository cartRepository, UserRepository userRepository,
-      UserService userService, CartMapper cartMapper) {
+      CartMapper cartMapper) {
     this.cartRepository = cartRepository;
     this.userRepository = userRepository;
-    this.userService = userService;
     this.cartMapper = cartMapper;
   }
 
@@ -40,11 +39,7 @@ public class CartServiceImpl implements CartService {
   @Transactional(readOnly = true)
   public Optional<CartDtoAmountsGross> findByUserIdAllAmountsGross() {
     log.debug("REST request to get all the amounts gross of a current logged user");
-
-    User currentLoggedUser = new User();
-
-    currentLoggedUser = userRepository.findOneByLogin(userService.getCurrentUserLogin())
-        .orElseThrow(() -> new UserNotFoundException());
+    currentLoggedUser = checkIfUserExist();
 
     return cartRepository.findByUserId(currentLoggedUser.getId())
         .map(cartMapper::toDtoAmountsGross);
@@ -54,13 +49,16 @@ public class CartServiceImpl implements CartService {
   @Transactional(readOnly = true)
   public Optional<CartDtoAmountOfCartGross> findByUserIdAmountOfCartGross() {
     log.debug("REST request to get the amount of cart gross of a current logged user");
-
-    User currentLoggedUser = new User();
-
-    currentLoggedUser = userRepository.findOneByLogin(userService.getCurrentUserLogin())
-        .orElseThrow(() -> new UserNotFoundException());
+    currentLoggedUser = checkIfUserExist();
 
     return cartRepository.findByUserId(currentLoggedUser.getId())
         .map(cartMapper::toDtoAmountOfCartGross);
+  }
+
+  private User checkIfUserExist() {
+    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new UserNotFoundException()))
+        .orElseThrow(() -> new UserNotFoundException());
+    return currentLoggedUser;
   }
 }

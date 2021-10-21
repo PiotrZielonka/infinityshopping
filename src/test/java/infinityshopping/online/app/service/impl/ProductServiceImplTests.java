@@ -102,7 +102,7 @@ public class ProductServiceImplTests {
   @Test
   @Transactional
   public void shouldSaveProductAndSetProperPriceGrossAutomatic() throws Exception {
-    // given ProductDto
+    // given
     final int databaseSizeBeforeSave = productRepository.findAll().size();
     ProductDTO productDto = productMapper.toDto(product);
 
@@ -132,7 +132,6 @@ public class ProductServiceImplTests {
   public void shouldUpdateExistProductAndSetProperPriceGrossAutomatic() throws Exception {
     // given
     productRepository.saveAndFlush(product);
-
     final int databaseSizeBeforeUpdate = productRepository.findAll().size();
 
     Product updatedProduct = productRepository.findById(product.getId()).get();

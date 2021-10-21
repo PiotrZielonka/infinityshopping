@@ -6,7 +6,6 @@ import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.PaymentCartService;
 import infinityshopping.online.app.service.UserNotFoundException;
-import infinityshopping.online.app.service.UserService;
 import infinityshopping.online.app.service.dto.PaymentCartDTO;
 import infinityshopping.online.app.web.rest.errors.BadRequestAlertException;
 import java.net.URISyntaxException;
@@ -47,7 +46,7 @@ public class PaymentCartResource {
   public PaymentCartResource(
       PaymentCartService paymentCartService,
       PaymentCartRepository paymentCartRepository,
-      UserRepository userRepository, UserService userService) {
+      UserRepository userRepository) {
     this.paymentCartService = paymentCartService;
     this.paymentCartRepository = paymentCartRepository;
     this.userRepository = userRepository;

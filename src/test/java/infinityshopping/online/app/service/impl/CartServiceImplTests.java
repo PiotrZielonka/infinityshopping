@@ -9,6 +9,8 @@ import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
+import infinityshopping.online.app.security.SecurityUtils;
+import infinityshopping.online.app.service.UserNotFoundException;
 import infinityshopping.online.app.service.dto.CartDtoAmountOfCartGross;
 import infinityshopping.online.app.service.dto.CartDtoAmountsGross;
 import java.math.BigDecimal;
@@ -105,10 +107,7 @@ public class CartServiceImplTests {
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void shouldGetOnlyAmountsGrossOfCurrentUser() throws Exception {
     // given
-    // @BeforeEach
-
-    // given logged user
-    currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
+    currentLoggedUser = checkIfUserExist();
 
     // when
     Optional<CartDtoAmountsGross> dbCart = cartServiceImp.findByUserIdAllAmountsGross();
@@ -128,10 +127,7 @@ public class CartServiceImplTests {
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void shouldGetOnlyAmountOfCartGrossOfCurrentUser() throws Exception {
     // given
-    // @BeforeEach
-
-    // given logged user
-    currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
+    currentLoggedUser = checkIfUserExist();
 
     // when
     Optional<CartDtoAmountOfCartGross> dbCart = cartServiceImp.findByUserIdAmountOfCartGross();
@@ -147,11 +143,8 @@ public class CartServiceImplTests {
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void everyUserShouldHaveOnlyOneCart() throws Exception {
     // given
-    // @BeforeEach
-
-    // given logged user
     final int databaseSizeBeforeCreate = cartRepository.findAll().size();
-    currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
+    currentLoggedUser = checkIfUserExist();
 
     // when
     cartRepository.save(currentLoggedUser.getCart());
@@ -161,19 +154,10 @@ public class CartServiceImplTests {
     assertThat(cartList).hasSize(databaseSizeBeforeCreate);
   }
 
-  public String getCurrentUserLogin() {
-    org.springframework.security.core.context.SecurityContext securityContext
-        = SecurityContextHolder.getContext();
-    Authentication authentication = securityContext.getAuthentication();
-    String login = null;
-    if (authentication != null) {
-      if (authentication.getPrincipal() instanceof UserDetails) {
-        login = ((UserDetails) authentication.getPrincipal()).getUsername();
-      } else if (authentication.getPrincipal() instanceof String) {
-        login = (String) authentication.getPrincipal();
-      }
-    }
-
-    return login;
+  private User checkIfUserExist() {
+    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new UserNotFoundException()))
+        .orElseThrow(() -> new UserNotFoundException());
+    return currentLoggedUser;
   }
 }

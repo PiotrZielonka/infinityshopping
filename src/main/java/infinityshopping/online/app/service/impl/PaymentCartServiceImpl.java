@@ -9,7 +9,6 @@ import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.PaymentCartService;
 import infinityshopping.online.app.service.UserNotFoundException;
-import infinityshopping.online.app.service.UserService;
 import infinityshopping.online.app.service.dto.PaymentCartDTO;
 import infinityshopping.online.app.service.mapper.PaymentCartMapper;
 import java.util.Optional;
@@ -38,8 +37,7 @@ public class PaymentCartServiceImpl implements PaymentCartService {
 
   public PaymentCartServiceImpl(PaymentCartRepository paymentCartRepository,
       PaymentCartMapper paymentCartMapper,
-      UserRepository userRepository, UserService userService,
-      CartRepository cartRepository) {
+      UserRepository userRepository, CartRepository cartRepository) {
     this.paymentCartRepository = paymentCartRepository;
     this.paymentCartMapper = paymentCartMapper;
     this.userRepository = userRepository;

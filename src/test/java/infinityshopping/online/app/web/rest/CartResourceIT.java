@@ -13,6 +13,8 @@ import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
+import infinityshopping.online.app.security.SecurityUtils;
+import infinityshopping.online.app.service.UserNotFoundException;
 import infinityshopping.online.app.service.mapper.CartMapper;
 import java.math.BigDecimal;
 import javax.persistence.EntityManager;
@@ -119,11 +121,7 @@ class CartResourceIT {
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   void getAllAmountsGrossOfCurrentLoggedUser() throws Exception {
-    // given
-    // @BeforeEach
-
-    // given current user
-    currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
+    currentLoggedUser = checkIfUserExist();
 
     // Get all the cartList
     restCartMockMvc
@@ -145,11 +143,7 @@ class CartResourceIT {
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   void getAmountOfCartGrossOfCurrentLoggedUser() throws Exception {
-    // given
-    // @BeforeEach
-
-    // given current user
-    currentLoggedUser = userRepository.findOneByLogin(getCurrentUserLogin()).get();
+    currentLoggedUser = checkIfUserExist();
 
     // Get all the cartList
     restCartMockMvc
@@ -165,19 +159,10 @@ class CartResourceIT {
         .andExpect(jsonPath("$.amountOfOrderGross").doesNotExist());
   }
 
-  public String getCurrentUserLogin() {
-    org.springframework.security.core.context.SecurityContext securityContext
-        = SecurityContextHolder.getContext();
-    Authentication authentication = securityContext.getAuthentication();
-    String login = null;
-    if (authentication != null) {
-      if (authentication.getPrincipal() instanceof UserDetails) {
-        login = ((UserDetails) authentication.getPrincipal()).getUsername();
-      } else if (authentication.getPrincipal() instanceof String) {
-        login = (String) authentication.getPrincipal();
-      }
-    }
-
-    return login;
+  private User checkIfUserExist() {
+    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new UserNotFoundException()))
+        .orElseThrow(() -> new UserNotFoundException());
+    return currentLoggedUser;
   }
 }

@@ -347,22 +347,6 @@ public class UserService {
         }
     }
 
-  public String getCurrentUserLogin() {
-    org.springframework.security.core.context.SecurityContext securityContext
-        = SecurityContextHolder.getContext();
-    Authentication authentication = securityContext.getAuthentication();
-    String login = null;
-    if (authentication != null) {
-      if (authentication.getPrincipal() instanceof UserDetails) {
-        login = ((UserDetails) authentication.getPrincipal()).getUsername();
-      } else if (authentication.getPrincipal() instanceof String) {
-        login = (String) authentication.getPrincipal();
-      }
-    }
-
-    return login;
-  }
-
     public void createCartPaymentCartAndShipmentCartForNewUser(User newUser) {
         Cart cart = new Cart();
         cart.setUser(newUser);

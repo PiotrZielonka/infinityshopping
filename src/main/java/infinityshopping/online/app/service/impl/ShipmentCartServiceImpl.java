@@ -7,7 +7,6 @@ import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.ShipmentCartService;
 import infinityshopping.online.app.service.UserNotFoundException;
-import infinityshopping.online.app.service.UserService;
 import infinityshopping.online.app.service.dto.ShipmentCartDTO;
 import infinityshopping.online.app.service.mapper.ShipmentCartMapper;
 import java.util.Optional;
@@ -31,8 +30,7 @@ public class ShipmentCartServiceImpl implements ShipmentCartService {
 
 
   public ShipmentCartServiceImpl(ShipmentCartRepository shipmentCartRepository,
-      UserRepository userRepository, UserService userService,
-      ShipmentCartMapper shipmentCartMapper) {
+      UserRepository userRepository, ShipmentCartMapper shipmentCartMapper) {
     this.shipmentCartRepository = shipmentCartRepository;
     this.userRepository = userRepository;
     this.shipmentCartMapper = shipmentCartMapper;
