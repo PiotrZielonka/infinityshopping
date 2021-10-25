@@ -1,0 +1,89 @@
+<div>
+  <h2 id="page-heading" data-cy="ProductInCartHeading">
+    <span class="lowercase" jhiTranslate="infinityshoppingApp.productInCart.home.title">Cart</span>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="productInCarts?.length === 0">
+    <span jhiTranslate="infinityshoppingApp.productInCart.home.notFound">No productInCarts found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="productInCarts && productInCarts.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.productInCart.name">Name</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.productInCart.quantity">Quantity</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.productInCart.priceGross">Price Gross</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.productInCart.totalPriceGross">Total Price
+              Gross</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.productInCart.image">Image</span></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let productInCart of productInCarts; trackBy: trackId" data-cy="entityTable">
+          <td>{{ productInCart.name }}</td>
+          <td>{{ productInCart.quantity }}</td>
+          <td>{{ productInCart.priceGross }}</td>
+          <td>{{ productInCart.totalPriceGross }}</td>
+          <td>
+            <a *ngIf="productInCart.image" (click)="openFile(productInCart.image, productInCart.imageContentType)">
+              <img [src]="'data:' + productInCart.imageContentType + ';base64,' + productInCart.image"
+                style="max-height: 90px" alt="productInCart image" />
+            </a>
+          </td>
+          <td class="text-right">
+            <div class="btn-group">
+              <button type="submit" [routerLink]="['/product-in-cart', productInCart.id, 'view']"
+                class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </button>
+
+              <button type="submit" [routerLink]="['/product-in-cart', productInCart.id, 'edit']"
+                class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.editTheQuantityOfOrder">Edit the quantity of order</span>
+              </button>
+
+              <button type="submit" (click)="delete(productInCart)" class="btn btn-danger btn-sm"
+                data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <div class="table-responsive" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr>
+            <th class="tableAmountOfCartGross"><span jhiTranslate="infinityshoppingApp.cart.amountOfCartGross">Amount Of Cart</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="cart">
+            <td class="tableAmountOfCartGrossValue">{{ cart.amountOfCartGross }}$</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="float-right">
+    <button id="jh-create-entity" class="btn btn-primary jh-create-entity create-order-main"
+      [routerLink]="['/order-main/new']">
+      <fa-icon icon="truck-loading"></fa-icon>
+      <span jhiTranslate="exampleShopApp.orderMain.home.deliveryAndPayment">
+        Delivery and payment
+      </span>
+    </button>
+  </div>
+</div>

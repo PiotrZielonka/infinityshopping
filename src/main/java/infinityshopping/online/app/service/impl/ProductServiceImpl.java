@@ -2,6 +2,7 @@ package infinityshopping.online.app.service.impl;
 
 import infinityshopping.online.app.domain.Product;
 import infinityshopping.online.app.repository.ProductRepository;
+import infinityshopping.online.app.service.AddVat;
 import infinityshopping.online.app.service.ProductService;
 import infinityshopping.online.app.service.dto.ProductDTO;
 import infinityshopping.online.app.service.dto.ProductDtoImageNamePriceGross;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductServiceImpl implements ProductService {
+public class ProductServiceImpl implements ProductService, AddVat {
 
   private final Logger log = LoggerFactory.getLogger(ProductServiceImpl.class);
 
@@ -35,7 +36,10 @@ public class ProductServiceImpl implements ProductService {
     log.debug("Request to save Product : {}", productDto);
     Product product = productMapper.toEntity(productDto);
     setQuantityOne(product);
-    addVat(product);
+
+    product.setPriceGross(addVat(product.getPriceNet(), product.getVat()));
+
+
     product = productRepository.save(product);
     return productMapper.toDto(product);
   }
@@ -44,9 +48,9 @@ public class ProductServiceImpl implements ProductService {
     product.setQuantity(BigDecimal.ONE);
   }
 
-  private void addVat(Product product) {
-    product.setPriceGross(product.getPriceNet()
-        .add(product.getPriceNet().multiply(product.getVat().movePointLeft(2))));
+  @Override
+  public BigDecimal addVat(BigDecimal priceNet, BigDecimal vat) {
+    return priceNet.add(priceNet.multiply(vat.movePointLeft(2)));
   }
 
   @Override

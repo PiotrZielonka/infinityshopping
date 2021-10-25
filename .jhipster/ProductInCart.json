@@ -1,0 +1,74 @@
+{
+  "fields": [
+    {
+      "fieldName": "category",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "quantity",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "priceNet",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "vat",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "priceGross",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "totalPriceNet",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "totalPriceGross",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "stock",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    },
+    {
+      "fieldName": "image",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "image"
+    },
+    {
+      "fieldName": "productId",
+      "fieldType": "Long"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipName": "cart",
+      "otherEntityName": "cart",
+      "relationshipType": "many-to-one",
+      "otherEntityField": "id",
+      "ownerSide": true,
+      "id": false,
+      "otherEntityRelationshipName": "productInCart"
+    }
+  ],
+  "service": "serviceImpl",
+  "dto": "mapstruct",
+  "jpaMetamodelFiltering": false,
+  "readOnly": false,
+  "pagination": "no",
+  "name": "ProductInCart",
+  "skipClient": true,
+  "skipServer": true,
+  "changelogDate": "20211021173021"
+}

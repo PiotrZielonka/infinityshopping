@@ -23,6 +23,11 @@
       <fa-icon icon="plus"></fa-icon>
       <span jhiTranslate="infinityshoppingApp.product.home.createLabel"> Create a new product </span>
     </button>
+
+    <button class="btn btn-info mr-2 float-right" (click)="loadPage()" [disabled]="isLoading">
+      <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+      <span jhiTranslate="infinityshoppingApp.product.home.refreshListLabel">Refresh List</span>
+    </button>
   </div>
 
   <div class="w-100"></div>

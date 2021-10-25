@@ -1,0 +1,33 @@
+{
+  "infinityshoppingApp": {
+    "productInCart": {
+      "home": {
+        "title": "Cart",
+        "refreshListLabel": "Refresh",
+        "createLabel": "Create a new Product to Cart",
+        "EditLabel": "Edit the quantity of order",
+        "notFound": "You have not any products in Cart yet"
+      },
+      "created": "A Product was added to the Cart",
+      "updated": "The quantity of order has been changed",
+      "deleted": "The product has been deleted from the cart",
+      "delete": {
+        "question": "Are you sure you want to delete this Product from the cart ?"
+      },
+      "category": "Category",
+      "name": "Name",
+      "quantity": "Ordered quantity",
+      "changeTheOrderedQuantity": "Change here the ordered quantity and click save",
+      "priceNet": "Price Net",
+      "vat": "Vat",
+      "priceGross": "Price Gross",
+      "totalPriceNet": "Total Price Net",
+      "totalPriceGross": "Total Price Gross",
+      "stock": "Stock",
+      "description": "Description",
+      "image": "Image",
+      "productId": "Product Id",
+      "cart": "Cart"
+    }
+  }
+}

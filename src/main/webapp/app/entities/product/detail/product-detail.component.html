@@ -1,79 +1,122 @@
-<div class="row justify-content-center">
-  <div class="col-8">
-    <div *ngIf="product">
-      <h2 data-cy="productDetailsHeading"><span jhiTranslate="infinityshoppingApp.product.detail.title">Product</span></h2>
+  <div class="row justify-content-center">
+    <div class="col-4">
+      <div *ngIf="product">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
 
-      <hr />
+          <div>
+            <div>
+              <div *ngIf="product.image">
+                <img
+                  [src]="'data:' + editForm.get('imageContentType')!.value + ';base64,' + editForm.get('image')!.value"
+                  style="max-height: 100%;" *ngIf="editForm.get('image')!.value" alt="product image" />
+              </div>
 
-      <jhi-alert-error></jhi-alert-error>
+              <input type="hidden" class="form-control" name="image" id="field_image" [(ngModel)]="product.image"
+                formControlName="image" />
 
-      <jhi-alert></jhi-alert>
+              <input type="hidden" class="form-control" name="imageContentType" id="field_imageContentType"
+                [(ngModel)]="product.imageContentType" formControlName="imageContentType" />
+            </div>
 
-      <dl class="row-md jh-entity-details">
-        <dt><span jhiTranslate="global.field.id">ID</span></dt>
-        <dd>
-          <span>{{ product.id }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.product.productCategoryEnum">Product Category Enum</span></dt>
-        <dd>
-          <span jhiTranslate="{{ 'infinityshoppingApp.ProductCategoryEnum.' + product.productCategoryEnum }}">{{
-            product.productCategoryEnum
-          }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.product.name">Name</span></dt>
-        <dd>
-          <span>{{ product.name }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.product.quantity">Quantity</span></dt>
-        <dd>
-          <span>{{ product.quantity }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.product.priceNet">Price Net</span></dt>
-        <dd>
-          <span>{{ product.priceNet }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.product.vat">Vat</span></dt>
-        <dd>
-          <span>{{ product.vat }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.product.priceGross">Price Gross</span></dt>
-        <dd>
-          <span>{{ product.priceGross }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.product.stock">Stock</span></dt>
-        <dd>
-          <span>{{ product.stock }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.product.description">Description</span></dt>
-        <dd>
-          <span>{{ product.description }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.product.createTime">Create Time</span></dt>
-        <dd>
-          <span>{{ product.createTime | formatMediumDatetime }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.product.updateTime">Update Time</span></dt>
-        <dd>
-          <span>{{ product.updateTime | formatMediumDatetime }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.product.image">Image</span></dt>
-        <dd>
-          <div *ngIf="product.image">
-            <a (click)="openFile(product.image, product.imageContentType)">
-              <img [src]="'data:' + product.imageContentType + ';base64,' + product.image" style="max-width: 100%" alt="product image" />
-            </a>
-            {{ product.imageContentType }}, {{ byteSize(product.image) }}
+            
+            <dl>
+              <dt ><span jhiTranslate="infinityshoppingApp.product.name" for="field_name">Name</span>
+              </dt>
+              <dd>
+                <span>{{ product.name }}</span>
+              </dd>
+              <input type="hidden" name="name" id="field_name" [(ngModel)]="product.name" formControlName="name" />
+            </dl>
+
+            <dl>
+              <dt><span jhiTranslate="infinityshoppingApp.product.productCategoryEnum"
+                  for="field_category">Category</span></dt>
+              <dd>
+                <span>{{ product.productCategoryEnum }}</span>
+              </dd>
+              <input type="hidden" name="category" id="field_category" [(ngModel)]="product.productCategoryEnum"
+                formControlName="category" />
+            </dl>
+
+            <dl>
+              <dt><span jhiTranslate="infinityshoppingApp.product.quantity" for="field_quantity">Quantity</span></dt>
+
+              <input type="number" name="quantity" id="field_quantity" [(ngModel)]="product.quantity"
+                formControlName="quantity" />
+            </dl>
+
+            <dl class="doNotDisplay">
+              <dt><span jhiTranslate="infinityshoppingApp.product.priceNet" for="field_priceNet">Price net</span></dt>
+              <dd>
+                <span>{{ product.priceNet }}</span>
+              </dd>
+              <input type="hidden" name="priceNet" id="field_priceNet" [(ngModel)]="product.priceNet"
+                formControlName="priceNet" />
+            </dl>
+
+            <dl class="doNotDisplay">
+              <dt><span jhiTranslate="infinityshoppingApp.product.vat" for="field_vat">Vat</span></dt>
+              <dd>
+                <span>{{ product.vat }}</span>
+              </dd>
+              <input type="hidden" name="vat" id="field_vat" [(ngModel)]="product.vat" formControlName="vat" />
+            </dl>
+
+            <dl>
+              <dt><span jhiTranslate="infinityshoppingApp.productInCart.priceGross" for="field_priceGross">Price
+                  gross</span></dt>
+              <dd>
+                <span>{{ product.priceGross }}</span>
+              </dd>
+              <input type="hidden" name="priceGross" id="field_priceGross" [(ngModel)]="product.priceGross"
+                formControlName="priceGross" />
+            </dl>
+
+            <dl>
+              <dt><span jhiTranslate="infinityshoppingApp.productInCart.stock" for="field_stock">Stock</span></dt>
+              <dd>
+                <span>{{ product.stock }}</span>
+              </dd>
+              <input type="hidden" name="stock" id="field_stock" [(ngModel)]="product.stock" formControlName="stock" />
+            </dl>
+
+            <dl>
+              <dt><span jhiTranslate="infinityshoppingApp.productInCart.description"
+                  for="field_description">Description</span>
+              </dt>
+              <dd>
+                <span>{{ product.description }}</span>
+              </dd>
+              <input type="hidden" name="description" id="field_description" [(ngModel)]="product.description"
+                formControlName="description" />
+            </dl>
+
+            <dl class="doNotDisplay">
+              <dt><span jhiTranslate="infinityshoppingApp.productInCart.productId"
+                  for="field_productId">ProductId</span></dt>
+
+              <dd>
+                <span>{{ product.id }}</span>
+              </dd>
+              <input type="hidden" name="productId" id="field_productId" [(ngModel)]="product.id"
+                formControlName="productId" />
+            </dl>
+
           </div>
-        </dd>
-      </dl>
 
-      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
-        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
-      </button>
+          <jhi-alert-error></jhi-alert-error>
 
-      <button type="button" [routerLink]="['/product', product.id, 'edit']" class="btn btn-primary">
-        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
-      </button>
+          <div>
+            <button type="button" id="cancel-save" class="btn btn-secondary" (click)="previousState()">
+              <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+            </button>
+
+            <button type="submit" id="save-entity" data-cy="entityCreateSaveButton"
+              [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+              <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.addToCart">Save</span>
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>

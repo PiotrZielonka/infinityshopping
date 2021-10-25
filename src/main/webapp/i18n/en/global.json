@@ -12,6 +12,7 @@
         "payment": "Payment",
         "paymentCart": "Kind of payment",
         "shipmentCart": "Address of shipment",
+        "productInCart": "Cart",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {
@@ -104,6 +105,8 @@
       "edit": "Edit",
       "open": "Open",
       "save": "Save",
+      "addToCart": "Add to cart",
+      "editTheQuantityOfOrder": "Edit the quantity of order",
       "view": "View"
     },
     "detail": {
@@ -139,6 +142,8 @@
     "idnull": "Invalid ID",
     "idinvalid": "Invalid ID",
     "idnotfound": "ID cannot be found",
+    "fromYourCartAndWeDoNotHaveItYetCallUs": "Another user bought some product from your cart at the same time as you and we don't have it any now. Contact us",
+    "inStock": "We do not have that much of this product in stock",
     "file": {
       "could.not.extract": "Could not extract file",
       "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""

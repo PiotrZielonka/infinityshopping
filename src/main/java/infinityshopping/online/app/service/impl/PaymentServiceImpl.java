@@ -2,10 +2,12 @@ package infinityshopping.online.app.service.impl;
 
 import infinityshopping.online.app.domain.Payment;
 import infinityshopping.online.app.repository.PaymentRepository;
+import infinityshopping.online.app.service.AddVat;
 import infinityshopping.online.app.service.PaymentService;
 import infinityshopping.online.app.service.dto.PaymentDTO;
 import infinityshopping.online.app.service.dto.PaymentDtoNamePriceGross;
 import infinityshopping.online.app.service.mapper.PaymentMapper;
+import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PaymentServiceImpl implements PaymentService {
+public class PaymentServiceImpl implements PaymentService, AddVat {
 
   private final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
@@ -34,14 +36,16 @@ public class PaymentServiceImpl implements PaymentService {
   public PaymentDTO save(PaymentDTO paymentDto) {
     log.debug("Request to save Payment : {}", paymentDto);
     Payment payment = paymentMapper.toEntity(paymentDto);
-    addVat(payment);
+
+    payment.setPriceGross(addVat(payment.getPriceNet(), payment.getVat()));
+
     payment = paymentRepository.save(payment);
     return paymentMapper.toDto(payment);
   }
 
-  private void addVat(Payment payment) {
-    payment.setPriceGross(payment.getPriceNet()
-        .add(payment.getPriceNet().multiply(payment.getVat().movePointLeft(2))));
+  @Override
+  public BigDecimal addVat(BigDecimal priceNet, BigDecimal vat) {
+    return priceNet.add(priceNet.multiply(vat.movePointLeft(2)));
   }
 
   @Override

@@ -4,7 +4,7 @@
       "home": {
         "title": "All products",
         "titleProductManagement": "Product management",
-        "refreshListLabel": "Refresh list",
+        "refreshListLabel": "Refresh",
         "createLabel": "Create a new Product",
         "createOrEditLabel": "Create or edit a Product",
         "notFound": "No Products found"

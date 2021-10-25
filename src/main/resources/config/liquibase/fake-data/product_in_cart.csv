@@ -1,0 +1,11 @@
+id;category;name;quantity;price_net;vat;price_gross;total_price_net;total_price_gross;stock;description;image;image_content_type;product_id
+1;schemas;Laos Incredible;49082;35371;11898;37502;36658;3997;62650;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;38615
+2;Pizza Investment;Meadow Representative;69331;73739;4198;8910;3291;92567;74453;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;95777
+3;Śląskie;matrix;80634;22331;29122;20410;85130;41997;5615;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;65896
+4;infrastructures open-source auxiliary;circuit copying secured;37460;17523;93743;49284;41699;94973;19108;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;15435
+5;Avon green AI;Algerian;61174;32857;16126;22984;88813;94322;84882;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;85217
+6;Markets Handcrafted Plastic;cross-platform Account;1659;65237;92006;45978;9010;68687;96326;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;94056
+7;cross-platform;navigating;84692;58094;1431;85142;79884;12392;32767;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;1607
+8;analyzing Gardens Movies;incremental Rustic;27487;43412;36001;73378;90183;66158;49649;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;99725
+9;Dobra;Account Infrastructure;17616;51369;5869;75147;98900;42370;34468;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;70870
+10;disintermediate back;Chicken Manager;77446;2168;30763;68222;453;14754;1278;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;18616

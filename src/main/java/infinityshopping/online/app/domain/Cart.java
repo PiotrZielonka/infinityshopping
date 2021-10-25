@@ -2,12 +2,15 @@ package infinityshopping.online.app.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -61,6 +64,9 @@ public class Cart implements Serializable {
 
   @OneToOne(mappedBy = "cart", orphanRemoval = true)
   private ShipmentCart shipmentCart;
+
+  @OneToMany(mappedBy = "cart", orphanRemoval = true)
+  private Set<ProductInCart> productInCarts = new HashSet<>();
 
   // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -194,7 +200,33 @@ public class Cart implements Serializable {
     this.shipmentCart = shipmentCart;
   }
 
-  // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+  public Set<ProductInCart> getProductInCarts() {
+    return productInCarts;
+  }
+
+  public Cart productInCarts(Set<ProductInCart> productInCarts) {
+    this.productInCarts = productInCarts;
+    return this;
+  }
+
+  public Cart addProductInCart(ProductInCart productInCart) {
+    this.productInCarts.add(productInCart);
+    productInCart.setCart(this);
+    return this;
+  }
+
+  public Cart removeProductInCart(ProductInCart productInCart) {
+    this.productInCarts.remove(productInCart);
+    productInCart.setCart(null);
+    return this;
+  }
+
+  public void setProductInCarts(Set<ProductInCart> productInCarts) {
+    this.productInCarts = productInCarts;
+  }
+
+  // jhipster-needle-entity-add-getters-setters
+  // - JHipster will add getters and setters here
 
   @Override
   public boolean equals(Object o) {

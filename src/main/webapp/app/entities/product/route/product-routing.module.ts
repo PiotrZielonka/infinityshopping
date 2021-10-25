@@ -37,6 +37,7 @@ const productRoute: Routes = [
     },
     data: {
       authorities: [],
+      pageTitle: 'infinityshoppingApp.productInCart.home.createLabel'
     },
     canActivate: [],
   },

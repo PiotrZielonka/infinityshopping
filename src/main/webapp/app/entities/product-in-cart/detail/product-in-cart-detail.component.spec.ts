@@ -4,39 +4,39 @@ import { of } from 'rxjs';
 
 import { DataUtils } from 'app/core/util/data-util.service';
 
-import { ProductDetailComponent } from './product-detail.component';
+import { ProductInCartDetailComponent } from './product-in-cart-detail.component';
 
 describe('Component Tests', () => {
-  describe('Product Management Detail Component', () => {
-    let comp: ProductDetailComponent;
-    let fixture: ComponentFixture<ProductDetailComponent>;
+  describe('ProductInCart Management Detail Component', () => {
+    let comp: ProductInCartDetailComponent;
+    let fixture: ComponentFixture<ProductInCartDetailComponent>;
     let dataUtils: DataUtils;
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        declarations: [ProductDetailComponent],
+        declarations: [ProductInCartDetailComponent],
         providers: [
           {
             provide: ActivatedRoute,
-            useValue: { data: of({ product: { id: 123 } }) },
+            useValue: { data: of({ productInCart: { id: 123 } }) },
           },
         ],
       })
-        .overrideTemplate(ProductDetailComponent, '')
+        .overrideTemplate(ProductInCartDetailComponent, '')
         .compileComponents();
-      fixture = TestBed.createComponent(ProductDetailComponent);
+      fixture = TestBed.createComponent(ProductInCartDetailComponent);
       comp = fixture.componentInstance;
       dataUtils = TestBed.inject(DataUtils);
       jest.spyOn(window, 'open').mockImplementation(() => null);
     });
 
     describe('OnInit', () => {
-      it('Should load product on init', () => {
+      it('Should load productInCart on init', () => {
         // WHEN
         comp.ngOnInit();
 
         // THEN
-        expect(comp.product).toEqual(expect.objectContaining({ id: 123 }));
+        expect(comp.productInCart).toEqual(expect.objectContaining({ id: 123 }));
       });
     });
 

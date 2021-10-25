@@ -12,6 +12,7 @@
         "payment": "Payment",
         "paymentCart": "Sposób wysyłki",
         "shipmentCart": "Adres wysyłki",
+        "productInCart": "Koszyk",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {
@@ -104,6 +105,8 @@
       "edit": "Edytuj",
       "open": "Otwórz",
       "save": "Zapisz",
+      "addToCart": "Dodaj do koszyka",
+      "editTheQuantityOfOrder": "Edytuj zamawianą ilość",
       "view": "Widok"
     },
     "detail": {
@@ -138,6 +141,8 @@
     "idnull": "Błędne ID",
     "idinvalid": "Invalid Id",
     "idnotfound": "ID cannot be found",
+    "fromYourCartAndWeDoNotHaveItYetCallUs": "Ktoś kupił jakiś produkt z twojego koszyka chwilę przed Tobą i my go już nie mamy skontaktuj się z nami",
+    "inStock": "Nie mamy tak dużej ilości na magazynie",
     "file": {
       "could.not.extract": "Could not extract file",
       "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""

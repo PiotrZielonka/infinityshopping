@@ -1,0 +1,119 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-product-in-cart-heading" data-cy="ProductInCartCreateUpdateHeading"
+        jhiTranslate="infinityshoppingApp.productInCart.home.EditLabel">
+        Change here the ordered quantity and click save
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        <div class="form-group" [hidden]="editForm.get('id')!.value == null">
+          <label class="doNotDisplay" jhiTranslate="global.field.id" for="field_id">ID</label>
+          <input type="hidden" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id"
+            [readonly]="true" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.productInCart.name"
+            for="field_name">Name</label>
+          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" readonly/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.productInCart.category"
+            for="field_category">Category</label>
+          <input type="text" class="form-control" name="category" id="field_category" data-cy="category"
+            formControlName="category" readonly/>
+        </div>
+
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.productInCart.changeTheOrderedQuantity"
+            for="field_quantity">Quantity</label>
+          <input type="number" class="form-control" name="quantity" id="field_quantity" data-cy="quantity"
+            formControlName="quantity" />
+        </div>
+
+        <div class="form-group">
+          <label class="doNotDisplay" jhiTranslate="infinityshoppingApp.productInCart.priceNet"
+            for="field_priceNet">Price Net</label>
+          <input type="hidden" class="form-control" name="priceNet" id="field_priceNet" data-cy="priceNet"
+            formControlName="priceNet"/>
+        </div>
+
+        <div class="form-group">
+          <label class="doNotDisplay" jhiTranslate="infinityshoppingApp.productInCart.vat" for="field_vat">Vat</label>
+          <input type="hidden" class="form-control" name="vat" id="field_vat" data-cy="vat" formControlName="vat" />
+        </div>
+
+        <div class="form-group">
+          <label jhiTranslate="infinityshoppingApp.productInCart.priceGross"
+            for="field_priceGross">Price Gross</label>
+          <input type="number" class="form-control" name="priceGross" id="field_priceGross" data-cy="priceGross"
+            formControlName="priceGross" readonly/>
+        </div>
+
+        <div class="form-group">
+          <label class="doNotDisplay" jhiTranslate="infinityshoppingApp.productInCart.totalPriceNet"
+            for="field_totalPriceNet">Total Price Net</label>
+          <input type="hidden" class="form-control" name="totalPriceNet" id="field_totalPriceNet"
+            data-cy="totalPriceNet" formControlName="totalPriceNet" readonly/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.productInCart.totalPriceGross"
+            for="field_totalPriceGross">Total Price Gross</label>
+          <input type="number" class="form-control" name="totalPriceGross" id="field_totalPriceGross"
+            data-cy="totalPriceGross" formControlName="totalPriceGross" readonly/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.productInCart.stock"
+            for="field_stock">Stock</label>
+          <input type="number" class="form-control" name="stock" id="field_stock" data-cy="stock"
+            formControlName="stock" readonly/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.productInCart.description"
+            for="field_description">Description</label>
+          <textarea class="form-control" name="description" id="field_description" data-cy="description"
+            formControlName="description" readonly></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.productInCart.image"
+            for="field_image">Image</label>
+          <div>
+            <img [src]="'data:' + editForm.get('imageContentType')!.value + ';base64,' + editForm.get('image')!.value"
+              style="max-height: 100px" *ngIf="editForm.get('image')!.value" alt="productInCart image" />
+            <div *ngIf="editForm.get('image')!.value" class="form-text text-danger clearfix">
+
+            </div>
+          </div>
+        </div>
+
+          <div class="form-group">
+            <label class="doNotDisplay" jhiTranslate="infinityshoppingApp.productInCart.productId"
+              for="field_productId">Product Id</label>
+            <input type="hidden" class="form-control" name="productId" id="field_productId" data-cy="productId"
+              formControlName="productId" />
+          </div>
+        </div>
+
+        <div>
+          <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary"
+            (click)="previousState()">
+            <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+          </button>
+
+          <button type="submit" id="save-entity" data-cy="entityCreateSaveButton"
+            [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+            <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+          </button>
+        </div>
+    </form>
+  </div>
+</div>

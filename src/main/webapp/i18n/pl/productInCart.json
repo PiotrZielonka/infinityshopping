@@ -1,0 +1,33 @@
+{
+  "infinityshoppingApp": {
+    "productInCart": {
+      "home": {
+        "title": "Koszyk",
+        "refreshListLabel": "Odśwież liste",
+        "createLabel": "Dodaj produkt do koszyka",
+        "EditLabel": "Edytuj zamawianą ilość",
+        "notFound": "Nie masz jeszcze żadnych produktów w koszyku"
+      },
+      "created": "Produkt został dodany do koszyka",
+      "updated": "Zamawiana ilość została zmieniona",
+      "deleted": "Produkt został usunięty z koszyka",
+      "delete": {
+        "question": "Czy na pewno chcesz usunąć ten produkt z koszyka ?"
+      },
+      "category": "Kategoria",
+      "name": "Nazwa",
+      "quantity": "Zamawiana ilość",
+      "changeTheOrderedQuantity": "Zmień tutaj zamawianą ilość i kliknij zapisz",
+      "priceNet": "Cena netto",
+      "vat": "Vat",
+      "priceGross": "Cena brutto",
+      "totalPriceNet": "Cena netto razem",
+      "totalPriceGross": "Cena brutto razem",
+      "stock": "Ilość na magazynie",
+      "description": "Opis",
+      "image": "Zdjęcie",
+      "productId": "Product Id",
+      "cart": "Cart"
+    }
+  }
+}

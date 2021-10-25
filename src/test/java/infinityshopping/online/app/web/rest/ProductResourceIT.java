@@ -461,7 +461,8 @@ class ProductResourceIT {
 
     // Update the Product
     restProductMockMvc
-        .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+        .perform(put(ENTITY_API_URL_ID, productDto.getId())
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isForbidden());
 
@@ -512,7 +513,7 @@ class ProductResourceIT {
 
     // Update the Product
     restProductMockMvc
-        .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+        .perform(put(ENTITY_API_URL_ID, productDto.getId()).contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isUnauthorized());
 
