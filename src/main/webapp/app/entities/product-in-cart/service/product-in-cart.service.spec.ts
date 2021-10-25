@@ -94,30 +94,6 @@ describe('ProductInCart Service', () => {
       expect(expectedResult).toMatchObject(expected);
     });
 
-    it('should partial update a ProductInCart', () => {
-      const patchObject = Object.assign(
-        {
-          category: 'BBBBBB',
-          name: 'BBBBBB',
-          priceNet: 1,
-          totalPriceNet: 1,
-          stock: 1,
-          image: 'BBBBBB',
-        },
-        new ProductInCart()
-      );
-
-      const returnedFromService = Object.assign(patchObject, elemDefault);
-
-      const expected = Object.assign({}, returnedFromService);
-
-      service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp.body));
-
-      const req = httpMock.expectOne({ method: 'PATCH' });
-      req.flush(returnedFromService);
-      expect(expectedResult).toMatchObject(expected);
-    });
-
     it('should return a list of ProductInCart', () => {
       const returnedFromService = Object.assign(
         {
