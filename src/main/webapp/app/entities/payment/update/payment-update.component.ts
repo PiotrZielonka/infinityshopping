@@ -8,6 +8,7 @@ import * as dayjs from 'dayjs';
 import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 import { IPayment, Payment } from '../payment.model';
 import { PaymentService } from '../service/payment.service';
+import { PaymentStatusEnum } from 'app/entities/enumerations/payment-status-enum.model';
 
 @Component({
   selector: 'jhi-payment-update',
@@ -15,12 +16,14 @@ import { PaymentService } from '../service/payment.service';
 })
 export class PaymentUpdateComponent implements OnInit {
   isSaving = false;
+  paymentStatusEnumValues = Object.keys(PaymentStatusEnum);
 
   editForm = this.fb.group({
     id: [],
     name: [null, [Validators.required, Validators.minLength(0), Validators.maxLength(1000)]],
     priceNet: [null, [Validators.required, Validators.min(0), Validators.max(10000)]],
     vat: [null, [Validators.required, Validators.min(0), Validators.max(100)]],
+    paymentStatus: [null, [Validators.required]],
     priceGross: [],
     createTime: [],
     updateTime: [],
@@ -80,6 +83,7 @@ export class PaymentUpdateComponent implements OnInit {
       priceNet: payment.priceNet,
       vat: payment.vat,
       priceGross: payment.priceGross,
+      paymentStatus: payment.paymentStatus,
       createTime: payment.createTime ? payment.createTime.format(DATE_TIME_FORMAT) : null,
       updateTime: payment.updateTime ? payment.updateTime.format(DATE_TIME_FORMAT) : null,
     });
@@ -93,6 +97,7 @@ export class PaymentUpdateComponent implements OnInit {
       priceNet: this.editForm.get(['priceNet'])!.value,
       vat: this.editForm.get(['vat'])!.value,
       priceGross: this.editForm.get(['priceGross'])!.value,
+      paymentStatus: this.editForm.get(['paymentStatus'])!.value,
       createTime: this.editForm.get(['createTime'])!.value ? dayjs(this.editForm.get(['createTime'])!.value, DATE_TIME_FORMAT) : undefined,
       updateTime: this.editForm.get(['updateTime'])!.value ? dayjs(this.editForm.get(['updateTime'])!.value, DATE_TIME_FORMAT) : undefined,
     };

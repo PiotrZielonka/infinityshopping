@@ -14,11 +14,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import infinityshopping.online.app.IntegrationTest;
 import infinityshopping.online.app.domain.Payment;
+import infinityshopping.online.app.domain.PaymentCart;
+import infinityshopping.online.app.domain.enumeration.PaymentStatusEnum;
 import infinityshopping.online.app.repository.PaymentRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
+import infinityshopping.online.app.service.AddVat;
+import infinityshopping.online.app.service.dto.PaymentCartDTO;
 import infinityshopping.online.app.service.dto.PaymentDTO;
 import infinityshopping.online.app.service.mapper.PaymentMapper;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -36,20 +41,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
 @AutoConfigureMockMvc
-class PaymentResourceIT {
+class PaymentResourceIT implements AddVat {
+
+  private static Random random = new Random();
+  private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
   private static final String DEFAULT_NAME = "AAAAAAAAAA";
   private static final String UPDATED_NAME = "BBBBBBBBBB";
 
-  private static BigDecimal DEFAULT_PRICE_NET = new BigDecimal("200");
+  private static BigDecimal DEFAULT_PRICE_NET = new BigDecimal(random.nextInt(10000));
   private static BigDecimal UPDATED_PRICE_NET = new BigDecimal("310");
 
-  private static BigDecimal DEFAULT_VAT = new BigDecimal("23");
+  private static BigDecimal DEFAULT_VAT = new BigDecimal(random.nextInt(30 - 5) + 5);
   private static BigDecimal UPDATED_VAT = new BigDecimal("5");
 
-  private static BigDecimal DEFAULT_PROPER_PRICE_GROSS = new BigDecimal("246");
+  private final BigDecimal defaultProperPriceGross = addVat(DEFAULT_PRICE_NET, DEFAULT_VAT);
   private static BigDecimal UPDATED_PROPER_PRICE_GROSS = new BigDecimal("325.50");
   private static BigDecimal DEFAULT_FAKE_PRICE_GROSS = BigDecimal.ZERO;
+
+  private static final PaymentStatusEnum DEFAULT_PAYMENT_STATUS_ENUM
+      = PaymentStatusEnum.WaitingForBankTransfer;
+
+  private static final PaymentStatusEnum UPDATED_PAYMENT_STATUS_ENUM
+      = PaymentStatusEnum.PreparationForShipping;
 
   private static final Instant DEFAULT_CREATE_TIME = Instant.ofEpochMilli(0L);
   private static final Instant UPDATED_CREATE_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
@@ -60,8 +74,6 @@ class PaymentResourceIT {
   private static final String ENTITY_API_URL = "/api/payments";
   private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
-  private static Random random = new Random();
-  private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
   @Autowired
   private PaymentRepository paymentRepository;
@@ -83,6 +95,7 @@ class PaymentResourceIT {
         .priceNet(DEFAULT_PRICE_NET)
         .vat(DEFAULT_VAT)
         .priceGross(DEFAULT_FAKE_PRICE_GROSS)
+        .paymentStatus(DEFAULT_PAYMENT_STATUS_ENUM)
         .createTime(DEFAULT_CREATE_TIME)
         .updateTime(DEFAULT_UPDATE_TIME);
     return payment;
@@ -91,6 +104,11 @@ class PaymentResourceIT {
   @BeforeEach
   public void initTest() {
     payment = createEntity(em);
+  }
+
+  @Override
+  public BigDecimal addVat(BigDecimal priceNet, BigDecimal vat) {
+    return priceNet.add(priceNet.multiply(vat.movePointLeft(2)));
   }
 
   @Test
@@ -150,7 +168,8 @@ class PaymentResourceIT {
     assertThat(testPayment.getPriceNet()).isEqualByComparingTo(DEFAULT_PRICE_NET);
     assertThat(testPayment.getVat()).isEqualByComparingTo(DEFAULT_VAT);
     assertThat(testPayment.getPriceGross()).isEqualByComparingTo(
-        DEFAULT_PROPER_PRICE_GROSS.setScale(2));
+        defaultProperPriceGross.setScale(4, RoundingMode.CEILING));
+    assertThat(testPayment.getPaymentStatus()).isEqualByComparingTo(DEFAULT_PAYMENT_STATUS_ENUM);
     assertNotNull(testPayment.getCreateTime());
     assertNotNull(testPayment.getUpdateTime());
   }
@@ -241,7 +260,7 @@ class PaymentResourceIT {
   @WithMockUser(username = "admin", password = "admin", authorities = AuthoritiesConstants.ADMIN)
   void getAllPayments() throws Exception {
     // Initialize the database
-    payment.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+    payment.setPriceGross(defaultProperPriceGross);
     paymentRepository.saveAndFlush(payment);
 
     // Get all the paymentList
@@ -253,8 +272,10 @@ class PaymentResourceIT {
         .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
         .andExpect(jsonPath("$.[*].priceNet").value(hasItem(sameNumber(DEFAULT_PRICE_NET))))
         .andExpect(jsonPath("$.[*].vat").value(hasItem(sameNumber(DEFAULT_VAT))))
-        .andExpect(
-            jsonPath("$.[*].priceGross").value(hasItem(sameNumber(DEFAULT_PROPER_PRICE_GROSS))))
+        .andExpect(jsonPath("$.[*].priceGross").value(
+            hasItem(sameNumber(defaultProperPriceGross))))
+        .andExpect(jsonPath("$.[*].paymentStatus").value(
+            hasItem(DEFAULT_PAYMENT_STATUS_ENUM.toString())))
         .andExpect(jsonPath("$.[*].createTime").exists())
         .andExpect(jsonPath("$.[*].updateTime").exists());
   }
@@ -264,7 +285,7 @@ class PaymentResourceIT {
   @WithMockUser(username = "user", password = "user", authorities = AuthoritiesConstants.USER)
   void getAllPaymentsForPaymentManagementByUserShouldThrowStatusForbidden() throws Exception {
     // Initialize the database
-    payment.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+    payment.setPriceGross(defaultProperPriceGross);
     paymentRepository.saveAndFlush(payment);
 
     // Get all the paymentList
@@ -276,7 +297,7 @@ class PaymentResourceIT {
   @Transactional
   void getAllProductsForPaymentManagementByAnyoneShouldThrowStatusUnauthorized() throws Exception {
     // Initialize the database
-    payment.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+    payment.setPriceGross(defaultProperPriceGross);
     paymentRepository.saveAndFlush(payment);
 
     // Get all the paymentList
@@ -288,7 +309,7 @@ class PaymentResourceIT {
   @Transactional
   void getAllPaymentsOnlyWithNamePriceGross() throws Exception {
     // Initialize the database
-    payment.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+    payment.setPriceGross(defaultProperPriceGross);
     paymentRepository.saveAndFlush(payment);
 
     // Get all the paymentList
@@ -300,8 +321,9 @@ class PaymentResourceIT {
         .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
         .andExpect(jsonPath("$.[*].priceNet").doesNotExist())
         .andExpect(jsonPath("$.[*].vat").doesNotExist())
-        .andExpect(
-            jsonPath("$.[*].priceGross").value(hasItem(sameNumber(DEFAULT_PROPER_PRICE_GROSS))))
+        .andExpect(jsonPath("$.[*].priceGross").value(
+            hasItem(sameNumber(defaultProperPriceGross))))
+        .andExpect(jsonPath("$.[*].paymentStatus").doesNotExist())
         .andExpect(jsonPath("$.[*].createTime").doesNotExist())
         .andExpect(jsonPath("$.[*].updateTime").doesNotExist());
   }
@@ -311,7 +333,7 @@ class PaymentResourceIT {
   @WithMockUser(username = "user", password = "user", authorities = AuthoritiesConstants.USER)
   void getPaymentForPaymentManagementByUserShouldThrowStatusForbidden() throws Exception {
     // Initialize the database
-    payment.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+    payment.setPriceGross(defaultProperPriceGross);
     paymentRepository.saveAndFlush(payment);
 
     // Get the payment
@@ -323,7 +345,7 @@ class PaymentResourceIT {
   @Transactional
   void getPaymentForPaymentManagementByAnyoneShouldThrowStatusUnauthorized() throws Exception {
     // Initialize the database
-    payment.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+    payment.setPriceGross(defaultProperPriceGross);
     paymentRepository.saveAndFlush(payment);
 
     // Get the payment
@@ -336,7 +358,7 @@ class PaymentResourceIT {
   @WithMockUser(username = "admin", password = "admin", authorities = AuthoritiesConstants.ADMIN)
   void getPayment() throws Exception {
     // Initialize the database
-    payment.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+    payment.setPriceGross(defaultProperPriceGross);
     paymentRepository.saveAndFlush(payment);
 
     // Get the payment
@@ -348,7 +370,8 @@ class PaymentResourceIT {
         .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
         .andExpect(jsonPath("$.priceNet").value(sameNumber(DEFAULT_PRICE_NET)))
         .andExpect(jsonPath("$.vat").value(sameNumber(DEFAULT_VAT)))
-        .andExpect(jsonPath("$.priceGross").value(sameNumber(DEFAULT_PROPER_PRICE_GROSS)));
+        .andExpect(jsonPath("$.priceGross").value(sameNumber(defaultProperPriceGross)))
+        .andExpect(jsonPath("$.paymentStatus").value(DEFAULT_PAYMENT_STATUS_ENUM.toString()));
   }
 
   @Test
@@ -364,30 +387,22 @@ class PaymentResourceIT {
   @Transactional
   @WithMockUser(username = "user", password = "user", authorities = AuthoritiesConstants.USER)
   void putNewPaymentByUserShouldThrowStatusForbidden() throws Exception {
-    // Initialize the database
-    paymentRepository.saveAndFlush(payment);
-
+    paymentRepository.save(payment);
     final int databaseSizeBeforeUpdate = paymentRepository.findAll().size();
-
-    // Update the payment
     Payment updatedPayment = paymentRepository.findById(payment.getId()).get();
-    // Disconnect from session so that the updates on updatedPayment are not directly saved in db
-    em.detach(updatedPayment);
-    updatedPayment
-        .name(UPDATED_NAME)
-        .priceNet(UPDATED_PRICE_NET)
-        .vat(UPDATED_VAT)
-        .priceGross(null)
-        .createTime(UPDATED_CREATE_TIME)
-        .updateTime(UPDATED_UPDATE_TIME);
     PaymentDTO paymentDto = paymentMapper.toDto(updatedPayment);
+    paymentDto.setName(UPDATED_NAME);
+    paymentDto.setPriceNet(UPDATED_PRICE_NET);
+    paymentDto.setVat(UPDATED_VAT);
+    paymentDto.setPriceGross(null);
+    paymentDto.setPaymentStatus(UPDATED_PAYMENT_STATUS_ENUM);
+    paymentDto.setCreateTime(UPDATED_CREATE_TIME);
+    paymentDto.setUpdateTime(UPDATED_UPDATE_TIME);
 
     restPaymentMockMvc
-        .perform(
-            put(ENTITY_API_URL_ID, paymentDto.getId())
+        .perform(put(ENTITY_API_URL_ID, paymentDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtil.convertObjectToJsonBytes(paymentDto))
-        )
+                .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isForbidden());
 
     // Validate the Payment in the database
@@ -395,9 +410,11 @@ class PaymentResourceIT {
     assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
     Payment testPayment = paymentList.get(paymentList.size() - 1);
     assertThat(testPayment.getName()).isEqualTo(DEFAULT_NAME);
-    assertThat(testPayment.getPriceNet()).isEqualTo(DEFAULT_PRICE_NET.setScale(2));
-    assertThat(testPayment.getVat()).isEqualTo(DEFAULT_VAT.setScale(2));
-    assertThat(testPayment.getPriceGross()).isEqualTo(DEFAULT_FAKE_PRICE_GROSS.setScale(2));
+    assertThat(testPayment.getPriceNet()).isEqualTo(DEFAULT_PRICE_NET);
+    assertThat(testPayment.getVat()).isEqualTo(DEFAULT_VAT);
+    assertThat(testPayment.getPriceGross())
+        .isEqualTo(DEFAULT_FAKE_PRICE_GROSS);
+    assertThat(testPayment.getPaymentStatus()).isEqualTo(DEFAULT_PAYMENT_STATUS_ENUM);
     assertNotNull(testPayment.getCreateTime());
     assertNotNull(testPayment.getUpdateTime());
   }
@@ -405,30 +422,22 @@ class PaymentResourceIT {
   @Test
   @Transactional
   void putNewPaymentByAnyoneShouldThrowStatusUnauthorized() throws Exception {
-    // Initialize the database
-    paymentRepository.saveAndFlush(payment);
-
+    paymentRepository.save(payment);
     final int databaseSizeBeforeUpdate = paymentRepository.findAll().size();
-
-    // Update the payment
     Payment updatedPayment = paymentRepository.findById(payment.getId()).get();
-    // Disconnect from session so that the updates on updatedPayment are not directly saved in db
-    em.detach(updatedPayment);
-    updatedPayment
-        .name(UPDATED_NAME)
-        .priceNet(UPDATED_PRICE_NET)
-        .vat(UPDATED_VAT)
-        .priceGross(null)
-        .createTime(UPDATED_CREATE_TIME)
-        .updateTime(UPDATED_UPDATE_TIME);
     PaymentDTO paymentDto = paymentMapper.toDto(updatedPayment);
+    paymentDto.setName(UPDATED_NAME);
+    paymentDto.setPriceNet(UPDATED_PRICE_NET);
+    paymentDto.setVat(UPDATED_VAT);
+    paymentDto.setPriceGross(null);
+    paymentDto.setPaymentStatus(UPDATED_PAYMENT_STATUS_ENUM);
+    paymentDto.setCreateTime(UPDATED_CREATE_TIME);
+    paymentDto.setUpdateTime(UPDATED_UPDATE_TIME);
 
     restPaymentMockMvc
-        .perform(
-            put(ENTITY_API_URL_ID, paymentDto.getId())
+        .perform(put(ENTITY_API_URL_ID, paymentDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtil.convertObjectToJsonBytes(paymentDto))
-        )
+                .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isUnauthorized());
 
     // Validate the Payment in the database
@@ -436,9 +445,10 @@ class PaymentResourceIT {
     assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
     Payment testPayment = paymentList.get(paymentList.size() - 1);
     assertThat(testPayment.getName()).isEqualTo(DEFAULT_NAME);
-    assertThat(testPayment.getPriceNet()).isEqualTo(DEFAULT_PRICE_NET.setScale(2));
-    assertThat(testPayment.getVat()).isEqualTo(DEFAULT_VAT.setScale(2));
-    assertThat(testPayment.getPriceGross()).isEqualTo(DEFAULT_FAKE_PRICE_GROSS.setScale(2));
+    assertThat(testPayment.getPriceNet()).isEqualTo(DEFAULT_PRICE_NET);
+    assertThat(testPayment.getVat()).isEqualTo(DEFAULT_VAT);
+    assertThat(testPayment.getPriceGross()).isEqualTo(DEFAULT_FAKE_PRICE_GROSS);
+    assertThat(testPayment.getPaymentStatus()).isEqualTo(DEFAULT_PAYMENT_STATUS_ENUM);
     assertNotNull(testPayment.getCreateTime());
     assertNotNull(testPayment.getUpdateTime());
   }
@@ -447,30 +457,22 @@ class PaymentResourceIT {
   @Transactional
   @WithMockUser(username = "admin", password = "admin", authorities = AuthoritiesConstants.ADMIN)
   void putNewPaymentAndSetProperPriceGrossAutomatic() throws Exception {
-    // Initialize the database
-    paymentRepository.saveAndFlush(payment);
-
+    paymentRepository.save(payment);
     final int databaseSizeBeforeUpdate = paymentRepository.findAll().size();
-
-    // Update the payment
     Payment updatedPayment = paymentRepository.findById(payment.getId()).get();
-    // Disconnect from session so that the updates on updatedPayment are not directly saved in db
-    em.detach(updatedPayment);
-    updatedPayment
-        .name(UPDATED_NAME)
-        .priceNet(UPDATED_PRICE_NET)
-        .vat(UPDATED_VAT)
-        .priceGross(null)
-        .createTime(UPDATED_CREATE_TIME)
-        .updateTime(UPDATED_UPDATE_TIME);
     PaymentDTO paymentDto = paymentMapper.toDto(updatedPayment);
+    paymentDto.setName(UPDATED_NAME);
+    paymentDto.setPriceNet(UPDATED_PRICE_NET);
+    paymentDto.setVat(UPDATED_VAT);
+    paymentDto.setPriceGross(null);
+    paymentDto.setPaymentStatus(UPDATED_PAYMENT_STATUS_ENUM);
+    paymentDto.setCreateTime(UPDATED_CREATE_TIME);
+    paymentDto.setUpdateTime(UPDATED_UPDATE_TIME);
 
     restPaymentMockMvc
-        .perform(
-            put(ENTITY_API_URL_ID, paymentDto.getId())
+        .perform(put(ENTITY_API_URL_ID, paymentDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtil.convertObjectToJsonBytes(paymentDto))
-        )
+                .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isOk());
 
     // Validate the Payment in the database
@@ -481,6 +483,7 @@ class PaymentResourceIT {
     assertThat(testPayment.getPriceNet()).isEqualTo(UPDATED_PRICE_NET);
     assertThat(testPayment.getVat()).isEqualTo(UPDATED_VAT);
     assertThat(testPayment.getPriceGross()).isEqualTo(UPDATED_PROPER_PRICE_GROSS);
+    assertThat(testPayment.getPaymentStatus()).isEqualTo(UPDATED_PAYMENT_STATUS_ENUM);
     assertNotNull(testPayment.getCreateTime());
     assertNotNull(testPayment.getUpdateTime());
   }
@@ -497,11 +500,9 @@ class PaymentResourceIT {
 
     // If the entity doesn't have an ID, it will throw BadRequestAlertException
     restPaymentMockMvc
-        .perform(
-            put(ENTITY_API_URL_ID, paymentDto.getId())
+        .perform(put(ENTITY_API_URL_ID, paymentDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtil.convertObjectToJsonBytes(paymentDto))
-        )
+                .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isBadRequest());
 
     // Validate the Payment in the database
@@ -521,11 +522,9 @@ class PaymentResourceIT {
 
     // If url ID doesn't match entity ID, it will throw BadRequestAlertException
     restPaymentMockMvc
-        .perform(
-            put(ENTITY_API_URL_ID, count.incrementAndGet())
+        .perform(put(ENTITY_API_URL_ID, count.incrementAndGet())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtil.convertObjectToJsonBytes(paymentDto))
-        )
+                .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isBadRequest());
 
     // Validate the Payment in the database
@@ -545,7 +544,8 @@ class PaymentResourceIT {
 
     // If url ID doesn't match entity ID, it will throw BadRequestAlertException
     restPaymentMockMvc
-        .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+        .perform(put(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isMethodNotAllowed());
 

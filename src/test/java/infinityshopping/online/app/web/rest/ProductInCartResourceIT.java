@@ -20,6 +20,7 @@ import infinityshopping.online.app.domain.Product;
 import infinityshopping.online.app.domain.ProductInCart;
 import infinityshopping.online.app.domain.ShipmentCart;
 import infinityshopping.online.app.domain.User;
+import infinityshopping.online.app.domain.enumeration.PaymentStatusEnum;
 import infinityshopping.online.app.domain.enumeration.ProductCategoryEnum;
 import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.PaymentCartRepository;
@@ -92,11 +93,6 @@ class ProductInCartResourceIT implements AddVat {
   private static final BigDecimal DEFAULT_PRICE_GROSS_2 =
       DEFAULT_PRICE_NET_2.add(DEFAULT_PRICE_NET_2.multiply(DEFAULT_VAT_2.movePointLeft(2)));
 
-  @Override
-  public BigDecimal addVat(BigDecimal priceNet, BigDecimal vat) {
-    return priceNet.add(priceNet.multiply(vat.movePointLeft(2)));
-  }
-
   private static final BigDecimal DEFAULT_TOTAL_PRICE_NET
       = DEFAULT_QUANTITY.multiply(DEFAULT_PRICE_NET);
   private static final BigDecimal DEFAULT_TOTAL_PRICE_NET_2
@@ -139,6 +135,8 @@ class ProductInCartResourceIT implements AddVat {
   private static final BigDecimal DEFAULT_PaymentCart_PRICE_NET = new BigDecimal("3.0");
   private static final BigDecimal DEFAULT_PaymentCart_VAT = new BigDecimal("23");
   private static final BigDecimal DEFAULT_PaymentCart_PRICE_GROSS = new BigDecimal("3.69");
+  private static final PaymentStatusEnum DEFAULT_PAYMENT_STATUS_ENUM
+      = PaymentStatusEnum.WaitingForBankTransfer;
 
   // Cart
   private static final BigDecimal DEFAULT_AMOUNT_OF_CART_NET = BigDecimal.ZERO;
@@ -153,7 +151,6 @@ class ProductInCartResourceIT implements AddVat {
       = DEFAULT_PaymentCart_PRICE_NET;
   private static final BigDecimal DEFAULT_AMOUNT_OF_ORDER_GROSS
       = DEFAULT_PaymentCart_PRICE_GROSS;
-
 
   // ShipmentCart
   private static final String DEFAULT_ShipmentCart_FIRST_NAME = "AAAAAAAAAA";
@@ -305,6 +302,7 @@ class ProductInCartResourceIT implements AddVat {
     paymentCart.setPriceNet(DEFAULT_PaymentCart_PRICE_NET);
     paymentCart.setVat(DEFAULT_PaymentCart_VAT);
     paymentCart.setPriceGross(DEFAULT_PaymentCart_PRICE_GROSS);
+    paymentCart.setPaymentStatus(DEFAULT_PAYMENT_STATUS_ENUM);
     paymentCart.setCart(cart);
     paymentCartRepository.save(paymentCart);
     cart.setPaymentCart(paymentCart);
@@ -324,6 +322,11 @@ class ProductInCartResourceIT implements AddVat {
     // given Product
     product = createEntityProduct(em);
     productRepository.saveAndFlush(product);
+  }
+
+  @Override
+  public BigDecimal addVat(BigDecimal priceNet, BigDecimal vat) {
+    return priceNet.add(priceNet.multiply(vat.movePointLeft(2)));
   }
 
   @Test

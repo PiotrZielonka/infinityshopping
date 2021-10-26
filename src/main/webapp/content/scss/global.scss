@@ -181,7 +181,7 @@ product-management
 }
 
 /* ==============================================================
-product-management, product
+product-management, product, payment-cart-update, product-in-cart
 ===============================================================*/
 
 .lowercase {
@@ -228,10 +228,36 @@ h2::first-letter {
   text-transform: uppercase;
 }
 
+h3::first-letter {
+  text-transform: uppercase;
+}
+
 /* ==============================================================
 product-detail, product-in-cart-update
 ===============================================================*/
 
 .doNotDisplay {
   display: none;
+}
+
+/* ==============================================================
+order-main-update
+===============================================================*/
+
+.positionOrderMainUpdateAmount {
+  padding-top: 25px;
+}
+
+.orderMainUpdateTableAmount {
+  text-align: center;
+  font-size: 13px;
+  color: #252525;
+  font-family: Verdana, Geneva, Tahoma, sans-seri;
+}
+
+.orderMainUpdateTableAmountValue {
+  font-size: 14px;
+  color: #252525;
+  font-weight: bold;
+  font-family: Verdana, Geneva, Tahoma, sans-seri;
 }

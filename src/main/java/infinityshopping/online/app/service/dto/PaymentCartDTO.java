@@ -12,13 +12,10 @@ public class PaymentCartDTO implements Serializable {
   @NotNull
   private String name;
 
-  @NotNull
   private BigDecimal priceNet;
 
-  @NotNull
   private BigDecimal vat;
 
-  @NotNull
   private BigDecimal priceGross;
 
   public Long getId() {

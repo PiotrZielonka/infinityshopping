@@ -19,6 +19,11 @@
       "fieldName": "priceGross",
       "fieldType": "BigDecimal",
       "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "PaymentStatusEnum",
+      "fieldType": "PaymentStatusEnum",
+      "fieldValues": "WaitingForBankTransfer,PreparationForShipping"
     }
   ],
   "relationships": [

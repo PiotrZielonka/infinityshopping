@@ -1,9 +1,12 @@
 package infinityshopping.online.app.domain;
 
+import infinityshopping.online.app.domain.enumeration.PaymentStatusEnum;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -43,6 +46,11 @@ public class PaymentCart implements Serializable {
   @NotNull
   @Column(name = "price_gross", precision = 21, scale = 2, nullable = false)
   private BigDecimal priceGross;
+
+  @NotNull
+  @Enumerated(EnumType.STRING)
+  @Column(name = "payment_status", nullable = false)
+  private PaymentStatusEnum paymentStatus;
 
   @OneToOne
   @JoinColumn(unique = true)
@@ -115,6 +123,19 @@ public class PaymentCart implements Serializable {
     this.priceGross = priceGross;
   }
 
+  public PaymentStatusEnum getPaymentStatus() {
+    return this.paymentStatus;
+  }
+
+  public PaymentCart paymentStatus(PaymentStatusEnum paymentStatus) {
+    this.setPaymentStatus(paymentStatus);
+    return this;
+  }
+
+  public void setPaymentStatus(PaymentStatusEnum paymentStatus) {
+    this.paymentStatus = paymentStatus;
+  }
+
   public Cart getCart() {
     return this.cart;
   }
@@ -156,6 +177,7 @@ public class PaymentCart implements Serializable {
         + ", priceNet=" + getPriceNet()
         + ", vat=" + getVat()
         + ", priceGross=" + getPriceGross()
+        + ", paymentStatus='" + getPaymentStatus() + "'"
         + "}";
   }
 }

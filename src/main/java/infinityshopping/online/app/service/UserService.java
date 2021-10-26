@@ -6,6 +6,7 @@ import infinityshopping.online.app.domain.Cart;
 import infinityshopping.online.app.domain.PaymentCart;
 import infinityshopping.online.app.domain.ShipmentCart;
 import infinityshopping.online.app.domain.User;
+import infinityshopping.online.app.domain.enumeration.PaymentStatusEnum;
 import infinityshopping.online.app.repository.AuthorityRepository;
 import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.PaymentCartRepository;
@@ -369,6 +370,7 @@ public class UserService {
         paymentCart.setPriceNet(new BigDecimal("3.0"));
         paymentCart.setVat(new BigDecimal("23"));
         paymentCart.setPriceGross(new BigDecimal("3.69"));
+        paymentCart.setPaymentStatus(PaymentStatusEnum.WaitingForBankTransfer);
         paymentCart.setCart(cart);
 
         paymentCartRepository.save(paymentCart);

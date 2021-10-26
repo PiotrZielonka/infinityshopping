@@ -11,17 +11,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import infinityshopping.online.app.IntegrationTest;
 import infinityshopping.online.app.config.Constants;
 import infinityshopping.online.app.domain.Cart;
+import infinityshopping.online.app.domain.Payment;
 import infinityshopping.online.app.domain.PaymentCart;
 import infinityshopping.online.app.domain.ShipmentCart;
 import infinityshopping.online.app.domain.User;
+import infinityshopping.online.app.domain.enumeration.PaymentStatusEnum;
 import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.PaymentCartRepository;
+import infinityshopping.online.app.repository.PaymentRepository;
 import infinityshopping.online.app.repository.ShipmentCartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
+import infinityshopping.online.app.service.AddVat;
 import infinityshopping.online.app.service.dto.PaymentCartDTO;
 import infinityshopping.online.app.service.mapper.PaymentCartMapper;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -38,25 +44,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
 @AutoConfigureMockMvc
-class PaymentCartResourceIT {
+class PaymentCartResourceIT implements AddVat {
+
+  private static Random random = new Random();
+  private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
   // PaymentCart
   private static final String DEFAULT_NAME = "AAAAAAAAAA";
   private static final String UPDATED_NAME = "BBBBBBBBBB";
 
-  private static final BigDecimal DEFAULT_PRICE_NET = new BigDecimal("100");
-  private static final BigDecimal UPDATED_PRICE_NET = new BigDecimal("155");
-
-  private static final BigDecimal DEFAULT_VAT = new BigDecimal("23");
-  private static final BigDecimal UPDATED_VAT = new BigDecimal("8");
-
-  private static final BigDecimal DEFAULT_PRICE_GROSS = new BigDecimal("123");
-  private static final BigDecimal UPDATED_PRICE_GROSS = new BigDecimal("167.44");
+  private static final BigDecimal DEFAULT_PRICE_NET = new BigDecimal(random.nextInt(10000));
+  private static final BigDecimal DEFAULT_VAT = new BigDecimal(random.nextInt(30 - 5) + 5);
+  private final BigDecimal defaultPriceGross = addVat(DEFAULT_PRICE_NET, DEFAULT_VAT);
 
   private static final String DEFAULT_NAME_2 = "CCCCCCCCCC";
   private static final BigDecimal DEFAULT_PRICE_NET_2 = new BigDecimal("200");
   private static final BigDecimal DEFAULT_VAT_2 = new BigDecimal("5");
   private static final BigDecimal DEFAULT_PRICE_GROSS_2 = new BigDecimal("210");
+
+  private static final PaymentStatusEnum DEFAULT_PAYMENT_STATUS_ENUM
+      = PaymentStatusEnum.WaitingForBankTransfer;
 
   // Cart
   private static final BigDecimal DEFAULT_AMOUNT_OF_CART_NET = new BigDecimal("100");
@@ -70,29 +77,31 @@ class PaymentCartResourceIT {
 
   // ShipmentCart
   private static final String DEFAULT_FIRST_NAME = "AAAAAAAAAA";
-
   private static final String DEFAULT_LAST_NAME = "AAAAAAAAAA";
-
   private static final String DEFAULT_STREET = "AAAAAAAAAA";
-
   private static final String DEFAULT_POSTAL_CODE = "AAAAAAAAAA";
-
   private static final String DEFAULT_CITY = "AAAAAAAAAA";
-
   private static final String DEFAULT_COUNTRY = "AAAAAAAAAA";
-
   private static final String DEFAULT_PHONE_TO_THE_RECEIVER = "AAAAAAAAAA";
-
   private static final String DEFAULT_FIRM = "AAAAAAAAAA";
-
   private static final String DEFAULT_TAX_NUMBER = "AAAAAAAAAA";
 
+  //Payment
+  private static final String DEFAULT_Payment_NAME = "VVVV";
+  private static BigDecimal DEFAULT_Payment_PRICE_NET = new BigDecimal(random.nextInt(10000));
+  private static BigDecimal DEFAULT_Payment_VAT = new BigDecimal(random.nextInt(30 - 5) + 5);
+  private final BigDecimal defaultPaymentPriceGross
+      = addVat(DEFAULT_Payment_PRICE_NET, DEFAULT_Payment_VAT);
+
+  private static final PaymentStatusEnum DEFAULT_PAYMENT_STATUS_ENUM_FROM_PAYMENT
+      = PaymentStatusEnum.PreparationForShipping;
+
+  private static final Instant DEFAULT_Payment_TIME = Instant.ofEpochMilli(0L);
+  private static final Instant UPDATED_Payment_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
   private static final String ENTITY_API_URL = "/api/payment-cart";
   private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
-  private static Random random = new Random();
-  private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
   @Autowired
   private PaymentCartRepository paymentCartRepository;
@@ -105,6 +114,9 @@ class PaymentCartResourceIT {
 
   @Autowired
   private UserRepository userRepository;
+
+  @Autowired
+  private PaymentRepository paymentRepository;
 
   @Autowired
   private PaymentCartMapper paymentCartMapper;
@@ -123,13 +135,16 @@ class PaymentCartResourceIT {
 
   private ShipmentCart shipmentCart2;
 
+  private Payment payment;
 
-  public static PaymentCart createEntity(EntityManager em) {
+
+  public PaymentCart createEntity(EntityManager em) {
     PaymentCart paymentCart = new PaymentCart()
         .name(DEFAULT_NAME)
         .priceNet(DEFAULT_PRICE_NET)
         .vat(DEFAULT_VAT)
-        .priceGross(DEFAULT_PRICE_GROSS);
+        .priceGross(defaultPriceGross)
+        .paymentStatus(DEFAULT_PAYMENT_STATUS_ENUM);
     return paymentCart;
   }
 
@@ -138,7 +153,8 @@ class PaymentCartResourceIT {
         .name(DEFAULT_NAME_2)
         .priceNet(DEFAULT_PRICE_NET_2)
         .vat(DEFAULT_VAT_2)
-        .priceGross(DEFAULT_PRICE_GROSS_2);
+        .priceGross(DEFAULT_PRICE_GROSS_2)
+        .paymentStatus(DEFAULT_PAYMENT_STATUS_ENUM);
     return paymentCart2;
   }
 
@@ -154,6 +170,23 @@ class PaymentCartResourceIT {
         .firm(DEFAULT_FIRM)
         .taxNumber(DEFAULT_TAX_NUMBER);
     return shipmentCart;
+  }
+
+  public Payment createEntityPayment(EntityManager em) {
+    Payment payment = new Payment()
+        .name(DEFAULT_Payment_NAME)
+        .priceNet(DEFAULT_Payment_PRICE_NET)
+        .vat(DEFAULT_Payment_VAT)
+        .priceGross(defaultPaymentPriceGross)
+        .paymentStatus(DEFAULT_PAYMENT_STATUS_ENUM_FROM_PAYMENT)
+        .createTime(DEFAULT_Payment_TIME)
+        .updateTime(UPDATED_Payment_TIME);
+    return payment;
+  }
+
+  @Override
+  public BigDecimal addVat(BigDecimal priceNet, BigDecimal vat) {
+    return priceNet.add(priceNet.multiply(vat.movePointLeft(2)));
   }
 
   @BeforeEach
@@ -235,6 +268,10 @@ class PaymentCartResourceIT {
     shipmentCartRepository.save(shipmentCart2);
     cart2.setShipmentCart(shipmentCart2);
     cartRepository.save(cart2);
+
+    // given Payment
+    payment = createEntityPayment(em);
+    paymentRepository.save(payment);
   }
 
   @Test
@@ -248,9 +285,10 @@ class PaymentCartResourceIT {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.id").value(paymentCart.getId()))
         .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()))
-        .andExpect(jsonPath("$.priceNet").value((DEFAULT_PRICE_NET)))
-        .andExpect(jsonPath("$.vat").value((DEFAULT_VAT)))
-        .andExpect(jsonPath("$.priceGross").value((DEFAULT_PRICE_GROSS)));
+        .andExpect(jsonPath("$.priceNet").value(sameNumber(DEFAULT_PRICE_NET)))
+        .andExpect(jsonPath("$.vat").value(sameNumber(DEFAULT_VAT)))
+        .andExpect(jsonPath("$.priceGross").value(sameNumber(defaultPriceGross)))
+        .andExpect(jsonPath("$.paymentStatus").doesNotExist());
   }
 
   @Test
@@ -266,7 +304,8 @@ class PaymentCartResourceIT {
         .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
         .andExpect(jsonPath("$.priceNet").value(sameNumber(DEFAULT_PRICE_NET)))
         .andExpect(jsonPath("$.vat").value(sameNumber(DEFAULT_VAT)))
-        .andExpect(jsonPath("$.priceGross").value(sameNumber(DEFAULT_PRICE_GROSS)));
+        .andExpect(jsonPath("$.priceGross").value(sameNumber(defaultPriceGross)))
+        .andExpect(jsonPath("$.paymentStatus").doesNotExist());
   }
 
   @Test
@@ -284,9 +323,12 @@ class PaymentCartResourceIT {
   public void userShouldNotEditAnotherPaymentCartOfAnotherUser() throws Exception {
     final int databaseSizeBeforeUpdate = paymentCartRepository.findAll().size();
     PaymentCart updatedPaymentCart = paymentCartRepository.findById(paymentCart.getId()).get();
-    updatedPaymentCart.setName("VVVVVVVVV");
     PaymentCartDTO paymentCartDto = paymentCartMapper.toDto(updatedPaymentCart);
     paymentCartDto.setId(paymentCart2.getId());
+    paymentCartDto.setName(DEFAULT_Payment_NAME);
+    paymentCartDto.setPriceNet(null);
+    paymentCartDto.setVat(null);
+    paymentCartDto.setPriceGross(null);
 
     restPaymentCartMockMvc.perform(put(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
@@ -301,6 +343,7 @@ class PaymentCartResourceIT {
     assertThat(testPaymentCart.getPriceNet()).isEqualTo(DEFAULT_PRICE_NET_2);
     assertThat(testPaymentCart.getVat()).isEqualTo(DEFAULT_VAT_2);
     assertThat(testPaymentCart.getPriceGross()).isEqualTo(DEFAULT_PRICE_GROSS_2);
+    assertThat(testPaymentCart.getPaymentStatus()).isEqualTo(DEFAULT_PAYMENT_STATUS_ENUM);
 
     // Validate the all amounts in the Cart in the database
     List<Cart> cartList = cartRepository.findAll();
@@ -321,11 +364,11 @@ class PaymentCartResourceIT {
   void putNewPaymentCart() throws Exception {
     final int databaseSizeBeforeUpdate = paymentCartRepository.findAll().size();
     PaymentCart updatedPaymentCart = paymentCartRepository.findById(paymentCart.getId()).get();
-    updatedPaymentCart.setName(UPDATED_NAME);
-    updatedPaymentCart.setPriceNet(UPDATED_PRICE_NET);
-    updatedPaymentCart.setVat(UPDATED_VAT);
-    updatedPaymentCart.setPriceGross(UPDATED_PRICE_GROSS);
     PaymentCartDTO paymentCartDto = paymentCartMapper.toDto(updatedPaymentCart);
+    paymentCartDto.setName(DEFAULT_Payment_NAME);
+    paymentCartDto.setPriceNet(null);
+    paymentCartDto.setVat(null);
+    paymentCartDto.setPriceGross(null);
 
     restPaymentCartMockMvc.perform(put(ENTITY_API_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -337,10 +380,12 @@ class PaymentCartResourceIT {
     assertThat(paymentCartList).hasSize(databaseSizeBeforeUpdate);
     PaymentCart testPaymentCart = paymentCartList.get(paymentCartList.size() - 2);
     assertThat(testPaymentCart.getId()).isEqualTo(paymentCart.getId());
-    assertThat(testPaymentCart.getName()).isEqualTo(UPDATED_NAME);
-    assertThat(testPaymentCart.getPriceNet()).isEqualTo(UPDATED_PRICE_NET);
-    assertThat(testPaymentCart.getVat()).isEqualTo(UPDATED_VAT);
-    assertThat(testPaymentCart.getPriceGross()).isEqualTo(UPDATED_PRICE_GROSS);
+    assertThat(testPaymentCart.getName()).isEqualTo(DEFAULT_Payment_NAME);
+    assertThat(testPaymentCart.getPriceNet()).isEqualTo(DEFAULT_Payment_PRICE_NET);
+    assertThat(testPaymentCart.getVat()).isEqualTo(DEFAULT_Payment_VAT);
+    assertThat(testPaymentCart.getPriceGross()).isEqualTo(defaultPaymentPriceGross);
+    assertThat(testPaymentCart.getPaymentStatus())
+        .isEqualTo(DEFAULT_PAYMENT_STATUS_ENUM_FROM_PAYMENT);
     assertThat(testPaymentCart.getCart().getId()).isEqualTo(shipmentCart.getCart().getId());
 
     // Validate the all amounts in the Cart in the database
@@ -349,12 +394,12 @@ class PaymentCartResourceIT {
     assertThat(testCart.getId()).isEqualTo(paymentCart.getCart().getId());
     assertThat(testCart.getAmountOfCartNet()).isEqualTo(DEFAULT_AMOUNT_OF_CART_NET);
     assertThat(testCart.getAmountOfCartGross()).isEqualTo(DEFAULT_AMOUNT_OF_CART_GROSS);
-    assertThat(testCart.getAmountOfShipmentNet()).isEqualTo(UPDATED_PRICE_NET);
-    assertThat(testCart.getAmountOfShipmentGross()).isEqualTo(UPDATED_PRICE_GROSS);
+    assertThat(testCart.getAmountOfShipmentNet()).isEqualTo(DEFAULT_Payment_PRICE_NET);
+    assertThat(testCart.getAmountOfShipmentGross()).isEqualTo(defaultPaymentPriceGross);
     assertThat(testCart.getAmountOfOrderNet()).isEqualTo(
-        DEFAULT_AMOUNT_OF_CART_NET.add(UPDATED_PRICE_NET));
+        DEFAULT_AMOUNT_OF_CART_NET.add(DEFAULT_Payment_PRICE_NET));
     assertThat(testCart.getAmountOfOrderGross()).isEqualTo(
-        DEFAULT_AMOUNT_OF_CART_GROSS.add(UPDATED_PRICE_GROSS));
+        DEFAULT_AMOUNT_OF_CART_GROSS.add(defaultPaymentPriceGross));
     assertThat(testCart.getPaymentCart().getId()).isEqualTo(paymentCart.getId());
   }
 }

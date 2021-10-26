@@ -3,14 +3,11 @@
     "paymentCart": {
       "home": {
         "title": "Kind of payment",
-        "createOrEditLabel": "Edit kind of payment",
+        "createOrEditLabel": "Change kind of payment",
         "notFound": "No kind of payments found"
       },
       "updated": "A Kind of payment was updated",
-      "name": "Name",
-      "priceNet": "Price Net",
-      "vat": "Vat",
-      "priceGross": "Price Gross"
+      "kindOfPayment": "Kind of payment"
     }
   }
 }

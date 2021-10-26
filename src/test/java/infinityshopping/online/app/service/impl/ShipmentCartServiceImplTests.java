@@ -8,6 +8,7 @@ import infinityshopping.online.app.domain.Cart;
 import infinityshopping.online.app.domain.PaymentCart;
 import infinityshopping.online.app.domain.ShipmentCart;
 import infinityshopping.online.app.domain.User;
+import infinityshopping.online.app.domain.enumeration.PaymentStatusEnum;
 import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.PaymentCartRepository;
 import infinityshopping.online.app.repository.ShipmentCartRepository;
@@ -62,31 +63,22 @@ public class ShipmentCartServiceImplTests {
 
 
   private static final String DEFAULT_FIRST_NAME_2 = "CCCCCCCCCC";
-
   private static final String DEFAULT_LAST_NAME_2 = "CCCCCCCCCC";
-
   private static final String DEFAULT_STREET_2 = "CCCCCCCCCC";
-
   private static final String DEFAULT_POSTAL_CODE_2 = "CCCCCCCCCC";
-
   private static final String DEFAULT_CITY_2 = "CCCCCCCCCC";
-
   private static final String DEFAULT_COUNTRY_2 = "CCCCCCCCCC";
-
   private static final String DEFAULT_PHONE_TO_THE_RECEIVER_2 = "CCCCCCCCCC";
-
   private static final String DEFAULT_FIRM_2 = "CCCCCCCCCC";
-
   private static final String DEFAULT_TAX_NUMBER_2 = "CCCCCCCCCC";
 
   // PaymentCart
   private static final String DEFAULT_NAME = "AAAAAAAAAA";
-
   private static final BigDecimal DEFAULT_PRICE_NET = new BigDecimal("100");
-
   private static final BigDecimal DEFAULT_VAT = new BigDecimal("23");
-
   private static final BigDecimal DEFAULT_PRICE_GROSS = new BigDecimal("123");
+  private static final PaymentStatusEnum DEFAULT_PAYMENT_STATUS_ENUM
+      = PaymentStatusEnum.WaitingForBankTransfer;
 
 
   private ShipmentCart shipmentCart;
@@ -155,7 +147,8 @@ public class ShipmentCartServiceImplTests {
         .name(DEFAULT_NAME)
         .priceNet(DEFAULT_PRICE_NET)
         .vat(DEFAULT_VAT)
-        .priceGross(DEFAULT_PRICE_GROSS);
+        .priceGross(DEFAULT_PRICE_GROSS)
+        .paymentStatus(DEFAULT_PAYMENT_STATUS_ENUM);
     return paymentCart;
   }
 

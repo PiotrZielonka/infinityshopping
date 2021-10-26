@@ -2,6 +2,7 @@
   <div class="col-8">
     <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2
+        class="lowercase"
         id="jhi-payment-cart-heading"
         data-cy="PaymentCartCreateUpdateHeading"
         jhiTranslate="infinityshoppingApp.paymentCart.home.createOrEditLabel"
@@ -9,81 +10,18 @@
         Edit Kind of payment
       </h2>
 
-      <div>
-        <jhi-alert-error></jhi-alert-error>
-
-        <div class="form-group">
-          <label class="form-control-label" jhiTranslate="infinityshoppingApp.paymentCart.name" for="field_name">Name</label>
-          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
-          <div *ngIf="editForm.get('name')!.invalid && (editForm.get('name')!.dirty || editForm.get('name')!.touched)">
-            <small class="form-text text-danger" *ngIf="editForm.get('name')?.errors?.required" jhiTranslate="entity.validation.required">
-              This field is required.
-            </small>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-control-label" jhiTranslate="infinityshoppingApp.paymentCart.priceNet" for="field_priceNet">Price Net</label>
-          <input type="number" class="form-control" name="priceNet" id="field_priceNet" data-cy="priceNet" formControlName="priceNet" />
-          <div *ngIf="editForm.get('priceNet')!.invalid && (editForm.get('priceNet')!.dirty || editForm.get('priceNet')!.touched)">
-            <small
-              class="form-text text-danger"
-              *ngIf="editForm.get('priceNet')?.errors?.required"
-              jhiTranslate="entity.validation.required"
-            >
-              This field is required.
-            </small>
-            <small
-              class="form-text text-danger"
-              [hidden]="!editForm.get('priceNet')?.errors?.number"
-              jhiTranslate="entity.validation.number"
-            >
-              This field should be a number.
-            </small>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-control-label" jhiTranslate="infinityshoppingApp.paymentCart.vat" for="field_vat">Vat</label>
-          <input type="number" class="form-control" name="vat" id="field_vat" data-cy="vat" formControlName="vat" />
-          <div *ngIf="editForm.get('vat')!.invalid && (editForm.get('vat')!.dirty || editForm.get('vat')!.touched)">
-            <small class="form-text text-danger" *ngIf="editForm.get('vat')?.errors?.required" jhiTranslate="entity.validation.required">
-              This field is required.
-            </small>
-            <small class="form-text text-danger" [hidden]="!editForm.get('vat')?.errors?.number" jhiTranslate="entity.validation.number">
-              This field should be a number.
-            </small>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-control-label" jhiTranslate="infinityshoppingApp.paymentCart.priceGross" for="field_priceGross"
-            >Price Gross</label
-          >
-          <input
-            type="number"
-            class="form-control"
-            name="priceGross"
-            id="field_priceGross"
-            data-cy="priceGross"
-            formControlName="priceGross"
-          />
-          <div *ngIf="editForm.get('priceGross')!.invalid && (editForm.get('priceGross')!.dirty || editForm.get('priceGross')!.touched)">
-            <small
-              class="form-text text-danger"
-              *ngIf="editForm.get('priceGross')?.errors?.required"
-              jhiTranslate="entity.validation.required"
-            >
-              This field is required.
-            </small>
-            <small
-              class="form-text text-danger"
-              [hidden]="!editForm.get('priceGross')?.errors?.number"
-              jhiTranslate="entity.validation.number"
-            >
-              This field should be a number.
-            </small>
-          </div>
+      <div class="form-group">
+        <label class="form-control-label" jhiTranslate="infinityshoppingApp.paymentCart.kindOfPayment" for="field_name">Name</label>
+        <select class="form-control" name="name" id="field_name" formControlName="name" data-cy="name">
+          <option *ngFor="let payment of payments; trackBy: trackId" [value]="payment.name">
+            {{payment.name}} +{{payment.priceGross}} $
+          </option>
+        </select>
+       
+        <div *ngIf="editForm.get('name')!.invalid && (editForm.get('name')!.dirty || editForm.get('name')!.touched)">
+          <small class="form-text text-danger" *ngIf="editForm.get('name')?.errors?.required" jhiTranslate="entity.validation.required">
+            This field is required.
+          </small>
         </div>
       </div>
 

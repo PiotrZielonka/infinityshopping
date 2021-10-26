@@ -26,6 +26,11 @@
       "fieldType": "BigDecimal"
     },
     {
+      "fieldName": "PaymentStatusEnum",
+      "fieldType": "PaymentStatusEnum",
+      "fieldValues": "WaitingForBankTransfer,PreparationForShipping"
+    },
+    {
       "fieldName": "createTime",
       "fieldType": "Instant"
     },

@@ -23,6 +23,8 @@
       "vat": "Vat",
       "priceGross": "Cena brutto",
       "priceGrossFormForm": "Cena brutto (nie wymagane cena zostanie ustawiona automatycznie po zapisaniu)",
+      "paymentStatus": "Status płatności",
+      "paymentStatusForForm": "Status płatności (Gdy klient wybierze ten rodzaj płatności, ten status płatności zostanie ustawiony automatycznie w statusie zamówienia)",
       "createTime": "Utworzono",
       "updateTime": "Aktualizacja"
     }

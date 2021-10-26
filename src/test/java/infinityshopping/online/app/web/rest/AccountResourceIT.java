@@ -10,6 +10,7 @@ import infinityshopping.online.app.IntegrationTest;
 import infinityshopping.online.app.config.Constants;
 import infinityshopping.online.app.domain.Cart;
 import infinityshopping.online.app.domain.User;
+import infinityshopping.online.app.domain.enumeration.PaymentStatusEnum;
 import infinityshopping.online.app.repository.AuthorityRepository;
 import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.UserRepository;
@@ -68,6 +69,9 @@ class AccountResourceIT {
     private static final BigDecimal DEFAULT_PAYMENT_CART_VAT = new BigDecimal("23");
 
     private static final BigDecimal DEFAULT_PAYMENT_CART_PRICE_GROSS = new BigDecimal("3.69");
+
+    private static final PaymentStatusEnum DEFAULT_PAYMENT_STATUS_ENUM
+        = PaymentStatusEnum.WaitingForBankTransfer;
 
     @Test
     @WithUnauthenticatedMockUser
@@ -829,6 +833,8 @@ class AccountResourceIT {
             .isEqualTo(DEFAULT_PAYMENT_CART_VAT);
         assertThat(testCart.getPaymentCart().getPriceGross())
             .isEqualTo(DEFAULT_PAYMENT_CART_PRICE_GROSS);
+        assertThat(testCart.getPaymentCart().getPaymentStatus())
+            .isEqualTo(DEFAULT_PAYMENT_STATUS_ENUM);
 
         // Validate the ShipmentCart in database
         assertThat(testCart.getId()).isEqualTo(testCart.getShipmentCart().getCart().getId());

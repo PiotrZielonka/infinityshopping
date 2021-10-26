@@ -99,6 +99,24 @@
             [readonly]="true"
           />
         </div>
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.payment.paymentStatusForForm" for="field_paymentStatus"
+            >Payment Status</label
+          >
+          <select
+            class="form-control"
+            name="paymentStatus"
+            formControlName="paymentStatus"
+            id="field_paymentStatus"
+            data-cy="paymentStatus"
+          >
+            <option *ngFor="let paymentStatusEnum of paymentStatusEnumValues" [value]="paymentStatusEnum">
+              {{ 'infinityshoppingApp.PaymentStatusEnum.' + paymentStatusEnum | translate }}
+            </option>
+          </select>
+        </div>
+
+      
       </div>
 
       <div>

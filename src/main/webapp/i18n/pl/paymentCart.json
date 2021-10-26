@@ -3,14 +3,10 @@
     "paymentCart": {
       "home": {
         "title": "Sposób wysyłki",
-        "createOrEditLabel": "Edutyj sposób wysyłki",
+        "createOrEditLabel": "Zmień sposób wysyłki",
         "notFound": "Nie znaleziono żadnych sposobów wysyłki"
       },
       "updated": "Sposobów wysyłki został uaktualniony",
-      "name": "Nazwa",
-      "priceNet": "Cena netto",
-      "vat": "Vat",
-      "priceGross": "Cena brutto"
-    }
+      "kindOfPayment": "Rodzaj płatności"    }
   }
 }

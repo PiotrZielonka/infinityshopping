@@ -4,6 +4,7 @@ import * as dayjs from 'dayjs';
 import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 import { IPayment, Payment } from '../payment.model';
 import { PaymentService } from './payment.service';
+import { PaymentStatusEnum } from 'app/entities/enumerations/payment-status-enum.model';
 
 describe('Payment Service', () => {
   let service: PaymentService;
@@ -27,6 +28,7 @@ describe('Payment Service', () => {
       priceNet: 0,
       vat: 0,
       priceGross: 0,
+      paymentStatus: PaymentStatusEnum.WaitingForBankTransfer,
       createTime: currentDate,
       updateTime: currentDate,
     };
@@ -82,6 +84,7 @@ describe('Payment Service', () => {
           priceNet: 1,
           vat: 1,
           priceGross: 1,
+          paymentStatus: PaymentStatusEnum.PreparationForShipping,
           createTime: currentDate.format(DATE_TIME_FORMAT),
           updateTime: currentDate.format(DATE_TIME_FORMAT),
         },
@@ -111,6 +114,7 @@ describe('Payment Service', () => {
           priceNet: 1,
           vat: 1,
           priceGross: 1,
+          paymentStatus: PaymentStatusEnum.WaitingForBankTransfer,
           createTime: currentDate.format(DATE_TIME_FORMAT),
           updateTime: currentDate.format(DATE_TIME_FORMAT),
         },

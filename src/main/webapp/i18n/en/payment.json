@@ -23,6 +23,8 @@
       "vat": "Vat",
       "priceGross": "Price Gross",
       "priceGrossFormForm": "Price Gross (Not required the price will be set automatically after saving)",
+      "paymentStatus": "Payment Status",
+      "paymentStatusForForm": "Payment Status (When the customer selects this kind of payment, this payment status will be setting automatically in the order status)",
       "createTime": "Created",
       "updateTime": "Updated"
     }

@@ -1,5 +1,7 @@
 package infinityshopping.online.app.service.dto;
 
+import infinityshopping.online.app.domain.enumeration.OrderMainStatusEnum;
+import infinityshopping.online.app.domain.enumeration.PaymentStatusEnum;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -28,6 +30,9 @@ public class PaymentDTO implements Serializable {
   private BigDecimal vat;
 
   private BigDecimal priceGross;
+
+  @NotNull
+  private PaymentStatusEnum paymentStatus;
 
   private Instant createTime;
 
@@ -71,6 +76,14 @@ public class PaymentDTO implements Serializable {
 
   public void setPriceGross(BigDecimal priceGross) {
     this.priceGross = priceGross;
+  }
+
+  public PaymentStatusEnum getPaymentStatus() {
+    return paymentStatus;
+  }
+
+  public void setPaymentStatus(PaymentStatusEnum paymentStatus) {
+    this.paymentStatus = paymentStatus;
   }
 
   public Instant getCreateTime() {
@@ -119,6 +132,7 @@ public class PaymentDTO implements Serializable {
         + ", priceNet=" + getPriceNet()
         + ", vat=" + getVat()
         + ", priceGross=" + getPriceGross()
+        + ", paymentStatus='" + getPaymentStatus() + "'"
         + ", createTime='" + getCreateTime() + "'"
         + ", updateTime='" + getUpdateTime() + "'"
         + "}";

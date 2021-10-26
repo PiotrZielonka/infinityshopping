@@ -26,6 +26,9 @@
             <column name="price_gross" type="decimal(21,2)">
                 <constraints nullable="false" />
             </column>
+            <column name="payment_status" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
             <column name="cart_id" type="bigint">
                 <constraints nullable="true" unique="true" uniqueConstraintName="ux_payment_cart__cart_id" />
             </column>
@@ -54,6 +57,7 @@
             <column name="price_net" type="numeric"/>
             <column name="vat" type="numeric"/>
             <column name="price_gross" type="numeric"/>
+            <column name="payment_status" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

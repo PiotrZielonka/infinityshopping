@@ -7,6 +7,8 @@ import { finalize } from 'rxjs/operators';
 
 import { IPaymentCart, PaymentCart } from '../payment-cart.model';
 import { PaymentCartService } from '../service/payment-cart.service';
+import { IPayment } from 'app/entities/payment/payment.model';
+import { PaymentService } from 'app/entities/payment/service/payment.service';
 
 @Component({
   selector: 'jhi-payment-cart-update',
@@ -14,26 +16,50 @@ import { PaymentCartService } from '../service/payment-cart.service';
 })
 export class PaymentCartUpdateComponent implements OnInit {
   isSaving = false;
+  payments?: IPayment[];
+  isLoading = false;
 
   editForm = this.fb.group({
     id: [],
     name: [null, [Validators.required]],
-    priceNet: [null, [Validators.required]],
-    vat: [null, [Validators.required]],
-    priceGross: [null, [Validators.required]],
+    priceNet: [],
+    vat: [],
+    priceGross: [],
     cart: [],
   });
 
+
+
   constructor(
     protected paymentCartService: PaymentCartService,
+    protected paymentService: PaymentService,
     protected activatedRoute: ActivatedRoute,
     protected fb: FormBuilder
-  ) {}
+  ) { }
+
+  loadAll(): void {
+    this.isLoading = true;
+
+    this.paymentService.query().subscribe(
+      (res: HttpResponse<IPayment[]>) => {
+        this.isLoading = false;
+        this.payments = res.body ?? [];
+      },
+      () => {
+        this.isLoading = false;
+      }
+    );
+  }
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ paymentCart }) => {
       this.updateForm(paymentCart);
     });
+    this.loadAll();
+  }
+
+  trackId(index: number, item: IPayment): number {
+    return item.id!;
   }
 
   previousState(): void {
@@ -45,7 +71,7 @@ export class PaymentCartUpdateComponent implements OnInit {
     const paymentCart = this.createFromForm();
     if (paymentCart.id !== undefined) {
       this.subscribeToSaveResponse(this.paymentCartService.update(paymentCart));
-    } 
+    }
   }
 
   protected subscribeToSaveResponse(result: Observable<HttpResponse<IPaymentCart>>): void {
@@ -71,9 +97,6 @@ export class PaymentCartUpdateComponent implements OnInit {
     this.editForm.patchValue({
       id: paymentCart.id,
       name: paymentCart.name,
-      priceNet: paymentCart.priceNet,
-      vat: paymentCart.vat,
-      priceGross: paymentCart.priceGross,
       cart: paymentCart.cart,
     });
   }
@@ -83,9 +106,6 @@ export class PaymentCartUpdateComponent implements OnInit {
       ...new PaymentCart(),
       id: this.editForm.get(['id'])!.value,
       name: this.editForm.get(['name'])!.value,
-      priceNet: this.editForm.get(['priceNet'])!.value,
-      vat: this.editForm.get(['vat'])!.value,
-      priceGross: this.editForm.get(['priceGross'])!.value,
       cart: this.editForm.get(['cart'])!.value,
     };
   }

@@ -1,0 +1,8 @@
+{
+  "infinityshoppingApp": {
+    "PaymentStatusEnum": {
+      "WaitingForBankTransfer": "Oczekiwanie na przelew bankowy",
+      "PreparationForShipping": "Przygotowanie do wysyłki"
+    }
+  }
+}

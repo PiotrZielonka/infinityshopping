@@ -36,6 +36,7 @@
           <th scope="col"><span jhiTranslate="infinityshoppingApp.payment.priceNet">Price Net</span></th>
           <th scope="col"><span jhiTranslate="infinityshoppingApp.payment.vat">Vat</span></th>
           <th scope="col"><span jhiTranslate="infinityshoppingApp.payment.priceGross">Price Gross</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.payment.paymentStatus">Payment status</span></th>
           <th scope="col"><span jhiTranslate="infinityshoppingApp.payment.createTime">Created</span></th>
           <th scope="col"><span jhiTranslate="infinityshoppingApp.payment.updateTime">Updated</span></th>
           <th scope="col"></th>
@@ -47,6 +48,9 @@
           <td>{{ payment.priceNet }}</td>
           <td>{{ payment.vat }}</td>
           <td>{{ payment.priceGross }}</td>
+          <td jhiTranslate="{{ 'infinityshoppingApp.PaymentStatusEnum.' + payment.paymentStatus }}">
+            {{ payment.paymentStatus }}
+          </td>
           <td>{{ payment.createTime | formatMediumDatetime }}</td>
           <td>{{ payment.updateTime | formatMediumDatetime }}</td>
           <td class="text-right">

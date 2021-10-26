@@ -1,10 +1,12 @@
 package infinityshopping.online.app.service.impl;
 
 import infinityshopping.online.app.domain.Cart;
+import infinityshopping.online.app.domain.Payment;
 import infinityshopping.online.app.domain.PaymentCart;
 import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.PaymentCartRepository;
+import infinityshopping.online.app.repository.PaymentRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.PaymentCartService;
@@ -24,6 +26,8 @@ public class PaymentCartServiceImpl implements PaymentCartService {
 
   private final PaymentCartRepository paymentCartRepository;
 
+  private final PaymentRepository paymentRepository;
+
   private final UserRepository userRepository;
 
   private final CartRepository cartRepository;
@@ -36,9 +40,11 @@ public class PaymentCartServiceImpl implements PaymentCartService {
 
 
   public PaymentCartServiceImpl(PaymentCartRepository paymentCartRepository,
+      PaymentRepository paymentRepository,
       PaymentCartMapper paymentCartMapper,
       UserRepository userRepository, CartRepository cartRepository) {
     this.paymentCartRepository = paymentCartRepository;
+    this.paymentRepository = paymentRepository;
     this.paymentCartMapper = paymentCartMapper;
     this.userRepository = userRepository;
     this.cartRepository = cartRepository;
@@ -48,12 +54,15 @@ public class PaymentCartServiceImpl implements PaymentCartService {
   @Transactional
   public PaymentCartDTO save(PaymentCartDTO paymentCartDto) {
     log.debug("Request to save only update PaymentCart : {}", paymentCartDto);
-    PaymentCart paymentCart = paymentCartMapper.toEntity(paymentCartDto);
 
     currentLoggedUser = checkIfUserExist();
 
+    Payment payment = findPaymentCartInPaymentRepositoryBecauseOnlyNameIsInDto(paymentCartDto);
+    PaymentCart paymentCart = paymentCartMapper.toEntity(paymentCartDto);
+
     setCartIdToPaymentCartOfLoggedUserBecauseItIsNotInDto(
         paymentCart, currentLoggedUser);
+    setProperValuesInPaymentCartFromPaymentBecauseAreNullInDto(paymentCart, payment);
 
     setAmountOfShipmentToProperCartOfUser(paymentCart);
     setAmountOfOrderNetToProperCartOfUser(paymentCart);
@@ -62,6 +71,19 @@ public class PaymentCartServiceImpl implements PaymentCartService {
     paymentCart = paymentCartRepository.save(paymentCart);
 
     return paymentCartMapper.toDto(paymentCart);
+  }
+
+  private Payment findPaymentCartInPaymentRepositoryBecauseOnlyNameIsInDto(
+      PaymentCartDTO paymentCartDto) {
+    return paymentRepository.findByName(paymentCartDto.getName()).get();
+  }
+
+  private void setProperValuesInPaymentCartFromPaymentBecauseAreNullInDto(
+      PaymentCart paymentCart, Payment payment) {
+    paymentCart.setPriceNet(payment.getPriceNet());
+    paymentCart.setVat(payment.getVat());
+    paymentCart.setPriceGross(payment.getPriceGross());
+    paymentCart.setPaymentStatus(payment.getPaymentStatus());
   }
 
   private void setCartIdToPaymentCartOfLoggedUserBecauseItIsNotInDto(

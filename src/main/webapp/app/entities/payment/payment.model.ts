@@ -1,4 +1,5 @@
 import * as dayjs from 'dayjs';
+import { PaymentStatusEnum } from '../enumerations/payment-status-enum.model';
 
 export interface IPayment {
   id?: number;
@@ -6,6 +7,7 @@ export interface IPayment {
   priceNet?: number;
   vat?: number;
   priceGross?: number | null;
+  paymentStatus?: PaymentStatusEnum | null;
   createTime?: dayjs.Dayjs | null;
   updateTime?: dayjs.Dayjs | null;
 }
@@ -17,6 +19,7 @@ export class Payment implements IPayment {
     public priceNet?: number,
     public vat?: number,
     public priceGross?: number | null,
+    public paymentStatus?: PaymentStatusEnum | null,
     public createTime?: dayjs.Dayjs | null,
     public updateTime?: dayjs.Dayjs | null
   ) {}
