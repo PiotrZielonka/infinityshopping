@@ -1,6 +1,5 @@
 package infinityshopping.online.app.service.dto;
 
-import infinityshopping.online.app.domain.enumeration.OrderMainStatusEnum;
 import infinityshopping.online.app.domain.enumeration.PaymentStatusEnum;
 import java.io.Serializable;
 import java.math.BigDecimal;
