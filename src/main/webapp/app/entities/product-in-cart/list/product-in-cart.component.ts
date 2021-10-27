@@ -12,6 +12,7 @@ import { ICart } from 'app/entities/cart/cart.model';
 @Component({
   selector: 'jhi-product-in-cart',
   templateUrl: './product-in-cart.component.html',
+  styleUrls: ['./product-in-cart.scss'],
 })
 export class ProductInCartComponent implements OnInit {
   productInCarts?: IProductInCart[];

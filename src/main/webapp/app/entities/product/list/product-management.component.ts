@@ -14,6 +14,7 @@ import { DataUtils } from 'app/core/util/data-util.service';
 @Component({
   selector: 'jhi-product-product-management',
   templateUrl: './product-management.component.html',
+  styleUrls: ['./product-management.scss'],
 })
 export class ProductManagementComponent implements OnInit {
   products?: IProduct[];

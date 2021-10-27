@@ -172,54 +172,6 @@ ui bootstrap tweaks
 
 /* jhipster-needle-scss-add-main JHipster will add new css style */
 
-/* ==============================================================
-product-management
-===============================================================*/
-
-.managementRow {
-  padding-bottom: 10px;
-}
-
-/* ==============================================================
-product-management, product, payment-cart-update, product-in-cart
-===============================================================*/
-
-.lowercase {
-  text-transform: lowercase;
-}
-
-h2::first-letter {
-  text-transform: uppercase;
-}
-
-/* ==============================================================
-product
-===============================================================*/
-
-.hiddenSortFaicon {
-  visibility: hidden;
-}
-
-/* ==============================================================
-product-in-cart
-===============================================================*/
-
-.tableAmountOfCartGross {
-  text-align: right;
-  font-size: 13px;
-  font-weight: 500;
-  color: #252525;
-  font-family: Verdana, Geneva, Tahoma, sans-seri;
-}
-
-.tableAmountOfCartGrossValue {
-  text-align: right;
-  font-size: 14px;
-  color: #252525;
-  font-weight: bold;
-  font-family: Verdana, Geneva, Tahoma, sans-seri;
-}
-
 .lowercase {
   text-transform: lowercase;
 }
@@ -238,26 +190,4 @@ product-detail, product-in-cart-update
 
 .doNotDisplay {
   display: none;
-}
-
-/* ==============================================================
-order-main-update
-===============================================================*/
-
-.positionOrderMainUpdateAmount {
-  padding-top: 25px;
-}
-
-.orderMainUpdateTableAmount {
-  text-align: center;
-  font-size: 13px;
-  color: #252525;
-  font-family: Verdana, Geneva, Tahoma, sans-seri;
-}
-
-.orderMainUpdateTableAmountValue {
-  font-size: 14px;
-  color: #252525;
-  font-weight: bold;
-  font-family: Verdana, Geneva, Tahoma, sans-seri;
 }
