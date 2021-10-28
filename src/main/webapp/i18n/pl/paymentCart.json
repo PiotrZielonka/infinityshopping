@@ -2,11 +2,11 @@
   "infinityshoppingApp": {
     "paymentCart": {
       "home": {
-        "title": "Sposób wysyłki",
-        "createOrEditLabel": "Zmień sposób wysyłki",
-        "notFound": "Nie znaleziono żadnych sposobów wysyłki"
+        "title": "Sposób płatności i wysyłki",
+        "createOrEditLabel": "Zmień sposób płatności i wysyłki",
+        "notFound": "Nie znaleziono żadnych sposobów płatności i wysyłki"
       },
-      "updated": "Sposobów wysyłki został uaktualniony",
-      "kindOfPayment": "Rodzaj płatności"    }
+      "updated": "Sposobów płatności i wysyłki został uaktualniony",
+      "kindOfPaymentAndShipment": "Rodzaj płatności i wysyłki"    }
   }
 }

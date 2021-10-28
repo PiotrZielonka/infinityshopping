@@ -2,29 +2,31 @@
   "infinityshoppingApp": {
     "payment": {
       "home": {
-        "title": "Zarządzaj płatnościami",
+        "title": "Zarządzaj płatnościami i wysyłką",
         "refreshListLabel": "Odśwież liste",
-        "createLabel": "Dodaj sposób płatności",
-        "createOrEditLabel": "Dodaj lub edytuj: Płatność",
+        "createLabel": "Dodaj sposób płatności i wysyłki",
+        "createOrEditLabel": "Dodaj lub edytuj płatność i wysyłkę",
         "notFound": "Nie znaleziono żadnych płatności"
       },
-      "created": "Nowy sposób płatności został dodany",
-      "updated": "Uaktualniono sposób płatności",
-      "deleted": "Usunięto sposób płatności",
+      "created": "Nowy sposób płatności i wysyłki został dodany",
+      "updated": "Uaktualniono sposób płatności i wysyłki",
+      "deleted": "Usunięto sposób płatności i wysyłki",
       "delete": {
-        "question": "Czy na pewno chcesz usunąć ten sposób płatności ?"
+        "question": "Czy na pewno chcesz usunąć ten sposób płatności i wysyłki ?"
       },
       "detail": {
-        "title": "Sposób płatności"
+        "title": "Sposób płatności i wysyłki"
       },
       "id": "ID",
       "name": "Nazwa",
+      "nameForForm": "Nazwa (Np. DHL przelew bankowy lub FedEx płatność za pobraniem)",
       "priceNet": "Cena netto",
+      "priceNetForForm": "Cena netto (wysyłka + płatność)",
       "vat": "Vat",
       "priceGross": "Cena brutto",
       "priceGrossFormForm": "Cena brutto (nie wymagane cena zostanie ustawiona automatycznie po zapisaniu)",
       "paymentStatus": "Status płatności",
-      "paymentStatusForForm": "Status płatności (Gdy klient wybierze ten rodzaj płatności, ten status płatności zostanie ustawiony automatycznie w statusie zamówienia)",
+      "paymentStatusForForm": "Status płatności (Gdy klient wybierze ten rodzaj płatności, ten status płatności zostanie ustawiony automatycznie jako status zamówienia)",
       "createTime": "Utworzono",
       "updateTime": "Aktualizacja"
     }

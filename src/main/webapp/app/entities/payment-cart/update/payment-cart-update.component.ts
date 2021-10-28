@@ -40,7 +40,7 @@ export class PaymentCartUpdateComponent implements OnInit {
   loadAll(): void {
     this.isLoading = true;
 
-    this.paymentService.query().subscribe(
+    this.paymentService.queryAllPaymentsOnlyWithNamePriceGross().subscribe(
       (res: HttpResponse<IPayment[]>) => {
         this.isLoading = false;
         this.payments = res.body ?? [];

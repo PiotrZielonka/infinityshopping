@@ -1,15 +1,15 @@
 <div class="row justify-content-center">
   <div class="col-8">
     <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-payment-heading" data-cy="PaymentCreateUpdateHeading" jhiTranslate="infinityshoppingApp.payment.home.createOrEditLabel">
-        Create or edit a Payment
+      <h2 class="lowercase" id="jhi-payment-heading" data-cy="PaymentCreateUpdateHeading" jhiTranslate="infinityshoppingApp.payment.home.createOrEditLabel">
+        Create or edit a payment and a shipment
       </h2>
 
       <div>
         <jhi-alert-error></jhi-alert-error>
 
         <div class="form-group">
-          <label class="form-control-label" jhiTranslate="infinityshoppingApp.payment.name" for="field_name">Name</label>
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.payment.nameForForm" for="field_name">Name (E.g. DHL bank transfer or FedEx cash on delivery)</label>
           <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
           <div *ngIf="editForm.get('name')!.invalid && (editForm.get('name')!.dirty || editForm.get('name')!.touched)">
             <small class="form-text text-danger" *ngIf="editForm.get('name')?.errors?.required" jhiTranslate="entity.validation.required">
@@ -35,7 +35,7 @@
         </div>
 
         <div class="form-group">
-          <label class="form-control-label" jhiTranslate="infinityshoppingApp.payment.priceNet" for="field_priceNet">Price Net</label>
+          <label class="form-control-label" jhiTranslate="infinityshoppingApp.payment.priceNetForForm" for="field_priceNet">Price Net (shipment + payment)</label>
           <input type="number" class="form-control" name="priceNet" id="field_priceNet" data-cy="priceNet" formControlName="priceNet" />
           <div *ngIf="editForm.get('priceNet')!.invalid && (editForm.get('priceNet')!.dirty || editForm.get('priceNet')!.touched)">
             <small
@@ -87,7 +87,7 @@
 
         <div class="form-group">
           <label class="form-control-label" jhiTranslate="infinityshoppingApp.payment.priceGrossFormForm" for="field_priceGross"
-            >(Not required the price will be set automatically after saving)</label
+            >Price Gross (Not required the price will be set automatically after saving)</label
           >
           <input
             type="number"
@@ -101,7 +101,7 @@
         </div>
         <div class="form-group">
           <label class="form-control-label" jhiTranslate="infinityshoppingApp.payment.paymentStatusForForm" for="field_paymentStatus"
-            >Payment Status</label
+            >Payment Status (When the customer selects this kind of payment, this payment status will be setting automatically in the order status)</label
           >
           <select
             class="form-control"

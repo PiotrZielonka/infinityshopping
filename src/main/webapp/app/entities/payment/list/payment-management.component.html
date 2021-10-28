@@ -1,6 +1,6 @@
 <div>
   <h2 class="lowercase" id="page-heading" data-cy="PaymentHeading">
-    <span jhiTranslate="infinityshoppingApp.payment.home.title">Payment management</span>
+    <span jhiTranslate="infinityshoppingApp.payment.home.title">Payment and shipment management</span>
 
     <div class="d-flex justify-content-end">
       <button class="btn btn-info mr-2" (click)="loadAll()" [disabled]="isLoading">
@@ -15,7 +15,7 @@
         [routerLink]="['/payment/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span jhiTranslate="infinityshoppingApp.payment.home.createLabel"> Create a new Payment </span>
+        <span jhiTranslate="infinityshoppingApp.payment.home.createLabel">Create a new kind of payment and shipment</span>
       </button>
     </div>
   </h2>
@@ -25,7 +25,7 @@
   <jhi-alert></jhi-alert>
 
   <div class="alert alert-warning" id="no-result" *ngIf="payments?.length === 0">
-    <span jhiTranslate="infinityshoppingApp.payment.home.notFound">No payments found</span>
+    <span jhiTranslate="infinityshoppingApp.payment.home.notFound">No kind of payments and shipments found</span>
   </div>
 
   <div class="table-responsive" id="entities" *ngIf="payments && payments.length > 0">

@@ -7,11 +7,11 @@
         data-cy="PaymentCartCreateUpdateHeading"
         jhiTranslate="infinityshoppingApp.paymentCart.home.createOrEditLabel"
       >
-        Edit Kind of payment
+        Change kind of payment and shipment
       </h2>
 
       <div class="form-group">
-        <label class="form-control-label" jhiTranslate="infinityshoppingApp.paymentCart.kindOfPayment" for="field_name">Name</label>
+        <label class="form-control-label" jhiTranslate="infinityshoppingApp.paymentCart.kindOfPaymentAndShipment" for="field_name">Kind of payment and shipment</label>
         <select class="form-control" name="name" id="field_name" formControlName="name" data-cy="name">
           <option *ngFor="let payment of payments; trackBy: trackId" [value]="payment.name">
             {{payment.name}} +{{payment.priceGross}} $
