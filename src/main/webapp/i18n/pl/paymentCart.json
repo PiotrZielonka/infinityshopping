@@ -3,10 +3,11 @@
     "paymentCart": {
       "home": {
         "title": "Sposób płatności i wysyłki",
-        "createOrEditLabel": "Zmień sposób płatności i wysyłki",
-        "notFound": "Nie znaleziono żadnych sposobów płatności i wysyłki"
+        "editLabel": "Zmień sposób płatności i wysyłki",
+        "notFound": "Nie znaleziono żadnego sposobu płatności i wysyłki"
       },
       "updated": "Sposobów płatności i wysyłki został uaktualniony",
-      "kindOfPaymentAndShipment": "Rodzaj płatności i wysyłki"    }
+      "kindOfPaymentAndShipment": "Rodzaj płatności i wysyłki"
+      }
   }
 }

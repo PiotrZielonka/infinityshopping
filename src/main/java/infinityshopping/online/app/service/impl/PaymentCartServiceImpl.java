@@ -64,9 +64,8 @@ public class PaymentCartServiceImpl implements PaymentCartService {
         paymentCart, currentLoggedUser);
     setProperValuesInPaymentCartFromPaymentBecauseAreNullInDto(paymentCart, payment);
 
-    setAmountOfShipmentToProperCartOfUser(paymentCart);
-    setAmountOfOrderNetToProperCartOfUser(paymentCart);
-    setAmountOfOrderGrossToProperCartOfUser(paymentCart);
+    setAmountsOfShipmentToProperCartOfUser(paymentCart);
+    setAmountsOfOrderToProperCartOfUser(paymentCart);
 
     paymentCart = paymentCartRepository.save(paymentCart);
 
@@ -91,7 +90,7 @@ public class PaymentCartServiceImpl implements PaymentCartService {
     paymentCartOfLoggedUser.setCart(currentLoggedUser.getCart());
   }
 
-  private void setAmountOfShipmentToProperCartOfUser(PaymentCart paymentCartOfLoggedUser) {
+  private void setAmountsOfShipmentToProperCartOfUser(PaymentCart paymentCartOfLoggedUser) {
     cart = cartRepository.findById(paymentCartOfLoggedUser.getCart().getId()).get();
 
     cart.setAmountOfShipmentNet(paymentCartOfLoggedUser.getPriceNet());
@@ -100,17 +99,12 @@ public class PaymentCartServiceImpl implements PaymentCartService {
     cartRepository.save(cart);
   }
 
-  private void setAmountOfOrderNetToProperCartOfUser(PaymentCart paymentCartOfLoggedUser) {
+  private void setAmountsOfOrderToProperCartOfUser(PaymentCart paymentCartOfLoggedUser) {
     cart = cartRepository.findById(paymentCartOfLoggedUser.getCart().getId()).get();
 
     cart.setAmountOfOrderNet(cart.getAmountOfCartNet().add(cart.getAmountOfShipmentNet()));
-    cartRepository.save(cart);
-  }
-
-  private void setAmountOfOrderGrossToProperCartOfUser(PaymentCart paymentCartOfLoggedUser) {
-    cart = cartRepository.findById(paymentCartOfLoggedUser.getCart().getId()).get();
-
     cart.setAmountOfOrderGross(cart.getAmountOfCartGross().add(cart.getAmountOfShipmentGross()));
+
     cartRepository.save(cart);
   }
 

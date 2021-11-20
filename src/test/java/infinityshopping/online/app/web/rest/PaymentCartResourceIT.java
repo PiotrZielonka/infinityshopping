@@ -51,7 +51,6 @@ class PaymentCartResourceIT implements AddVat {
 
   // PaymentCart
   private static final String DEFAULT_NAME = "AAAAAAAAAA";
-  private static final String UPDATED_NAME = "BBBBBBBBBB";
 
   private static final BigDecimal DEFAULT_PRICE_NET = new BigDecimal(random.nextInt(10000));
   private static final BigDecimal DEFAULT_VAT = new BigDecimal(random.nextInt(30 - 5) + 5);
@@ -87,7 +86,7 @@ class PaymentCartResourceIT implements AddVat {
   private static final String DEFAULT_TAX_NUMBER = "AAAAAAAAAA";
 
   //Payment
-  private static final String DEFAULT_Payment_NAME = "VVVV";
+  private static final String DEFAULT_Payment_NAME = "VVVVVVVVVV";
   private static BigDecimal DEFAULT_Payment_PRICE_NET = new BigDecimal(random.nextInt(10000));
   private static BigDecimal DEFAULT_Payment_VAT = new BigDecimal(random.nextInt(30 - 5) + 5);
   private final BigDecimal defaultPaymentPriceGross
@@ -101,6 +100,7 @@ class PaymentCartResourceIT implements AddVat {
 
   private static final String ENTITY_API_URL = "/api/payment-cart";
   private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+  private static final String ENTITY_API_URL_USER_PAYMENTCART = ENTITY_API_URL + "/userPaymentCart";
 
 
   @Autowired
@@ -182,11 +182,6 @@ class PaymentCartResourceIT implements AddVat {
         .createTime(DEFAULT_Payment_TIME)
         .updateTime(UPDATED_Payment_TIME);
     return payment;
-  }
-
-  @Override
-  public BigDecimal addVat(BigDecimal priceNet, BigDecimal vat) {
-    return priceNet.add(priceNet.multiply(vat.movePointLeft(2)));
   }
 
   @BeforeEach
@@ -280,7 +275,7 @@ class PaymentCartResourceIT implements AddVat {
   void getPaymentCartOfCurrentLoggedUser() throws Exception {
     // Get only the paymentCart of current user
     restPaymentCartMockMvc
-        .perform(get(ENTITY_API_URL + "/userPaymentCart"))
+        .perform(get(ENTITY_API_URL_USER_PAYMENTCART))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.id").value(paymentCart.getId()))
@@ -401,5 +396,46 @@ class PaymentCartResourceIT implements AddVat {
     assertThat(testCart.getAmountOfOrderGross()).isEqualTo(
         DEFAULT_AMOUNT_OF_CART_GROSS.add(defaultPaymentPriceGross));
     assertThat(testCart.getPaymentCart().getId()).isEqualTo(paymentCart.getId());
+  }
+
+  @Test
+  @Transactional
+  void putNewPaymentCartByAnyoneShouldThrowStatusUnauthorized() throws Exception {
+    PaymentCart updatedPaymentCart
+        = paymentCartRepository.findById(paymentCart.getId()).get();
+    PaymentCartDTO paymentCartDto = paymentCartMapper.toDto(updatedPaymentCart);
+    paymentCartDto.setName(DEFAULT_Payment_NAME);
+    paymentCartDto.setPriceNet(null);
+    paymentCartDto.setVat(null);
+    paymentCartDto.setPriceGross(null);
+
+    restPaymentCartMockMvc.perform(put(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(paymentCartDto)))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  void putNonExistingPaymentName() throws Exception {
+    int databaseSizeBeforeUpdate = paymentCartRepository.findAll().size();
+    PaymentCart updatedPaymentCart
+        = paymentCartRepository.findById(paymentCart.getId()).get();
+    PaymentCartDTO paymentCartDto = paymentCartMapper.toDto(updatedPaymentCart);
+    paymentCartDto.setName(DEFAULT_NAME);
+    paymentCartDto.setPriceNet(null);
+    paymentCartDto.setVat(null);
+    paymentCartDto.setPriceGross(null);
+
+    // If the entity doesn't have an ID, it will throw BadRequestAlertException
+    restPaymentCartMockMvc.perform(put(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(paymentCartDto)))
+        .andExpect(status().isInternalServerError());
+
+    // Validate the PaymentCart in the database
+    List<PaymentCart> paymentCartList = paymentCartRepository.findAll();
+    assertThat(paymentCartList).hasSize(databaseSizeBeforeUpdate);
   }
 }

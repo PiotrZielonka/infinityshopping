@@ -3,8 +3,8 @@
     "paymentCart": {
       "home": {
         "title": "Kind of payment and shipment",
-        "createOrEditLabel": "Change kind of payment and shipment",
-        "notFound": "No kind of payments and shipments found"
+        "editLabel": "Change kind of payment and shipment",
+        "notFound": "No kind of payment and shipment found"
       },
       "updated": "A Kind of payment and shipment was updated",
       "kindOfPaymentAndShipment": "Kind of payment and shipment"

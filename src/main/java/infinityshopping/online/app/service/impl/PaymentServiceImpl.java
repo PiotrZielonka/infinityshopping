@@ -44,11 +44,6 @@ public class PaymentServiceImpl implements PaymentService, AddVat {
   }
 
   @Override
-  public BigDecimal addVat(BigDecimal priceNet, BigDecimal vat) {
-    return priceNet.add(priceNet.multiply(vat.movePointLeft(2)));
-  }
-
-  @Override
   @Transactional(readOnly = true)
   public List<PaymentDTO> findAll() {
     log.debug("Request to get all Payments");
