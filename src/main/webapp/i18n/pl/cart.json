@@ -7,11 +7,11 @@
       },
       "id": "ID",
       "amountOfCartNet": "Amount Of Cart Net",
-      "amountOfCartGross": "Amount Of Cart Gross",
+      "amountOfCartGross": "Wartość koszyka brutto:",
       "amountOfShipmentNet": "Amount Of Shipment Net",
-      "amountOfShipmentGross": "Amount Of Shipment Gross",
+      "amountOfShipmentGross": "Cena wysyłki brutto:",
       "amountOfOrderNet": "Amount Of Order Net",
-      "amountOfOrderGross": "Amount Of Order Gross",
+      "amountOfOrderGross": "Łączna wartość zamówienia brutto:",
       "user": "User"
     }
   }
