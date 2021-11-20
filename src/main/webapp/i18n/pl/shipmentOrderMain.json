@@ -1,0 +1,21 @@
+{
+  "infinityshoppingApp": {
+    "shipmentOrderMain": {
+      "home": {
+        "title": "Adres wysyłki",
+        "editLabel": "Edytuj adres wysyłki złożonego zamówienia",
+        "notFound": "Nie znaleziona żadnego adresu wysyłki złożonego zamówienia"
+      },
+      "updated": "Adres wysyłki złożonego zamówienia został zaktualizowany",
+      "firstName": "Imię",
+      "lastName": "Nazwisko",
+      "street": "Ulica",
+      "postalCode": "Kod pocztowy",
+      "city": "Miasto",
+      "country": "Państwo",
+      "phoneToTheReceiver": "Telefon do odbierającego",
+      "firm": "Firma (Nie wymagane)",
+      "taxNumber": "Numer NIP (Nie wymagane)"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "infinityshoppingApp": {
+    "shipmentOrderMain": {
+      "home": {
+        "title": "Address of shipment",
+        "editLabel": "Edit address of shipment of the placed order",
+        "notFound": "No address of shipment of the placed order found"
+      },
+      "updated": "Address of shipment of the placed order was updated",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "street": "Street",
+      "postalCode": "Postal Code",
+      "city": "City",
+      "country": "Country",
+      "phoneToTheReceiver": "Phone To The Receiver",
+      "firm": "Firm (Not required)",
+      "taxNumber": "Tax Number (Not required)"
+    }
+  }
+}
