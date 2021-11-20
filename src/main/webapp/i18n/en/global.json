@@ -13,6 +13,10 @@
         "paymentCart": "Kind of payment",
         "shipmentCart": "Address of shipment",
         "productInCart": "Cart",
+        "orderMain": "Order Main",
+        "paymentOrderMain": "Payment Order Main",
+        "productInOrderMain": "Product In Order Main",
+        "shipmentOrderMain": "Shipment Order Main",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {
@@ -22,7 +26,9 @@
         "sessions": "Sessions",
         "login": "Sign in",
         "logout": "Sign out",
-        "register": "Register"
+        "register": "Register",
+        "myAddressOfShipment": "My address of shipment",        
+        "myOrders": "My orders" 
       },
       "admin": {
         "main": "Administration",
@@ -35,7 +41,8 @@
         "apidocs": "API",
         "database": "Database",
         "productManagement": "Product management",
-        "paymentManagement": "Payment management",
+        "paymentManagement": "Payment and shipment management",
+        "orderMainManagement": "Order management",
         "jhipster-needle-menu-add-admin-element": "JHipster will add additional menu entries here (do not translate!)"
       },
       "language": "Language"

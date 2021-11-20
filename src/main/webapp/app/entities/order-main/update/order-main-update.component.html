@@ -1,0 +1,139 @@
+<!--
+
+ Don't delete this comment here after update shipmentCart or payment cart does not have alert response because when it is
+ after created order there does not have alert response in product in cart and it must be alert
+ The order has been accepted for implementation after created order. There alert is in order-main-update-component
+ but Angular quick return to product in order cart
+
+<jhi-alert-error></jhi-alert-error>
+
+<jhi-alert></jhi-alert>
+
+-->
+
+<div class="container">
+  <div class="row">
+    <div class="col text-center">
+      <div class="card mb-3" style="max-width: 24rem;">
+        <h3 class="card-header lowercase"><span 
+            jhiTranslate="infinityshoppingApp.orderMain.customerData">Customer data</span>
+        </h3>
+        <div class="card-body">
+          <div>
+            <p><span *ngIf="currentAccount">{{ currentAccount.firstName }} {{ currentAccount.lastName }}</span></p>
+            <p><span *ngIf="currentAccount">{{ currentAccount.email }}</span></p>
+          </div>
+          <div class="row justify-content-center">
+            <button type="button" [routerLink]="['/account/settings']" class="btn btn-primary">
+              <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span
+                jhiTranslate="infinityshoppingApp.orderMain.editCustomerData">Edit customer data</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3" style="max-width: 24rem;">
+        <h3 class="card-header">
+          <span class="lowercase" jhiTranslate="infinityshoppingApp.paymentCart.home.title">Kind of payment and s
+          </span>
+        </h3>
+        <div class="card-body" *ngIf="paymentCart">
+          <p>{{ paymentCart.name }} +{{ paymentCart.priceGross }}$</p>
+          <div class="row justify-content-center">
+            <button type="button" [routerLink]="['/payment-cart', paymentCart.id, 'edit']" class="btn btn-primary">
+              <fa-icon icon="pencil-alt"></fa-icon>
+              <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card mb-3 text-center" style="max-width: 24rem;">
+          <h3 class="card-header"><span class="lowercase" jhiTranslate="infinityshoppingApp.shipmentCart.home.title">Address of shipment</span>
+          </h3>
+          <div class="card-body" *ngIf = "shipmentCart">
+              <p><span>{{ shipmentCart.firstName }}</span>
+                  <span>{{ shipmentCart.lastName }}</span>
+              </p>
+              <p><span>{{ shipmentCart.street }}</span></p>
+              <p><span>{{ shipmentCart.postalCode }}</span> <span>{{ shipmentCart.city }}</span></p>
+              <p><span>{{ shipmentCart.country }}</span></p>
+              <p><span>{{ shipmentCart.phoneToTheReceiver }}</span></p>
+              <p><span>{{ shipmentCart.firm }}</span></p>
+              <p><span>{{ shipmentCart.taxNumber }}</span></p>
+              <div class="row justify-content-center">
+                  <button type="button" [routerLink]="['/shipment-cart', shipmentCart.id, 'edit']"
+                      class="btn btn-primary">
+                      <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span
+                          jhiTranslate="infinityshoppingApp.shipmentCart.editAddressOfShipment">Edit</span>
+                  </button>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="positionOrderMainUpdateAmount">
+  <div class="table-responsive" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+          <tbody>
+              <tr *ngIf = "cart">
+                  <td class="orderMainUpdateTableAmount"> <span  jhiTranslate="infinityshoppingApp.cart.amountOfCartGross">Amount Of Cart</span> <span class="orderMainUpdateTableAmountValue"> {{ cart.amountOfCartGross }}$ </span></td>
+                  <td class="orderMainUpdateTableAmount"> <span jhiTranslate="infinityshoppingApp.cart.amountOfShipmentGross">Amount Of Shipment</span> <span class="orderMainUpdateTableAmountValue"> {{ cart.amountOfShipmentGross }}$ </span></td>
+                  <td class="orderMainUpdateTableAmount"> <span jhiTranslate="infinityshoppingApp.cart.amountOfOrderGross">Amount Of Order</span> <span class="orderMainUpdateTableAmountValue"> {{ cart.amountOfOrderGross }}$ </span></td>
+              </tr>
+          </tbody>
+      </table>
+  </div>
+</div>
+
+<div>
+  <div>
+      <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+          <div>
+              <jhi-alert-error></jhi-alert-error>
+
+              <div class="form-group" [hidden]="!editForm.get('id')!.value">
+                  <input type="hidden" class="form-control" id="id" name="id" formControlName="id" readonly />
+              </div>
+
+              <div class="form-group">
+                  <input type="hidden" class="form-control" name="buyerLogin" id="field_buyerLogin"
+                      formControlName="buyerLogin" readonly />
+              </div>
+
+              <div class="form-group">
+                  <input type="hidden" class="form-control" name="buyerFirstName" id="field_buyerFirstName"
+                      formControlName="buyerFirstName" readonly />
+              </div>
+
+              <div class="form-group">
+                  <input type="hidden" class="form-control" name="buyerLastName" id="field_buyerLastName"
+                      formControlName="buyerLastName" readonly />
+              </div>
+
+              <div class="form-group">
+                  <input type="hidden" class="form-control" name="buyerEmail" id="field_buyerEmail"
+                      formControlName="buyerEmail" readonly />
+              </div>
+
+              <div class="form-group">
+                  <input type="hidden" class="form-control" name="buyerPhone" id="field_buyerPhone"
+                      formControlName="buyerPhone" readonly />
+              </div>
+          </div>
+
+          <div class="float-right">
+              <button type="button" id="cancel-save" class="btn btn-secondary" (click)="previousState()">
+                  <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+              </button>
+
+              <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                  <fa-icon icon="check"></fa-icon>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span jhiTranslate="infinityshoppingApp.orderMain.confirmAndOrder">I confirm and I submit an order</span>
+              </button>
+          </div>
+      </form>
+  </div>
+</div>

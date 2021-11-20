@@ -1,0 +1,177 @@
+<jhi-alert-error></jhi-alert-error>
+
+<jhi-alert></jhi-alert>
+
+<div>
+  <div class="row">
+    <div class="col-md-auto">
+      <div *ngIf="orderMain">
+        <h2><span class="lowercase" jhiTranslate="infinityshoppingApp.orderMain.orderNumber">Order number</span>
+          {{ orderMain.id }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="orderMain">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.orderNumber">Order number</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.buyerLogin">Login</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.buyerFirstName">First Name</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.buyerLastName">Last Name</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.buyerEmail">E-mail</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.buyerPhone">Phone</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.amountOfCartGross">Price of ordered
+              products</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.amountOfShipmentGross">Price of
+              shipment</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.amountOfOrderGross">Toral order
+              price</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.orderMainStatus">Order Main Status</span>
+          </th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.createTime">Create Time</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.updateTime">Update Time</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="orderMain">
+          <td>{{ orderMain.id }}</td>
+          <td>{{ orderMain.buyerLogin }}</td>
+          <td>{{ orderMain.buyerFirstName }}</td>
+          <td>{{ orderMain.buyerLastName }}</td>
+          <td>{{ orderMain.buyerEmail }}</td>
+          <td>{{ orderMain.buyerPhone }}</td>
+          <td>{{ orderMain.amountOfCartGross }}</td>
+          <td>{{ orderMain.amountOfShipmentGross }}</td>
+          <td>{{ orderMain.amountOfOrderGross }}</td>
+          <td jhiTranslate="{{ 'infinityshoppingApp.OrderMainStatusEnum.' + orderMain.orderMainStatus }}">
+            {{ orderMain.orderMainStatus }}
+          </td>
+          <td>{{ orderMain.createTime | formatMediumDatetime }}</td>
+          <td>{{ orderMain.updateTime | formatMediumDatetime }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div>
+  <h2 id="page-heading">
+    <span class="lowercase" jhiTranslate="infinityshoppingApp.productInOrderMain.home.title">Ordered products</span>
+  </h2>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="productInOrderMains?.length === 0">
+    <span jhiTranslate="infinityshoppingApp.productInOrderMain.home.notFound">No productInOrderMains found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="productInOrderMains && productInOrderMains.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr>
+          <th></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.productInOrderMain.name">Name</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.productInOrderMain.quantity">Quantity</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.productInOrderMain.priceGross">Price Gross</span>
+          </th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.productInOrderMain.totalPriceGross">Total Price
+              Gross</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.productInOrderMain.image">Image</span></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let productInOrderMain of productInOrderMains ;trackBy: trackId; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ productInOrderMain.name }}</td>
+          <td>{{ productInOrderMain.quantity }}</td>
+          <td>{{ productInOrderMain.priceGross }}</td>
+          <td>{{ productInOrderMain.totalPriceGross }}</td>
+          <td>
+            <a *ngIf="productInOrderMain.image"
+              (click)="openFile(productInOrderMain.image, productInOrderMain.imageContentType)">
+              <img [src]="'data:' + productInOrderMain.imageContentType + ';base64,' + productInOrderMain.image"
+                style="max-height: 30px" alt="productInOrderMain image" />
+            </a>
+            <span *ngIf="productInOrderMain.image">{{ productInOrderMain.imageContentType }}, {{
+              byteSize(productInOrderMain.image) }}</span>
+          </td>
+          <td class="text-right">
+            <div class="btn-group">
+              <button type="submit" [routerLink]="['/product-in-order-main', productInOrderMain.id, 'view']"
+                class="btn btn-info btn-sm">
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </button>
+
+              <button type="submit" [routerLink]="['/product-in-order-main', productInOrderMain.id, 'edit']"
+                class="btn btn-primary btn-sm" data-cy="entityEditButton" *jhiHasAnyAuthority="'ROLE_ADMIN'">
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </button>
+              <button type="submit" (click)="deleteProductInOrderMain(productInOrderMain)" class="btn btn-danger btn-sm"
+                data-cy="entityDeleteButton" *jhiHasAnyAuthority="'ROLE_ADMIN'">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="container" class="float-right">
+  <div class="row">
+    <div class="col">
+      <div class="card border-success mb-3 text-center" style="max-width: 24rem;">
+        <h3 class="card-header lowercase">
+          <span jhiTranslate="infinityshoppingApp.paymentOrderMain.home.title">
+            Kind of payment and shipment
+          </span>
+        </h3>
+        <div class="card-body" *ngIf="paymentOrderMain">
+          <p>{{ paymentOrderMain.name }} +{{ paymentOrderMain.priceGross }}$</p>
+          <div class="row justify-content-center">
+            <button type="button" [routerLink]="['/payment-order-main', paymentOrderMain.id, 'edit']"
+              class="btn btn-primary" *jhiHasAnyAuthority="'ROLE_ADMIN'">
+              <fa-icon icon="pencil-alt"></fa-icon>
+              <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-success mb-3 text-center" style="max-width: 24rem;">
+        <h3 class="card-header lowercase">
+          <span jhiTranslate="infinityshoppingApp.shipmentOrderMain.home.title">Address of shipment</span>
+        </h3>
+        <div class="card-body" *ngIf="shipmentOrderMain">
+          <p><span>{{ shipmentOrderMain.firstName }}</span>
+            <span>{{ shipmentOrderMain.lastName }}</span>
+          </p>
+          <p><span>{{ shipmentOrderMain.street }}</span></p>
+          <p><span>{{ shipmentOrderMain.postalCode }}</span> <span>{{ shipmentOrderMain.city }}</span></p>
+          <p><span>{{ shipmentOrderMain.country }}</span></p>
+          <p><span>{{ shipmentOrderMain.phoneToTheReceiver }}</span></p>
+          <p><span>{{ shipmentOrderMain.firm }}</span></p>
+          <p><span>{{ shipmentOrderMain.taxNumber }}</span></p>
+          <div class="row justify-content-center">
+            <button type="button" [routerLink]="['/shipment-order-main', shipmentOrderMain.id, 'edit']"
+              class="btn btn-primary" *jhiHasAnyAuthority="'ROLE_ADMIN'">
+              <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="float-right">
+      <button type="submit" (click)="previousState()" class="btn btn-info">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+    </div>
+  </div>
+</div>

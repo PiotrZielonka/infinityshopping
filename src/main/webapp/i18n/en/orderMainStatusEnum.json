@@ -1,0 +1,12 @@
+{
+  "infinityshoppingApp": {
+    "OrderMainStatusEnum": {
+      "null": "",
+      "WaitingForBankTransfer": "Waiting for bank transfer",
+      "PreparationForShipping": "Preparation for shipping",
+      "Sent": "Sent",
+      "Delivered": "Delivered",
+      "Canceled": "Canceled"
+    }
+  }
+}

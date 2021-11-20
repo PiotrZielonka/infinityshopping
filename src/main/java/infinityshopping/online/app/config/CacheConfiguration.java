@@ -54,6 +54,11 @@ public class CacheConfiguration {
             createCache(cm, infinityshopping.online.app.domain.PaymentCart.class.getName());
             createCache(cm, infinityshopping.online.app.domain.ShipmentCart.class.getName());
             createCache(cm, infinityshopping.online.app.domain.ProductInCart.class.getName());
+            createCache(cm, infinityshopping.online.app.domain.OrderMain.class.getName());
+            createCache(cm, infinityshopping.online.app.domain.OrderMain.class.getName() + ".productInOrderMains");
+            createCache(cm, infinityshopping.online.app.domain.PaymentOrderMain.class.getName());
+            createCache(cm, infinityshopping.online.app.domain.ProductInOrderMain.class.getName());
+            createCache(cm, infinityshopping.online.app.domain.ShipmentOrderMain.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

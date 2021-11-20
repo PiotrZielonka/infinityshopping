@@ -1,0 +1,352 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+    <changeSet author="Piotrek (generated)" id="1635283692324-1">
+        <createSequence incrementBy="50" sequenceName="sequence_generator" startValue="1"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-2">
+        <createTable tableName="cart">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="cartPK"/>
+            </column>
+            <column name="amount_of_cart_gross" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount_of_cart_net" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount_of_order_gross" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount_of_order_net" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount_of_shipment_gross" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount_of_shipment_net" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-3">
+        <createTable tableName="jhi_authority">
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="jhi_authorityPK"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-4">
+        <createTable tableName="jhi_user">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="jhi_userPK"/>
+            </column>
+            <column name="created_by" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="last_modified_by" type="VARCHAR(50)"/>
+            <column name="last_modified_date" type="TIMESTAMP"/>
+            <column name="activated" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="activation_key" type="VARCHAR(20)"/>
+            <column name="email" type="VARCHAR(254)"/>
+            <column name="first_name" type="VARCHAR(50)"/>
+            <column name="image_url" type="VARCHAR(256)"/>
+            <column name="lang_key" type="VARCHAR(10)"/>
+            <column name="last_name" type="VARCHAR(50)"/>
+            <column name="login" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password_hash" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reset_date" type="TIMESTAMP"/>
+            <column name="reset_key" type="VARCHAR(20)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-5">
+        <createTable tableName="jhi_user_authority">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="authority_name" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-6">
+        <createTable tableName="order_main">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="order_mainPK"/>
+            </column>
+            <column name="amount_of_cart_gross" type="DECIMAL(21, 2)"/>
+            <column name="amount_of_cart_net" type="DECIMAL(21, 2)"/>
+            <column name="amount_of_order_gross" type="DECIMAL(21, 2)"/>
+            <column name="amount_of_order_net" type="DECIMAL(21, 2)"/>
+            <column name="amount_of_shipment_gross" type="DECIMAL(21, 2)"/>
+            <column name="amount_of_shipment_net" type="DECIMAL(21, 2)"/>
+            <column name="buyer_email" type="VARCHAR(255)"/>
+            <column name="buyer_first_name" type="VARCHAR(255)"/>
+            <column name="buyer_last_name" type="VARCHAR(255)"/>
+            <column name="buyer_login" type="VARCHAR(255)"/>
+            <column name="buyer_phone" type="VARCHAR(255)"/>
+            <column name="create_time" type="TIMESTAMP"/>
+            <column name="order_main_status" type="VARCHAR(255)"/>
+            <column name="update_time" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-7">
+        <createTable tableName="payment">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="paymentPK"/>
+            </column>
+            <column name="create_time" type="TIMESTAMP"/>
+            <column name="name" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payment_status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price_gross" type="DECIMAL(21, 2)"/>
+            <column name="price_net" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_time" type="TIMESTAMP"/>
+            <column name="vat" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-8">
+        <createTable tableName="payment_cart">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="payment_cartPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payment_status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price_gross" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price_net" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="vat" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cart_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-9">
+        <createTable tableName="payment_order_main">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="payment_order_mainPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price_gross" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price_net" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="vat" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_main_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-10">
+        <createTable tableName="product">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="productPK"/>
+            </column>
+            <column name="create_time" type="TIMESTAMP"/>
+            <column name="description" type="VARCHAR(2147483647)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image" type="BLOB">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image_content_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(5000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price_gross" type="DECIMAL(21, 2)"/>
+            <column name="price_net" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_category_enum" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="DECIMAL(19, 2)"/>
+            <column name="stock" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_time" type="TIMESTAMP"/>
+            <column name="vat" type="DECIMAL(21, 2)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-11">
+        <createTable tableName="product_in_cart">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="product_in_cartPK"/>
+            </column>
+            <column name="category" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(2147483647)"/>
+            <column name="image" type="BLOB"/>
+            <column name="image_content_type" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="price_gross" type="DECIMAL(21, 2)"/>
+            <column name="price_net" type="DECIMAL(21, 2)"/>
+            <column name="product_id" type="BIGINT"/>
+            <column name="quantity" type="DECIMAL(21, 2)"/>
+            <column name="stock" type="DECIMAL(21, 2)"/>
+            <column name="total_price_gross" type="DECIMAL(21, 2)"/>
+            <column name="total_price_net" type="DECIMAL(21, 2)"/>
+            <column name="vat" type="DECIMAL(21, 2)"/>
+            <column name="cart_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-12">
+        <createTable tableName="product_in_order_main">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="product_in_order_mainPK"/>
+            </column>
+            <column name="category" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(2147483647)"/>
+            <column name="image" type="BLOB"/>
+            <column name="image_content_type" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="price_gross" type="DECIMAL(21, 2)"/>
+            <column name="price_net" type="DECIMAL(21, 2)"/>
+            <column name="product_id" type="BIGINT"/>
+            <column name="quantity" type="DECIMAL(21, 2)"/>
+            <column name="stock" type="DECIMAL(21, 2)"/>
+            <column name="total_price_gross" type="DECIMAL(21, 2)"/>
+            <column name="total_price_net" type="DECIMAL(21, 2)"/>
+            <column name="vat" type="DECIMAL(21, 2)"/>
+            <column name="order_main_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-13">
+        <createTable tableName="shipment_cart">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="shipment_cartPK"/>
+            </column>
+            <column name="city" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="country" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firm" type="VARCHAR(10000)"/>
+            <column name="first_name" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone_to_the_receiver" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="postal_code" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="street" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tax_number" type="VARCHAR(50)"/>
+            <column name="cart_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-14">
+        <createTable tableName="shipment_order_main">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="shipment_order_mainPK"/>
+            </column>
+            <column name="city" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="country" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firm" type="VARCHAR(10000)"/>
+            <column name="first_name" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone_to_the_receiver" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="postal_code" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="street" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tax_number" type="VARCHAR(50)"/>
+            <column name="order_main_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-15">
+        <addUniqueConstraint columnNames="user_id" constraintName="UC_CARTUSER_ID_COL" tableName="cart"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-16">
+        <addUniqueConstraint columnNames="email" constraintName="UC_JHI_USEREMAIL_COL" tableName="jhi_user"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-17">
+        <addUniqueConstraint columnNames="login" constraintName="UC_JHI_USERLOGIN_COL" tableName="jhi_user"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-18">
+        <addUniqueConstraint columnNames="cart_id" constraintName="UC_PAYMENT_CARTCART_ID_COL" tableName="payment_cart"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-19">
+        <addUniqueConstraint columnNames="order_main_id" constraintName="UC_PAYMENT_ORDER_MAINORDER_MAIN_ID_COL" tableName="payment_order_main"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-20">
+        <addUniqueConstraint columnNames="cart_id" constraintName="UC_SHIPMENT_CARTCART_ID_COL" tableName="shipment_cart"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-21">
+        <addUniqueConstraint columnNames="order_main_id" constraintName="UC_SHIPMENT_ORDER_MAINORDER_MAIN_ID_COL" tableName="shipment_order_main"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-22">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="jhi_user_authority" constraintName="FK290okww5jujghp4el5i7mgwu0" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="jhi_user" validate="true"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-23">
+        <addForeignKeyConstraint baseColumnNames="cart_id" baseTableName="payment_cart" constraintName="FK48889ig4wb5m2r77q3qtbsyav" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="cart" validate="true"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-24">
+        <addForeignKeyConstraint baseColumnNames="authority_name" baseTableName="jhi_user_authority" constraintName="FK4psxl0jtx6nr7rhqbynr6itoc" deferrable="false" initiallyDeferred="false" referencedColumnNames="name" referencedTableName="jhi_authority" validate="true"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-25">
+        <addForeignKeyConstraint baseColumnNames="order_main_id" baseTableName="product_in_order_main" constraintName="FKdrqii4vhp2yh3hyw0xxq9qy0e" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="order_main" validate="true"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-26">
+        <addForeignKeyConstraint baseColumnNames="cart_id" baseTableName="shipment_cart" constraintName="FKhp6t02niol0dsd3cj0grbgq0n" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="cart" validate="true"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-27">
+        <addForeignKeyConstraint baseColumnNames="order_main_id" baseTableName="shipment_order_main" constraintName="FKiyebgxyhu25pgr0ja0jimvmd9" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="order_main" validate="true"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-28">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="cart" constraintName="FKpcu11tm66ignsp02ypnr4o43o" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="jhi_user" validate="true"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-29">
+        <addForeignKeyConstraint baseColumnNames="cart_id" baseTableName="product_in_cart" constraintName="FKq5fiqoevrmlirjqjxs0kvlnqq" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="cart" validate="true"/>
+    </changeSet>
+    <changeSet author="Piotrek (generated)" id="1635283692324-30">
+        <addForeignKeyConstraint baseColumnNames="order_main_id" baseTableName="payment_order_main" constraintName="FKrf5mr4y1vxa56w6vtmtjaasvs" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="order_main" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

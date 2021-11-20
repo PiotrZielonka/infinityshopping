@@ -1,0 +1,12 @@
+{
+  "infinityshoppingApp": {
+    "OrderMainStatusEnum": {
+      "null": "",
+      "WaitingForBankTransfer": "Oczekiwanie na przelew bankowy",
+      "PreparationForShipping": "Przygotowanie do wysyłki",
+      "Sent": "Wysłano",
+      "Delivered": "Dostarczono",
+      "Canceled": "Zamknięte"
+    }
+  }
+}

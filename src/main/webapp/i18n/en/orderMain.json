@@ -1,0 +1,41 @@
+{
+  "infinityshoppingApp": {
+    "orderMain": {
+      "home": {
+        "title": "My orders",
+        "titleOrderManagement": "Order management",
+        "titleSubmitYourOrder": "Submit your order",
+        "refreshListLabel": "Refresh list",
+        "changeStatus": "Change status",
+        "EditOrderStatus": "Change Order Status",
+        "notFound": "You have not placed any orders yet",
+        "deliveryAndPayment": "Delivery and payment"
+      },
+      "created": "The order has been accepted for implementation",
+      "updated": "The status of order number {{ param }} has been changed",
+      "deleted": "The order number {{ param }} has been deleted",
+      "delete": {
+        "question": "Are you sure you want to delete number of order {{ id }} ? This order and all products from this order will be delete forever. Instead of deleting this order, you can also set the order status canceled?"
+      },
+      "editCustomerData": "Edit customer data",
+      "orderNumber": "Order number",
+      "buyerLogin": "Login",
+      "buyerFirstName": "First Name",
+      "buyerLastName": "Last Name",
+      "buyerEmail": "E-mail",
+      "buyerPhone": "Phone",
+      "amountOfCartNet": "Amount Of Cart Net",
+      "amountOfCartGross": "Price of ordered products",
+      "amountOfShipmentNet": "Amount Of Shipment Net",
+      "amountOfShipmentGross": "Price of shipment",
+      "amountOfOrderNet": "Amount Of Order Net",
+      "amountOfOrderGross": "Total order price",
+      "orderMainStatus": "Order status",
+      "createTime": "Created",
+      "updateTime": "Updated",
+      "productInOrderMain": "Product In Order Main",
+      "customerData": "Customer data",
+      "confirmAndOrder": "I confirm and I submit an order"
+    }
+  }
+}

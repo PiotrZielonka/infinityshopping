@@ -1,4 +1,5 @@
 import {
+  faAddressCard,
   faArrowLeft,
   faAsterisk,
   faBan,
@@ -16,6 +17,7 @@ import {
   faHome,
   faList,
   faLock,
+  faPaperclip,
   faPencilAlt,
   faPlus,
   faRoad,
@@ -43,6 +45,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 export const fontAwesomeIcons = [
+  faAddressCard,
   faArrowLeft,
   faAsterisk,
   faBan,
@@ -60,6 +63,7 @@ export const fontAwesomeIcons = [
   faHome,
   faList,
   faLock,
+  faPaperclip,
   faPencilAlt,
   faPlus,
   faRoad,

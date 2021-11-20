@@ -1,0 +1,41 @@
+{
+  "infinityshoppingApp": {
+    "orderMain": {
+      "home": {
+        "title": "Moje zamówienia",
+        "titleOrderManagement": "Zarządzaj zamówieniami",
+        "titleSubmitYourOrder": "Złóż zamówienie",
+        "refreshListLabel": "Odśwież liste",
+        "changeStatus": "Zmień status",
+        "EditOrderStatus": "Zmień status zamówienia",
+        "notFound": "Nie złożyłeś jeszcze żadnych zamówień",
+        "deliveryAndPayment": "Dostawa i płatność"
+      },
+      "created": "Zamówienie zostało przyjęte do realizacji",
+      "updated": "Status zamówienia numer {{ param }} został zmieniony",
+      "deleted": "Usunięto zamówienie numer {{ param }}",
+      "delete": {
+        "question": "Czy na pewno chcesz usunąć zamówienie numer {{ id }} ? To zamówienie i wszystkie produkty z tego zamówienia zostaną usunięte na zawsze. Zamiast usuwać to zamówienie możesz ustawić również status zamówienia na canceled"
+      },
+      "editCustomerData": "Edytuj dane zamawiającego",
+      "orderNumber": "Zamówienie numer",
+      "buyerLogin": "Login",
+      "buyerFirstName": "Imię",
+      "buyerLastName": "Nazwisko",
+      "buyerEmail": "E-mail",
+      "buyerPhone": "Telefon",
+      "amountOfCartNet": "Cena zamówionych produktów netto",
+      "amountOfCartGross": "Cena zamówionych produktów",
+      "amountOfShipmentNet": "Cena wysyłki netto",
+      "amountOfShipmentGross": "Cena wysyłki",
+      "amountOfOrderNet": "Cena zamówienia razem netto",
+      "amountOfOrderGross": "Cena zamówienia razem",
+      "orderMainStatus": "Status zamówienia",
+      "createTime": "Utworzono",
+      "updateTime": "Aktualizacja",
+      "productInOrderMain": "Product In Order Main",
+      "customerData": "Dane zamawiającego",
+      "confirmAndOrder": "Potwierdzam i składam zamówienie"
+    }
+  }
+}

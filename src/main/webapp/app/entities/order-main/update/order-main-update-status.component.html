@@ -1,0 +1,34 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+      <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+          <h2 class="lowercase" id="jhi-order-main-heading" jhiTranslate="infinityshoppingApp.orderMain.home.EditOrderStatus">Change Order Status</h2>
+
+          <div>
+              <jhi-alert-error></jhi-alert-error>
+
+              <div class="form-group">
+                  <label class="form-control-label" jhiTranslate="infinityshoppingApp.orderMain.orderMainStatus"
+                      for="field_orderMainStatus">Order Status</label>
+                  <select class="form-control" name="orderMainStatus" formControlName="orderMainStatus"
+                      id="field_orderMainStatus">
+                      <option value="WaitingForBankTransfer">{{ 'infinityshoppingApp.OrderMainStatusEnum.WaitingForBankTransfer' | translate }}</option>
+                      <option value="PreparationForShipping">{{ 'infinityshoppingApp.OrderMainStatusEnum.PreparationForShipping' | translate }}</option>
+                      <option value="Sent">{{ 'infinityshoppingApp.OrderMainStatusEnum.Sent' | translate }}</option>
+                      <option value="Delivered">{{ 'infinityshoppingApp.OrderMainStatusEnum.Delivered' | translate }}</option>
+                      <option value="Canceled">{{ 'infinityshoppingApp.OrderMainStatusEnum.Canceled' | translate }}</option>
+                  </select>
+              </div>
+          </div>
+
+          <div>
+              <button type="button" id="cancel-save" class="btn btn-secondary" (click)="previousState()">
+                  <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+              </button>
+
+              <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                  <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+              </button>
+          </div>
+      </form>
+  </div>
+</div>

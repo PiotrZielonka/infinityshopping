@@ -1,0 +1,76 @@
+<div>
+  <h2 class="lowercase" id="page-heading" data-cy="OrderMainHeading">
+    <span jhiTranslate="infinityshoppingApp.orderMain.home.title">My orders</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info mr-2" (click)="loadAll()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span jhiTranslate="infinityshoppingApp.orderMain.home.refreshListLabel">Refresh List</span>
+      </button>
+
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="orderMains?.length === 0">
+    <span jhiTranslate="infinityshoppingApp.orderMain.home.notFound">No orderMains found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="orderMains && orderMains.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.orderNumber">Order number</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.buyerLogin">Login</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.buyerFirstName">First Name</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.buyerLastName">Last Name</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.buyerEmail">Email</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.buyerPhone">Phone</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.amountOfCartGross">Price of ordered products</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.amountOfShipmentGross">Price of shipment</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.amountOfOrderGross">Total of order</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.orderMainStatus">Order Main Status</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.createTime">Create Time</span></th>
+          <th scope="col"><span jhiTranslate="infinityshoppingApp.orderMain.updateTime">Update Time</span></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let orderMain of orderMains; trackBy: trackId" data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/order-main', orderMain.id, 'view']">{{ orderMain.id }}</a>
+          </td>
+          <td>{{ orderMain.buyerLogin }}</td>
+          <td>{{ orderMain.buyerFirstName }}</td>
+          <td>{{ orderMain.buyerLastName }}</td>
+          <td>{{ orderMain.buyerEmail }}</td>
+          <td>{{ orderMain.buyerPhone }}</td>
+          <td>{{ orderMain.amountOfCartGross }}</td>
+          <td>{{ orderMain.amountOfShipmentGross }}</td>
+          <td>{{ orderMain.amountOfOrderGross }}</td>
+          <td jhiTranslate="{{ 'infinityshoppingApp.OrderMainStatusEnum.' + orderMain.orderMainStatus }}">
+            {{ orderMain.orderMainStatus }}
+          </td>
+          <td>{{ orderMain.createTime | formatMediumDatetime }}</td>
+          <td>{{ orderMain.updateTime | formatMediumDatetime }}</td>
+          <td class="text-right">
+            <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/order-main', orderMain.id, 'view']"
+                class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

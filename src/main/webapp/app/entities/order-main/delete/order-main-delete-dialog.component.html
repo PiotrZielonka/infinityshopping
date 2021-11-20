@@ -1,0 +1,29 @@
+<form *ngIf="orderMain" name="deleteForm" (ngSubmit)="confirmDelete(orderMain.id!)">
+  <div class="modal-header">
+    <h4 class="modal-title" data-cy="orderMainDeleteDialogHeading" jhiTranslate="entity.delete.title">Confirm delete operation</h4>
+
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="cancel()">&times;</button>
+  </div>
+
+  <div class="modal-body">
+    <jhi-alert-error></jhi-alert-error>
+
+    <p
+      id="jhi-delete-orderMain-heading"
+      jhiTranslate="infinityshoppingApp.orderMain.delete.question"
+      [translateValues]="{ id: orderMain.id }"
+    >
+    Are you sure you want to delete number of order id ? This order and all products from this order will be delete forever. Instead of deleting this order, you can also set the order status canceled?
+    </p>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancel()">
+      <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+    </button>
+
+    <button id="jhi-confirm-delete-orderMain" data-cy="entityConfirmDeleteButton" type="submit" class="btn btn-danger">
+      <fa-icon icon="times"></fa-icon>&nbsp;<span jhiTranslate="entity.action.delete">Delete</span>
+    </button>
+  </div>
+</form>

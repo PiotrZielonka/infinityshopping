@@ -13,6 +13,10 @@
         "paymentCart": "Sposób wysyłki",
         "shipmentCart": "Adres wysyłki",
         "productInCart": "Koszyk",
+        "orderMain": "Order Main",
+        "paymentOrderMain": "Payment Order Main",
+        "productInOrderMain": "Product In Order Main",
+        "shipmentOrderMain": "Shipment Order Main",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {
@@ -22,7 +26,9 @@
         "sessions": "Sesje",
         "login": "Autoryzacja",
         "logout": "Wyloguj",
-        "register": "Zarejestruj się"
+        "register": "Zarejestruj się",
+        "myAddressOfShipment": "Mój adres wysyłki",
+        "myOrders": "Moje zamówienia"        
       },
       "admin": {
         "main": "Administracja",
@@ -35,7 +41,8 @@
         "apidocs": "API",
         "database": "Baza danych",
         "productManagement": "Zarządzaj produktem",
-        "paymentManagement": "Zarządzaj płatnościami",
+        "paymentManagement": "Zarządzaj płatnościami i wysyłką",
+        "orderMainManagement": "Zarządzaj zamówieniami",
         "jhipster-needle-menu-add-admin-element": "JHipster will add additional menu entries here (do not translate!)"
       },
       "language": "Język"

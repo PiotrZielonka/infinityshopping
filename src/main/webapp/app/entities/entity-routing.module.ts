@@ -29,6 +29,26 @@ import { RouterModule } from '@angular/router';
         data: { pageTitle: 'infinityshoppingApp.productInCart.home.title' },
         loadChildren: () => import('./product-in-cart/product-in-cart.module').then(m => m.ProductInCartModule),
       },
+      {
+        path: 'order-main',
+        data: { pageTitle: 'infinityshoppingApp.orderMain.home.title' },
+        loadChildren: () => import('./order-main/order-main.module').then(m => m.OrderMainModule),
+      },
+      {
+        path: 'payment-order-main',
+        data: { pageTitle: 'infinityshoppingApp.paymentOrderMain.home.title' },
+        loadChildren: () => import('./payment-order-main/payment-order-main.module').then(m => m.PaymentOrderMainModule),
+      },
+      {
+        path: 'product-in-order-main',
+        data: { pageTitle: 'infinityshoppingApp.productInOrderMain.home.title' },
+        loadChildren: () => import('./product-in-order-main/product-in-order-main.module').then(m => m.ProductInOrderMainModule),
+      },
+      {
+        path: 'shipment-order-main',
+        data: { pageTitle: 'infinityshoppingApp.shipmentOrderMain.home.title' },
+        loadChildren: () => import('./shipment-order-main/shipment-order-main.module').then(m => m.ShipmentOrderMainModule),
+      },
       /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
     ]),
   ],
