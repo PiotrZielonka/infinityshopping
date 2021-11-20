@@ -1,12 +1,8 @@
 package infinityshopping.online.app.web.rest;
 
-import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.ProductInCartRepository;
 import infinityshopping.online.app.repository.ProductRepository;
-import infinityshopping.online.app.repository.UserRepository;
-import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.ProductInCartService;
-import infinityshopping.online.app.service.UserNotFoundException;
 import infinityshopping.online.app.service.dto.ProductInCartDTO;
 import infinityshopping.online.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -45,19 +41,13 @@ public class ProductInCartResource {
 
   private final ProductInCartRepository productInCartRepository;
 
-  private final UserRepository userRepository;
-
   private final ProductRepository productRepository;
-
-  private User currentLoggedUser;
 
   public ProductInCartResource(ProductInCartService productInCartService,
       ProductInCartRepository productInCartRepository,
-      UserRepository userRepository,
       ProductRepository productRepository) {
     this.productInCartService = productInCartService;
     this.productInCartRepository = productInCartRepository;
-    this.userRepository = userRepository;
     this.productRepository = productRepository;
   }
 
@@ -154,14 +144,7 @@ public class ProductInCartResource {
 
   private boolean userOrderedMoreProductQuantityThenIsInTheStock(
       ProductInCartDTO productInCartDto) {
-    return (productInCartDto.getQuantity()
-        .compareTo(productRepository.findById(productInCartDto.getProductId()).get().getStock()) > 0);
-  }
-
-  private User checkIfUserExist() {
-    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UserNotFoundException()))
-        .orElseThrow(() -> new UserNotFoundException());
-    return currentLoggedUser;
+    return (productInCartDto.getQuantity().compareTo(
+        productRepository.findById(productInCartDto.getProductId()).get().getStock()) > 0);
   }
 }

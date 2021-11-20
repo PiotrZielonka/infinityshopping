@@ -9,6 +9,10 @@ export class SearchProductPipe implements PipeTransform {
     if (text == null || text === '') {
       return products;
     }
-    return products.filter(p => p.name!.includes(text));
+    return products.filter(
+      p => 
+      p.name!.includes(text) ||
+      p.id!.toString().includes(text)
+    );
   }
 }

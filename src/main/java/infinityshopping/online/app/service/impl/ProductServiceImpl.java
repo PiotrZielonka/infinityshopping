@@ -49,11 +49,6 @@ public class ProductServiceImpl implements ProductService, AddVat {
   }
 
   @Override
-  public BigDecimal addVat(BigDecimal priceNet, BigDecimal vat) {
-    return priceNet.add(priceNet.multiply(vat.movePointLeft(2)));
-  }
-
-  @Override
   @Transactional(readOnly = true)
   public Page<ProductDTO> findAll(Pageable pageable) {
     log.debug("Request to get all Products");

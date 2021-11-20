@@ -32,8 +32,6 @@ import infinityshopping.online.app.security.AuthoritiesConstants;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.AddVat;
 import infinityshopping.online.app.service.UserNotFoundException;
-import infinityshopping.online.app.service.dto.CartDTO;
-import infinityshopping.online.app.service.dto.PaymentCartDTO;
 import infinityshopping.online.app.service.dto.ProductInCartDTO;
 import infinityshopping.online.app.service.mapper.CartMapper;
 import infinityshopping.online.app.service.mapper.ProductInCartMapper;
@@ -63,8 +61,8 @@ class ProductInCartResourceIT implements AddVat {
   private static Random random = new Random();
   private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
-  private static final String DEFAULT_CATEGORY = "AAAAAAAAAA";
-  private static final String DEFAULT_CATEGORY_2 = "BBBBBBBBB";
+  private static final String DEFAULT_CATEGORY = String.valueOf(ProductCategoryEnum.Vitamins);
+  private static final String DEFAULT_CATEGORY_2 = String.valueOf(ProductCategoryEnum.Minerals);
 
   private static final String DEFAULT_NAME = "AAAAAAAAAA";
   private static final String DEFAULT_NAME_2 = "BBBBBBBBB";
@@ -90,8 +88,8 @@ class ProductInCartResourceIT implements AddVat {
   private final BigDecimal defaultPriceGross
       = addVat(DEFAULT_PRICE_NET, DEFAULT_VAT);
 
-  private static final BigDecimal DEFAULT_PRICE_GROSS_2 =
-      DEFAULT_PRICE_NET_2.add(DEFAULT_PRICE_NET_2.multiply(DEFAULT_VAT_2.movePointLeft(2)));
+  private final BigDecimal defaultPriceGross2
+      =  addVat(DEFAULT_PRICE_NET_2, DEFAULT_VAT_2);
 
   private static final BigDecimal DEFAULT_TOTAL_PRICE_NET
       = DEFAULT_QUANTITY.multiply(DEFAULT_PRICE_NET);
@@ -101,8 +99,8 @@ class ProductInCartResourceIT implements AddVat {
   public final BigDecimal defaultTotalPriceGross
       = DEFAULT_QUANTITY.multiply(defaultPriceGross);
 
-  private static final BigDecimal DEFAULT_TOTAL_PRICE_GROSS_2
-      = DEFAULT_QUANTITY_2.multiply(DEFAULT_PRICE_GROSS_2);
+  private final BigDecimal defaultTotalPriceGross2
+      = DEFAULT_QUANTITY_2.multiply(defaultPriceGross2);
 
   private static final BigDecimal DEFAULT_STOCK
       = new BigDecimal(random.nextInt(1000 - 101) + 101);
@@ -123,9 +121,6 @@ class ProductInCartResourceIT implements AddVat {
 
   private static final Instant DEFAULT_UPDATE_TIME = Instant.ofEpochMilli(0L);
   private static final Instant DEFAULT_UPDATE_TIME2 = Instant.ofEpochMilli(0L);
-
-  private static final String ENTITY_API_URL = "/api/product-in-carts";
-  private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
   private static final ProductCategoryEnum DEFAULT_PRODUCT_CATEGORY_ENUM_Vitamins
       = ProductCategoryEnum.Vitamins;
@@ -163,14 +158,9 @@ class ProductInCartResourceIT implements AddVat {
   private static final String DEFAULT_ShipmentCart_FIRM = "AAAAAAAAAA";
   private static final String DEFAULT_ShipmentCart_TAX_NUMBER = "AAAAAAAAAA";
 
-
-  private Product product;
-
-  private ProductInCart productInCart;
-
-  private ProductInCart productInCart2;
-
-  private User currentLoggedUser;
+  private static final String ENTITY_API_URL = "/api/product-in-carts";
+  private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+  private static final String ENTITY_API_URL_USER_CART = ENTITY_API_URL + "/userCart";
 
   @Autowired
   private ProductInCartRepository productInCartRepository;
@@ -187,7 +177,6 @@ class ProductInCartResourceIT implements AddVat {
   @Autowired
   private CartMapper cartMapper;
 
-
   @Autowired
   private PaymentCartRepository paymentCartRepository;
 
@@ -202,6 +191,14 @@ class ProductInCartResourceIT implements AddVat {
 
   @Autowired
   private MockMvc restProductInCartMockMvc;
+
+  private Product product;
+
+  private ProductInCart productInCart;
+
+  private ProductInCart productInCart2;
+
+  private User currentLoggedUser;
 
   public ProductInCart createEntity(EntityManager em) {
     ProductInCart productInCart = new ProductInCart()
@@ -220,16 +217,16 @@ class ProductInCartResourceIT implements AddVat {
     return productInCart;
   }
 
-  public static ProductInCart createEntity2(EntityManager em) {
+  public ProductInCart createEntity2(EntityManager em) {
     ProductInCart productInCart2 = new ProductInCart()
         .category(DEFAULT_CATEGORY_2)
         .name(DEFAULT_NAME_2)
         .quantity(DEFAULT_QUANTITY_2)
         .priceNet(DEFAULT_PRICE_NET_2)
-        .priceGross(DEFAULT_PRICE_GROSS_2)
+        .priceGross(defaultPriceGross2)
         .vat(DEFAULT_VAT_2)
         .totalPriceNet(DEFAULT_TOTAL_PRICE_NET_2)
-        .totalPriceGross(DEFAULT_TOTAL_PRICE_GROSS_2)
+        .totalPriceGross(defaultTotalPriceGross2)
         .stock(DEFAULT_STOCK_2)
         .description(DEFAULT_DESCRIPTION_2)
         .image(DEFAULT_IMAGE_2)
@@ -324,23 +321,17 @@ class ProductInCartResourceIT implements AddVat {
     productRepository.saveAndFlush(product);
   }
 
-  @Override
-  public BigDecimal addVat(BigDecimal priceNet, BigDecimal vat) {
-    return priceNet.add(priceNet.multiply(vat.movePointLeft(2)));
-  }
-
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void createProductInCartToProperUserOfCart() throws Exception {
     currentLoggedUser = checkIfUserExist();
-    Cart cart = currentLoggedUser.getCart();
 
     // Create the ProductInCart
     final int databaseCartSizeBeforeCreate = cartRepository.findAll().size();
     final int databaseProductInCartSizeBeforeCreate = productInCartRepository.findAll().size();
     productInCart.setProductId(product.getId());
-    productInCart.setCart(cart);
+    productInCart.setCart(currentLoggedUser.getCart());
     ProductInCartDTO productInCartDto = productInCartMapper.toDto(productInCart);
 
     restProductInCartMockMvc.perform(post(ENTITY_API_URL)
@@ -407,12 +398,11 @@ class ProductInCartResourceIT implements AddVat {
   public void createProductInCartToProperUserOfCartWithWrongQuantityShouldThrowBadRequest()
       throws Exception {
     currentLoggedUser = checkIfUserExist();
-    Cart cart = currentLoggedUser.getCart();
 
     // Create the ProductInCart
     productInCart.setQuantity(DEFAULT_HIGHER_QUANTITY);
     productInCart.setProductId(product.getId());
-    productInCart.setCart(cart);
+    productInCart.setCart(currentLoggedUser.getCart());
     ProductInCartDTO productInCartDto = productInCartMapper.toDto(productInCart);
 
     restProductInCartMockMvc.perform(post(ENTITY_API_URL)
@@ -460,15 +450,14 @@ class ProductInCartResourceIT implements AddVat {
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void getAllProductInCartOfCurrentUser() throws Exception {
     currentLoggedUser = checkIfUserExist();
-    Cart cart = currentLoggedUser.getCart();
 
-    productInCart.setCart(cart);
+    productInCart.setCart(currentLoggedUser.getCart());
     productInCart.setProductId(product.getId());
-    productInCartRepository.saveAndFlush(productInCart);
-    cart.addProductInCart(productInCart);
+    productInCartRepository.save(productInCart);
+    currentLoggedUser.getCart().addProductInCart(productInCart);
 
     // Get all the productInCartList
-    restProductInCartMockMvc.perform(get(ENTITY_API_URL + "/userCart"))
+    restProductInCartMockMvc.perform(get(ENTITY_API_URL_USER_CART))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.[*].id").value(hasItem(productInCart.getId().intValue())))
@@ -495,11 +484,10 @@ class ProductInCartResourceIT implements AddVat {
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void getProductInCart() throws Exception {
     productInCart.setProductId(product.getId());
-    productInCartRepository.saveAndFlush(productInCart);
+    productInCartRepository.save(productInCart);
 
     // Get the productInCart
-    restProductInCartMockMvc.perform(
-            get(ENTITY_API_URL_ID, productInCart.getId()))
+    restProductInCartMockMvc.perform(get(ENTITY_API_URL_ID, productInCart.getId()))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.id").value(productInCart.getId().intValue()))
@@ -554,17 +542,16 @@ class ProductInCartResourceIT implements AddVat {
     productInCartRepository.saveAndFlush(productInCart2);
     cart.addProductInCart(productInCart2);
     cart.setAmountOfCartNet(cart.getAmountOfCartNet().add(DEFAULT_TOTAL_PRICE_NET_2));
-    cart.setAmountOfCartGross(cart.getAmountOfCartGross().add(DEFAULT_TOTAL_PRICE_GROSS_2));
+    cart.setAmountOfCartGross(cart.getAmountOfCartGross().add(defaultTotalPriceGross2));
     cart.setAmountOfOrderNet(cart.getAmountOfOrderNet().add(DEFAULT_TOTAL_PRICE_NET_2));
-    cart.setAmountOfOrderGross(cart.getAmountOfOrderGross().add(DEFAULT_TOTAL_PRICE_GROSS_2));
+    cart.setAmountOfOrderGross(cart.getAmountOfOrderGross().add(defaultTotalPriceGross2));
     cartRepository.save(cart);
 
     // when
     int databaseSizeBeforeDelete = productInCartRepository.findAll().size();
 
     // Delete the productInCart
-    restProductInCartMockMvc.perform(
-            delete(ENTITY_API_URL_ID, productInCart.getId())
+    restProductInCartMockMvc.perform(delete(ENTITY_API_URL_ID, productInCart.getId())
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent());
 
@@ -579,35 +566,34 @@ class ProductInCartResourceIT implements AddVat {
     assertThat(testCart.getAmountOfCartNet()).isEqualTo(
         DEFAULT_TOTAL_PRICE_NET_2.setScale(2, RoundingMode.CEILING));
     assertThat(testCart.getAmountOfCartGross()).isEqualTo(
-        DEFAULT_TOTAL_PRICE_GROSS_2.setScale(4, RoundingMode.CEILING));
+        defaultTotalPriceGross2.setScale(4, RoundingMode.CEILING));
     assertThat(testCart.getAmountOfShipmentNet()).isEqualTo(DEFAULT_AMOUNT_OF_SHIPMENT_NET);
     assertThat(testCart.getAmountOfShipmentGross()).isEqualTo(DEFAULT_AMOUNT_OF_SHIPMENT_GROSS);
     assertThat(testCart.getAmountOfOrderNet()).isEqualTo(DEFAULT_TOTAL_PRICE_NET_2
         .add(DEFAULT_AMOUNT_OF_SHIPMENT_NET).setScale(2, RoundingMode.CEILING));
-    assertThat(testCart.getAmountOfOrderGross()).isEqualTo(DEFAULT_TOTAL_PRICE_GROSS_2
+    assertThat(testCart.getAmountOfOrderGross()).isEqualTo(defaultTotalPriceGross2
         .add(DEFAULT_AMOUNT_OF_SHIPMENT_GROSS).setScale(4, RoundingMode.CEILING));
   }
 
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void putNewProductInCartWithWrongValueQuantityShouldThrowStatusBadRequest() throws Exception {
+  public void putNewProductInCartWithWrongValueQuantityShouldThrowStatusBadRequest()
+      throws Exception {
     currentLoggedUser = checkIfUserExist();
-    Cart cart = currentLoggedUser.getCart();
 
-    productInCart.setCart(cart);
+    productInCart.setCart(currentLoggedUser.getCart());
     productInCart.setProductId(product.getId());
-    productInCartRepository.saveAndFlush(productInCart);
-    cart.addProductInCart(productInCart);
-    cartRepository.save(cart);
+    productInCartRepository.save(productInCart);
+    currentLoggedUser.getCart().addProductInCart(productInCart);
+    cartRepository.save(currentLoggedUser.getCart());
 
     final int databaseCartSizeBeforeUpdate = cartRepository.findAll().size();
     final int databaseProductInCartSizeBeforeUpdate = productInCartRepository.findAll().size();
 
     // Update the productInCart
-    ProductInCart updatedProductInCart = productInCartRepository.findById(
-        productInCart.getId()).get();
-    ProductInCartDTO productInCartDto = productInCartMapper.toDto(updatedProductInCart);
+    ProductInCartDTO productInCartDto = productInCartMapper.toDto(
+        productInCartRepository.findById(productInCart.getId()).get());
     productInCartDto.setQuantity(UPDATED_HIGHER_QUANTITY);
 
     restProductInCartMockMvc.perform(put(ENTITY_API_URL_ID, productInCartDto.getId())
@@ -657,22 +643,20 @@ class ProductInCartResourceIT implements AddVat {
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   public void putNewProductInCart() throws Exception {
     currentLoggedUser = checkIfUserExist();
-    Cart cart = currentLoggedUser.getCart();
 
-    productInCart.setCart(cart);
+    productInCart.setCart(currentLoggedUser.getCart());
     productInCart.setProductId(product.getId());
-    productInCartRepository.saveAndFlush(productInCart);
-    cart.addProductInCart(productInCart);
-    cartRepository.save(cart);
+    productInCartRepository.save(productInCart);
+    currentLoggedUser.getCart().addProductInCart(productInCart);
+    cartRepository.save(currentLoggedUser.getCart());
 
     final int databaseCartSizeBeforeUpdate = cartRepository.findAll().size();
     final int databaseProductInCartSizeBeforeUpdate = productInCartRepository.findAll().size();
 
     // Update the productInCart
-    ProductInCart updatedProductInCart
-        = productInCartRepository.findById(productInCart.getId()).get();
-    updatedProductInCart.setQuantity(UPDATED_QUANTITY);
-    ProductInCartDTO productInCartDto = productInCartMapper.toDto(updatedProductInCart);
+    ProductInCartDTO productInCartDto = productInCartMapper.toDto(
+        productInCartRepository.findById(productInCart.getId()).get());
+    productInCartDto.setQuantity(UPDATED_QUANTITY);
 
     restProductInCartMockMvc.perform(put(ENTITY_API_URL_ID, productInCartDto.getId())
             .contentType(MediaType.APPLICATION_JSON)
@@ -726,48 +710,90 @@ class ProductInCartResourceIT implements AddVat {
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   void putNonExistingProductInCart() throws Exception {
-    int databaseSizeBeforeUpdate = productInCartRepository.findAll().size();
-    productInCart.setId(count.incrementAndGet());
+    currentLoggedUser = checkIfUserExist();
 
-    // Create the ProductInCart
-    ProductInCartDTO productInCartDto = productInCartMapper.toDto(productInCart);
+    productInCart.setCart(currentLoggedUser.getCart());
+    productInCart.setProductId(product.getId());
+    productInCartRepository.save(productInCart);
+    currentLoggedUser.getCart().addProductInCart(productInCart);
+    cartRepository.save(currentLoggedUser.getCart());
+
+    final int databaseProductInCartSizeBeforeUpdate = productInCartRepository.findAll().size();
+
+    // Update the productInCart
+    ProductInCartDTO productInCartDto = productInCartMapper.toDto(
+        productInCartRepository.findById(productInCart.getId()).get());
+    productInCartDto.setId(count.incrementAndGet());
 
     // If the entity doesn't have an ID, it will throw BadRequestAlertException
-    restProductInCartMockMvc
-        .perform(
-            put(ENTITY_API_URL_ID, productInCartDto.getId())
+    restProductInCartMockMvc.perform(put(ENTITY_API_URL_ID, productInCartDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtil.convertObjectToJsonBytes(productInCartDto))
-        )
+                .content(TestUtil.convertObjectToJsonBytes(productInCartDto)))
         .andExpect(status().isBadRequest());
 
     // Validate the ProductInCart in the database
     List<ProductInCart> productInCartList = productInCartRepository.findAll();
-    assertThat(productInCartList).hasSize(databaseSizeBeforeUpdate);
+    assertThat(productInCartList).hasSize(databaseProductInCartSizeBeforeUpdate);
   }
 
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
   void putWithIdMismatchProductInCart() throws Exception {
-    int databaseSizeBeforeUpdate = productInCartRepository.findAll().size();
-    productInCart.setId(count.incrementAndGet());
+    currentLoggedUser = checkIfUserExist();
 
-    // Create the ProductInCart
-    ProductInCartDTO productInCartDTO = productInCartMapper.toDto(productInCart);
+    productInCart.setCart(currentLoggedUser.getCart());
+    productInCart.setProductId(product.getId());
+    productInCartRepository.save(productInCart);
+    currentLoggedUser.getCart().addProductInCart(productInCart);
+    cartRepository.save(currentLoggedUser.getCart());
+
+    final int databaseProductInCartSizeBeforeUpdate = productInCartRepository.findAll().size();
+
+    // Update the productInCart
+    ProductInCartDTO productInCartDto = productInCartMapper.toDto(
+        productInCartRepository.findById(productInCart.getId()).get());
+    productInCartDto.setId(count.incrementAndGet());
 
     // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-    restProductInCartMockMvc
-        .perform(
-            put(ENTITY_API_URL_ID, count.incrementAndGet())
+    restProductInCartMockMvc.perform(put(ENTITY_API_URL_ID, count.incrementAndGet())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtil.convertObjectToJsonBytes(productInCartDTO))
-        )
+                .content(TestUtil.convertObjectToJsonBytes(productInCartDto)))
         .andExpect(status().isBadRequest());
 
     // Validate the ProductInCart in the database
     List<ProductInCart> productInCartList = productInCartRepository.findAll();
-    assertThat(productInCartList).hasSize(databaseSizeBeforeUpdate);
+    assertThat(productInCartList).hasSize(databaseProductInCartSizeBeforeUpdate);
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  void putWithMissingIdPathParamProductInCart() throws Exception {
+    currentLoggedUser = checkIfUserExist();
+
+    productInCart.setCart(currentLoggedUser.getCart());
+    productInCart.setProductId(product.getId());
+    productInCartRepository.save(productInCart);
+    currentLoggedUser.getCart().addProductInCart(productInCart);
+    cartRepository.save(currentLoggedUser.getCart());
+
+    final int databaseProductInCartSizeBeforeUpdate = productInCartRepository.findAll().size();
+
+    // Update the productInCart
+    ProductInCartDTO productInCartDto = productInCartMapper.toDto(
+        productInCartRepository.findById(productInCart.getId()).get());
+    productInCartDto.setId(count.incrementAndGet());
+
+    // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+    restProductInCartMockMvc.perform(put(ENTITY_API_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtil.convertObjectToJsonBytes(productInCartDto)))
+        .andExpect(status().isMethodNotAllowed());
+
+    // Validate the ProductInCart in the database
+    List<ProductInCart> productInCartList = productInCartRepository.findAll();
+    assertThat(productInCartList).hasSize(databaseProductInCartSizeBeforeUpdate);
   }
 
   @Test
@@ -781,9 +807,8 @@ class ProductInCartResourceIT implements AddVat {
     final int databaseProductInCartSizeBeforeUpdate = productInCartRepository.findAll().size();
 
     // Update the productInCart
-    ProductInCart updatedProductInCart
-        = productInCartRepository.findById(productInCart.getId()).get();
-    ProductInCartDTO productInCartDto = productInCartMapper.toDto(updatedProductInCart);
+    ProductInCartDTO productInCartDto = productInCartMapper.toDto(
+        productInCartRepository.findById(productInCart.getId()).get());
     productInCartDto.setQuantity(UPDATED_QUANTITY);
 
     restProductInCartMockMvc.perform(put(ENTITY_API_URL_ID, productInCartDto.getId())
