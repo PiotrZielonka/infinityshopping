@@ -1,0 +1,13 @@
+{
+  "infinityshoppingApp": {
+    "paymentOrderMain": {
+      "home": {
+        "title": "Sposób płatności i wysyłki",
+        "editLabel": "Zmień sposób płatności i wysyłki złożonego zamówienia",
+        "notFound": "Nie znaleziono żadnego sposobu płatności i wysyłki złożonego zamówienia"
+      },
+      "updated": "Sposób płatności i wysyłki złożonego zamówienia został uaktualniony",
+      "kindOfPaymentAndShipment": "Rodzaj płatności i wysyłki"
+    }
+  }
+}

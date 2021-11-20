@@ -1,0 +1,13 @@
+{
+  "infinityshoppingApp": {
+    "paymentOrderMain": {
+      "home": {
+        "title": "Kind of payment and shipment",
+        "editLabel": "Change kind of payment and shipment of placed order",
+        "notFound": "No kind of payment and shipment of placed order found"
+      },
+      "updated": "A Kind of payment and shipment of placed order was updated",
+      "kindOfPaymentAndShipment": "Kind of payment and shipment"
+    }
+  }
+}
