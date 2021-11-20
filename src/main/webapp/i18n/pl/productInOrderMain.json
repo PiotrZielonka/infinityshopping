@@ -1,0 +1,24 @@
+{
+  "infinityshoppingApp": {
+    "productInOrderMain": {
+      "home": {
+        "title": "Zamówione produkty",
+        "editLabel": "Zmień ilość zamówionego produktu",
+        "notFound": "Nie znaleziono żadnych produktów w tym zamówieniu"
+      },
+      "updated": "Produkt w zamówieniu został zaktualizowany z identyfikatorem {{ param }}",
+      "deleted": "Produkt z zamówienia został usunięty z identyfikatorem {{ param }}",
+      "delete": {
+        "question": "Czy na pewno chcesz usunąć ten produkt z zamówienia?"
+      },    
+      "category": "Kategoria",
+      "name": "Nazwa",
+      "quantity": "Ilośc",
+      "priceGross": "Cena brutto",
+      "totalPriceGross": "Cena brutto razem",
+      "stock": "Ilość na magazynie (podczas składania zamówienia)",
+      "description": "Opis",
+      "image": "Zdjęcie"
+    }
+  }
+}

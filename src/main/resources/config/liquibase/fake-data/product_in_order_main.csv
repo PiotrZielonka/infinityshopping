@@ -1,0 +1,11 @@
+id;category;name;quantity;price_net;vat;price_gross;total_price_net;total_price_gross;stock;description;image;image_content_type;product_id
+1;interface;Handcrafted calculate quantify;9724;41531;46981;19634;22858;86845;13383;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;10805
+2;Avon deposit;Toys Fantastic;87764;62121;81903;78875;85300;74888;82511;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;37948
+3;JSON User-centric;Podkarpackie engine;44669;16224;91851;95333;712;49067;19193;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;45720
+4;Polarised;olive;23710;99916;33610;98994;91354;45099;39620;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;6288
+5;mission-critical Cambridgeshire;Marketing;51337;85858;21911;61096;2320;5768;31110;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;39172
+6;Dolnośląskie;Metal adapter synthesizing;98023;29853;76724;22958;98470;45453;39723;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;59258
+7;Investment Borders Programmable;hacking deposit;14699;68903;40355;52970;8147;36558;42658;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;73495
+8;Bedfordshire Adaptive Books;Courts;47258;1652;12432;90298;19107;25352;21146;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;53155
+9;applications cross-media;Francja SSL;92347;5031;56005;43673;94170;93156;20168;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;80435
+10;Solutions;Officer USB e-enable;56835;12997;35410;97928;64900;36192;41522;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.png;image/png;16495

@@ -1,0 +1,24 @@
+{
+  "infinityshoppingApp": {
+    "productInOrderMain": {
+      "home": {
+        "title": "Ordered products",
+        "editLabel": "Change the quantity of the ordered product",
+        "notFound": "No Products found in this order"
+      },
+      "updated": "A Product In Order was updated with identifier {{ param }}",
+      "deleted": "A Product In Order was deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete this product from the order?"
+      },
+      "category": "Category",
+      "name": "Name",
+      "quantity": "Quantity",
+      "priceGross": "Price gross",
+      "totalPriceGross": "Total price gross",
+      "stock": "Stock (while order was submitted)",
+      "description": "Description",
+      "image": "Image"
+    }
+  }
+}
