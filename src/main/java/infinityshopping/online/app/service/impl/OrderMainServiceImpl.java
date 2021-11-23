@@ -100,8 +100,6 @@ public class OrderMainServiceImpl implements OrderMainService {
         .map(orderMainMapper::toDto);
   }
 
-
-
   private void setCurrentUserToNewOrderMain(OrderMain orderMain) {
     currentLoggedUser = checkIfUserExist();
 

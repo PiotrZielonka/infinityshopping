@@ -53,7 +53,6 @@ public class PaymentOrderMainServiceImpl implements PaymentOrderMainService {
 
     setProperOrderMainIdToPaymentOrderMainBecauseItIsNotInDto(paymentOrderMain);
     setProperValuesInPaymentOrderMainFromPaymentBecauseAreNullInDto(paymentOrderMain, payment);
-
     setAmountsOfShipmentToProperOrderMain(paymentOrderMain);
     setAmountsOfOrderToProperOrderMain(paymentOrderMain);
 

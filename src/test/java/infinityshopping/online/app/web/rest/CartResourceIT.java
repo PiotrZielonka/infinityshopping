@@ -14,9 +14,11 @@ import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
 import infinityshopping.online.app.security.SecurityUtils;
+import infinityshopping.online.app.service.AddVat;
 import infinityshopping.online.app.service.UserNotFoundException;
 import infinityshopping.online.app.service.mapper.CartMapper;
 import java.math.BigDecimal;
+import java.util.Random;
 import javax.persistence.EntityManager;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,27 +26,35 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
 @AutoConfigureMockMvc
-class CartResourceIT {
+class CartResourceIT implements AddVat {
 
-  private static final BigDecimal DEFAULT_AMOUNT_OF_CART_NET = new BigDecimal("100");
-  private static final BigDecimal DEFAULT_AMOUNT_OF_CART_GROSS = new BigDecimal("123");
+  private static Random random = new Random();
 
-  private static final BigDecimal DEFAULT_AMOUNT_OF_SHIPMENT_NET = new BigDecimal("10");
-  private static final BigDecimal DEFAULT_AMOUNT_OF_SHIPMENT_GROSS = new BigDecimal("10.8");
+  private static final BigDecimal DEFAULT_AMOUNT_OF_CART_NET
+      = new BigDecimal(random.nextInt(10000));
+  private final BigDecimal defaultAmountOfCartGross
+      = addVat(DEFAULT_AMOUNT_OF_CART_NET, new BigDecimal(random.nextInt(30 - 5) + 5));
 
-  private static final BigDecimal DEFAULT_AMOUNT_OF_ORDER_NET = new BigDecimal("110");
-  private static final BigDecimal DEFAULT_AMOUNT_OF_ORDER_GROSS = new BigDecimal("133.8");
+  private static final BigDecimal DEFAULT_AMOUNT_OF_SHIPMENT_NET
+      = new BigDecimal(random.nextInt(100));
+  private final BigDecimal defaultAmountOfShipmentGross
+      = addVat(DEFAULT_AMOUNT_OF_SHIPMENT_NET, new BigDecimal(random.nextInt(30 - 5) + 5));
+
+  private static final BigDecimal DEFAULT_AMOUNT_OF_ORDER_NET
+      = DEFAULT_AMOUNT_OF_CART_NET.add(DEFAULT_AMOUNT_OF_SHIPMENT_NET);
+  private final BigDecimal defaultAmountOfOrderGross
+      = defaultAmountOfCartGross.add(defaultAmountOfShipmentGross);
 
   private static final String ENTITY_API_URL = "/api/cart/userCart";
+  private static final String ENTITY_API_URL_AMOUNTS_GROSS = ENTITY_API_URL + "/amountsGross";
+  private static final String ENTITY_API_URL_AMOUNT_OF_CART_GROSS
+      = ENTITY_API_URL + "/amountOfCartGross";
 
   @Autowired
   private CartRepository cartRepository;
@@ -83,11 +93,11 @@ class CartResourceIT {
     Cart cart = new Cart();
     cart.setUser(user);
     cart.setAmountOfCartNet(DEFAULT_AMOUNT_OF_CART_NET);
-    cart.setAmountOfCartGross(DEFAULT_AMOUNT_OF_CART_GROSS);
+    cart.setAmountOfCartGross(defaultAmountOfCartGross);
     cart.setAmountOfShipmentNet(DEFAULT_AMOUNT_OF_SHIPMENT_NET);
-    cart.setAmountOfShipmentGross(DEFAULT_AMOUNT_OF_SHIPMENT_GROSS);
+    cart.setAmountOfShipmentGross(defaultAmountOfShipmentGross);
     cart.setAmountOfOrderNet(DEFAULT_AMOUNT_OF_ORDER_NET);
-    cart.setAmountOfOrderGross(DEFAULT_AMOUNT_OF_ORDER_GROSS);
+    cart.setAmountOfOrderGross(defaultAmountOfOrderGross);
     cartRepository.save(cart);
     user.setCart(cart);
     userRepository.saveAndFlush(user);
@@ -124,19 +134,18 @@ class CartResourceIT {
     currentLoggedUser = checkIfUserExist();
 
     // Get all the cartList
-    restCartMockMvc
-        .perform(get(ENTITY_API_URL + "/amountsGross"))
+    restCartMockMvc.perform(get(ENTITY_API_URL_AMOUNTS_GROSS))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.id").value(currentLoggedUser.getCart().getId().intValue()))
         .andExpect(jsonPath("$.amountOfCartNet").doesNotExist())
-        .andExpect(jsonPath("$.amountOfCartGross").value(sameNumber(DEFAULT_AMOUNT_OF_CART_GROSS)))
+        .andExpect(jsonPath("$.amountOfCartGross").value(sameNumber(defaultAmountOfCartGross)))
         .andExpect(jsonPath("$.amountOfShipmentNet").doesNotExist())
         .andExpect(
-            jsonPath("$.amountOfShipmentGross").value(sameNumber(DEFAULT_AMOUNT_OF_SHIPMENT_GROSS)))
+            jsonPath("$.amountOfShipmentGross").value(sameNumber(defaultAmountOfShipmentGross)))
         .andExpect(jsonPath("$.amountOfOrderNet").doesNotExist())
         .andExpect(
-            jsonPath("$.amountOfOrderGross").value(sameNumber(DEFAULT_AMOUNT_OF_ORDER_GROSS)));
+            jsonPath("$.amountOfOrderGross").value(sameNumber(defaultAmountOfOrderGross)));
   }
 
   @Test
@@ -146,13 +155,12 @@ class CartResourceIT {
     currentLoggedUser = checkIfUserExist();
 
     // Get all the cartList
-    restCartMockMvc
-        .perform(get(ENTITY_API_URL + "/amountOfCartGross"))
+    restCartMockMvc.perform(get(ENTITY_API_URL_AMOUNT_OF_CART_GROSS))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.id").value(currentLoggedUser.getCart().getId().intValue()))
         .andExpect(jsonPath("$.amountOfCartNet").doesNotExist())
-        .andExpect(jsonPath("$.amountOfCartGross").value(sameNumber(DEFAULT_AMOUNT_OF_CART_GROSS)))
+        .andExpect(jsonPath("$.amountOfCartGross").value(sameNumber(defaultAmountOfCartGross)))
         .andExpect(jsonPath("$.amountOfShipmentNet").doesNotExist())
         .andExpect(jsonPath("$.amountOfShipmentGross").doesNotExist())
         .andExpect(jsonPath("$.amountOfOrderNet").doesNotExist())

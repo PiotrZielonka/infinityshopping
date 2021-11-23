@@ -12,7 +12,7 @@ export type EntityArrayResponseType = HttpResponse<IProductInCart[]>;
 @Injectable({ providedIn: 'root' })
 export class ProductInCartService {
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/product-in-carts');
-  protected userCartUrl = this.applicationConfigService.getEndpointFor('api/product-in-carts/userCart');
+  protected userCartUrl = this.applicationConfigService.getEndpointFor(this.resourceUrl + '/userCart');
 
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 

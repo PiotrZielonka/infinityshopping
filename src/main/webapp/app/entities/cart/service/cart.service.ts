@@ -11,16 +11,18 @@ export type EntityArrayResponseType = HttpResponse<ICart[]>;
 @Injectable({ providedIn: 'root' })
 export class CartService {
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/cart/userCart');
+  protected amountsGrossUrl = this.applicationConfigService.getEndpointFor(this.resourceUrl + '/amountsGross');
+  protected amountOfCartGrossUrl = this.applicationConfigService.getEndpointFor(this.resourceUrl + '/amountOfCartGross');
 
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
   querytAllAmountsGrossOfCurrentLoggedUser(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
-    return this.http.get<ICart[]>(`${this.resourceUrl}/amountsGross`, { params: options, observe: 'response' });
+    return this.http.get<ICart[]>(this.amountsGrossUrl, { params: options, observe: 'response' });
   }
 
   querytAmountOfCartGrossOfCurrentLoggedUser(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
-    return this.http.get<ICart[]>(`${this.resourceUrl}/amountOfCartGross`, { params: options, observe: 'response' });
+    return this.http.get<ICart[]>(this.amountOfCartGrossUrl, { params: options, observe: 'response' });
   }
 }

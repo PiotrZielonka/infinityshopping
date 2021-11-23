@@ -1,13 +1,10 @@
 package infinityshopping.online.app.service.impl;
 
 import infinityshopping.online.app.domain.Cart;
-import infinityshopping.online.app.domain.Product;
 import infinityshopping.online.app.domain.ProductInCart;
 import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.CartRepository;
-import infinityshopping.online.app.repository.PaymentCartRepository;
 import infinityshopping.online.app.repository.ProductInCartRepository;
-import infinityshopping.online.app.repository.ProductRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.ProductInCartService;
@@ -34,19 +31,13 @@ public class ProductInCartServiceImpl implements ProductInCartService {
 
   private final ProductInCartMapper productInCartMapper;
 
-  private final ProductRepository productRepository;
-
   private final UserRepository userRepository;
 
   private final CartRepository cartRepository;
 
-  private final PaymentCartRepository paymentCartRepository;
-
   private User currentLoggedUser;
 
   private User userForFindByCartId;
-
-  private Product product;
 
   private Cart cart;
 
@@ -64,15 +55,12 @@ public class ProductInCartServiceImpl implements ProductInCartService {
 
   public ProductInCartServiceImpl(ProductInCartRepository productInCartRepository,
       ProductInCartMapper productInCartMapper,
-      ProductRepository productRepository, UserRepository userRepository,
-      CartRepository cartRepository,
-      PaymentCartRepository paymentCartRepository) {
+      UserRepository userRepository,
+      CartRepository cartRepository) {
     this.productInCartRepository = productInCartRepository;
     this.productInCartMapper = productInCartMapper;
-    this.productRepository = productRepository;
     this.userRepository = userRepository;
     this.cartRepository = cartRepository;
-    this.paymentCartRepository = paymentCartRepository;
   }
 
   @Override
@@ -115,8 +103,6 @@ public class ProductInCartServiceImpl implements ProductInCartService {
   private void setAmountOfCartNetToProperCartOfUser(ProductInCart productInCart) {
     cart = cartRepository.findById(productInCart.getCart().getId()).get();
 
-    amountOfCartNet = cart.getAmountOfCartNet();
-
     amountOfCartNet = BigDecimal.ZERO;
 
     cart.getProductInCarts().forEach(productInCartForEach -> {
@@ -129,8 +115,6 @@ public class ProductInCartServiceImpl implements ProductInCartService {
 
   private void setAmountOfCartGrossToProperCartOfUser(ProductInCart productInCart) {
     cart = cartRepository.findById(productInCart.getCart().getId()).get();
-
-    amountOfCartGross = cart.getAmountOfCartGross();
 
     amountOfCartGross = BigDecimal.ZERO;
 

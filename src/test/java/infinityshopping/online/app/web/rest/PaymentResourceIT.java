@@ -14,12 +14,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import infinityshopping.online.app.IntegrationTest;
 import infinityshopping.online.app.domain.Payment;
-import infinityshopping.online.app.domain.PaymentCart;
 import infinityshopping.online.app.domain.enumeration.PaymentStatusEnum;
 import infinityshopping.online.app.repository.PaymentRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
 import infinityshopping.online.app.service.AddVat;
-import infinityshopping.online.app.service.dto.PaymentCartDTO;
 import infinityshopping.online.app.service.dto.PaymentDTO;
 import infinityshopping.online.app.service.mapper.PaymentMapper;
 import java.math.BigDecimal;
@@ -73,7 +71,7 @@ class PaymentResourceIT implements AddVat {
 
   private static final String ENTITY_API_URL = "/api/payments";
   private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-
+  private static final String ENTITY_API_URL_NAME_PRICE_GROSS = ENTITY_API_URL + "/namePriceGross";
 
   @Autowired
   private PaymentRepository paymentRepository;
@@ -118,8 +116,9 @@ class PaymentResourceIT implements AddVat {
     int databaseSizeBeforeCreate = paymentRepository.findAll().size();
     // Create the Payment
     PaymentDTO paymentDto = paymentMapper.toDto(payment);
-    restPaymentMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+
+    restPaymentMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isForbidden());
 
@@ -134,8 +133,9 @@ class PaymentResourceIT implements AddVat {
     int databaseSizeBeforeCreate = paymentRepository.findAll().size();
     // Create the Payment
     PaymentDTO paymentDto = paymentMapper.toDto(payment);
-    restPaymentMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+
+    restPaymentMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isUnauthorized());
 
@@ -155,8 +155,9 @@ class PaymentResourceIT implements AddVat {
     paymentDto.setPriceGross(null);
     paymentDto.setCreateTime(null);
     paymentDto.setUpdateTime(null);
-    restPaymentMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+
+    restPaymentMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isCreated());
 
@@ -185,8 +186,8 @@ class PaymentResourceIT implements AddVat {
     int databaseSizeBeforeCreate = paymentRepository.findAll().size();
 
     // An entity with an existing ID cannot be created, so this API call must fail
-    restPaymentMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+    restPaymentMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isBadRequest());
 
@@ -206,8 +207,8 @@ class PaymentResourceIT implements AddVat {
     // Create the Payment, which fails.
     PaymentDTO paymentDto = paymentMapper.toDto(payment);
 
-    restPaymentMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+    restPaymentMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isBadRequest());
 
@@ -226,8 +227,8 @@ class PaymentResourceIT implements AddVat {
     // Create the Payment, which fails.
     PaymentDTO paymentDto = paymentMapper.toDto(payment);
 
-    restPaymentMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+    restPaymentMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isBadRequest());
 
@@ -246,8 +247,8 @@ class PaymentResourceIT implements AddVat {
     // Create the Payment, which fails.
     PaymentDTO paymentDto = paymentMapper.toDto(payment);
 
-    restPaymentMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+    restPaymentMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isBadRequest());
 
@@ -264,8 +265,7 @@ class PaymentResourceIT implements AddVat {
     paymentRepository.saveAndFlush(payment);
 
     // Get all the paymentList
-    restPaymentMockMvc
-        .perform(get(ENTITY_API_URL + "?sort=id,desc"))
+    restPaymentMockMvc.perform(get(ENTITY_API_URL + "?sort=id,desc"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.[*].id").value(hasItem(payment.getId().intValue())))
@@ -313,8 +313,7 @@ class PaymentResourceIT implements AddVat {
     paymentRepository.saveAndFlush(payment);
 
     // Get all the paymentList
-    restPaymentMockMvc
-        .perform(get(ENTITY_API_URL + "/namePriceGross" + "?sort=id,desc"))
+    restPaymentMockMvc.perform(get(ENTITY_API_URL_NAME_PRICE_GROSS + "?sort=id,desc"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.[*].id").value(hasItem(payment.getId().intValue())))
@@ -362,8 +361,7 @@ class PaymentResourceIT implements AddVat {
     paymentRepository.saveAndFlush(payment);
 
     // Get the payment
-    restPaymentMockMvc
-        .perform(get(ENTITY_API_URL_ID, payment.getId()))
+    restPaymentMockMvc.perform(get(ENTITY_API_URL_ID, payment.getId()))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.id").value(payment.getId().intValue()))
@@ -399,8 +397,7 @@ class PaymentResourceIT implements AddVat {
     paymentDto.setCreateTime(UPDATED_CREATE_TIME);
     paymentDto.setUpdateTime(UPDATED_UPDATE_TIME);
 
-    restPaymentMockMvc
-        .perform(put(ENTITY_API_URL_ID, paymentDto.getId())
+    restPaymentMockMvc.perform(put(ENTITY_API_URL_ID, paymentDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isForbidden());
@@ -434,8 +431,7 @@ class PaymentResourceIT implements AddVat {
     paymentDto.setCreateTime(UPDATED_CREATE_TIME);
     paymentDto.setUpdateTime(UPDATED_UPDATE_TIME);
 
-    restPaymentMockMvc
-        .perform(put(ENTITY_API_URL_ID, paymentDto.getId())
+    restPaymentMockMvc.perform(put(ENTITY_API_URL_ID, paymentDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isUnauthorized());
@@ -469,8 +465,7 @@ class PaymentResourceIT implements AddVat {
     paymentDto.setCreateTime(UPDATED_CREATE_TIME);
     paymentDto.setUpdateTime(UPDATED_UPDATE_TIME);
 
-    restPaymentMockMvc
-        .perform(put(ENTITY_API_URL_ID, paymentDto.getId())
+    restPaymentMockMvc.perform(put(ENTITY_API_URL_ID, paymentDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isOk());
@@ -499,8 +494,7 @@ class PaymentResourceIT implements AddVat {
     PaymentDTO paymentDto = paymentMapper.toDto(payment);
 
     // If the entity doesn't have an ID, it will throw BadRequestAlertException
-    restPaymentMockMvc
-        .perform(put(ENTITY_API_URL_ID, paymentDto.getId())
+    restPaymentMockMvc.perform(put(ENTITY_API_URL_ID, paymentDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isBadRequest());
@@ -521,8 +515,7 @@ class PaymentResourceIT implements AddVat {
     PaymentDTO paymentDto = paymentMapper.toDto(payment);
 
     // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-    restPaymentMockMvc
-        .perform(put(ENTITY_API_URL_ID, count.incrementAndGet())
+    restPaymentMockMvc.perform(put(ENTITY_API_URL_ID, count.incrementAndGet())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isBadRequest());
@@ -543,8 +536,7 @@ class PaymentResourceIT implements AddVat {
     PaymentDTO paymentDto = paymentMapper.toDto(payment);
 
     // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-    restPaymentMockMvc
-        .perform(put(ENTITY_API_URL)
+    restPaymentMockMvc.perform(put(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(paymentDto)))
         .andExpect(status().isMethodNotAllowed());
@@ -564,12 +556,37 @@ class PaymentResourceIT implements AddVat {
     int databaseSizeBeforeDelete = paymentRepository.findAll().size();
 
     // Delete the payment
-    restPaymentMockMvc
-        .perform(delete(ENTITY_API_URL_ID, payment.getId()).accept(MediaType.APPLICATION_JSON))
+    restPaymentMockMvc.perform(delete(ENTITY_API_URL_ID, payment.getId())
+            .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent());
 
     // Validate the database contains one less item
     List<Payment> paymentList = paymentRepository.findAll();
     assertThat(paymentList).hasSize(databaseSizeBeforeDelete - 1);
+  }
+
+  @Test
+  @Transactional
+  void deletePaymentByAnyoneShouldThrowStatusUnauthorized() throws Exception {
+    // Initialize the database
+    paymentRepository.saveAndFlush(payment);
+
+    // Delete the payment
+    restPaymentMockMvc.perform(delete(ENTITY_API_URL_ID, payment.getId())
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "user", password = "user", authorities = AuthoritiesConstants.USER)
+  void deletePaymentByUserShouldThrowStatusForbidden() throws Exception {
+    // Initialize the database
+    paymentRepository.saveAndFlush(payment);
+
+    // Delete the payment
+    restPaymentMockMvc.perform(delete(ENTITY_API_URL_ID, payment.getId())
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isForbidden());
   }
 }

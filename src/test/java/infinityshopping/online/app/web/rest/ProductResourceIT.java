@@ -17,6 +17,7 @@ import infinityshopping.online.app.domain.Product;
 import infinityshopping.online.app.domain.enumeration.ProductCategoryEnum;
 import infinityshopping.online.app.repository.ProductRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
+import infinityshopping.online.app.service.AddVat;
 import infinityshopping.online.app.service.dto.ProductDTO;
 import infinityshopping.online.app.service.mapper.ProductMapper;
 import java.math.BigDecimal;
@@ -38,7 +39,10 @@ import org.springframework.util.Base64Utils;
 
 @IntegrationTest
 @AutoConfigureMockMvc
-class ProductResourceIT {
+class ProductResourceIT implements AddVat {
+
+  private static Random random = new Random();
+  private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
   private static final ProductCategoryEnum DEFAULT_PRODUCT_CATEGORY_ENUM
       = ProductCategoryEnum.Vitamins;
@@ -49,16 +53,18 @@ class ProductResourceIT {
   private static final String UPDATED_NAME = "BBBBBBBBBB";
 
   private static BigDecimal DEFAULT_QUANTITY = BigDecimal.ONE;
-  private static BigDecimal UPDATED_QUANTITY = new BigDecimal("2");
+  private static BigDecimal UPDATED_QUANTITY = new BigDecimal(random.nextInt(100 - 1) + 1);
 
-  private static BigDecimal DEFAULT_PRICE_NET = new BigDecimal("200");
-  private static BigDecimal UPDATED_PRICE_NET = new BigDecimal("310");
+  private static BigDecimal DEFAULT_PRICE_NET = new BigDecimal("200.53");
+  private static BigDecimal UPDATED_PRICE_NET = new BigDecimal("310.78");
 
-  private static BigDecimal DEFAULT_VAT = new BigDecimal("23");
-  private static BigDecimal UPDATED_VAT = new BigDecimal("5");
+  private static BigDecimal DEFAULT_VAT
+      = new BigDecimal(random.nextInt(30 - 5) + 5);
+  private static BigDecimal UPDATED_VAT
+      = new BigDecimal(random.nextInt(30 - 5) + 5);
 
-  private static BigDecimal DEFAULT_PROPER_PRICE_GROSS = new BigDecimal("246");
-  private static BigDecimal UPDATED_PROPER_PRICE_GROSS = new BigDecimal("325.50");
+  private BigDecimal defaultProperPriceGross = addVat(DEFAULT_PRICE_NET, DEFAULT_VAT);
+  private BigDecimal updatedProperPriceGross = addVat(UPDATED_PRICE_NET, UPDATED_VAT);
   private static BigDecimal DEFAULT_FAKE_PRICE_GROSS = BigDecimal.ZERO;
 
   private static BigDecimal DEFAULT_STOCK = BigDecimal.ZERO;
@@ -80,9 +86,12 @@ class ProductResourceIT {
 
   private static final String ENTITY_API_URL = "/api/products";
   private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+  private static final String ENTITY_API_URL_ID_BY_ID = ENTITY_API_URL + "/byid/{id}";
+  private static final String ENTITY_API_URL_ALL = ENTITY_API_URL + "/all";
+  private static final String ENTITY_API_URL_ALL_IMAGE_NAME_PRICE_GROSS
+      = ENTITY_API_URL + "/all/imageNamePriceGross";
 
-  private static Random random = new Random();
-  private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
 
   @Autowired
   private ProductRepository productRepository;
@@ -128,8 +137,9 @@ class ProductResourceIT {
 
     // Create the Product
     ProductDTO productDto = productMapper.toDto(product);
-    restProductMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+
+    restProductMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isForbidden());
 
@@ -145,8 +155,9 @@ class ProductResourceIT {
 
     // Create the Product
     ProductDTO productDto = productMapper.toDto(product);
-    restProductMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+
+    restProductMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isUnauthorized());
 
@@ -166,8 +177,9 @@ class ProductResourceIT {
     productDto.setPriceGross(null);
     productDto.setCreateTime(null);
     productDto.setUpdateTime(null);
-    restProductMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+
+    restProductMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isCreated());
 
@@ -180,7 +192,7 @@ class ProductResourceIT {
     assertThat(testProduct.getQuantity()).isEqualTo(BigDecimal.ONE);
     assertThat(testProduct.getPriceNet()).isEqualTo(DEFAULT_PRICE_NET);
     assertThat(testProduct.getVat()).isEqualTo(DEFAULT_VAT);
-    assertThat(testProduct.getPriceGross()).isEqualTo(DEFAULT_PROPER_PRICE_GROSS.setScale(2));
+    assertThat(testProduct.getPriceGross()).isEqualTo(defaultProperPriceGross);
     assertThat(testProduct.getStock()).isEqualTo(DEFAULT_STOCK);
     assertThat(testProduct.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
     assertThat(testProduct.getImage()).isEqualTo(DEFAULT_IMAGE);
@@ -200,8 +212,8 @@ class ProductResourceIT {
     int databaseSizeBeforeCreate = productRepository.findAll().size();
 
     // An entity with an existing ID cannot be created, so this API call must fail
-    restProductMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+    restProductMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isBadRequest());
 
@@ -221,8 +233,8 @@ class ProductResourceIT {
     // Create the Product, which fails.
     ProductDTO productDto = productMapper.toDto(product);
 
-    restProductMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+    restProductMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isBadRequest());
 
@@ -241,8 +253,8 @@ class ProductResourceIT {
     // Create the Product, which fails.
     ProductDTO productDto = productMapper.toDto(product);
 
-    restProductMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+    restProductMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isBadRequest());
 
@@ -261,8 +273,8 @@ class ProductResourceIT {
     // Create the Product, which fails.
     ProductDTO productDto = productMapper.toDto(product);
 
-    restProductMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+    restProductMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isBadRequest());
 
@@ -281,8 +293,8 @@ class ProductResourceIT {
     // Create the Product, which fails.
     ProductDTO productDto = productMapper.toDto(product);
 
-    restProductMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+    restProductMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isBadRequest());
 
@@ -301,8 +313,8 @@ class ProductResourceIT {
     // Create the Product, which fails.
     ProductDTO productDto = productMapper.toDto(product);
 
-    restProductMockMvc
-        .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+    restProductMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isBadRequest());
 
@@ -315,12 +327,11 @@ class ProductResourceIT {
   @WithMockUser(username = "admin", password = "admin", authorities = AuthoritiesConstants.ADMIN)
   void getAllProducts() throws Exception {
     // Initialize the database
-    product.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+    product.setPriceGross(defaultProperPriceGross);
     productRepository.saveAndFlush(product);
 
     // Get all the productList
-    restProductMockMvc
-        .perform(get(ENTITY_API_URL + "/all" + "?sort=id,desc"))
+    restProductMockMvc.perform(get(ENTITY_API_URL_ALL + "?sort=id,desc"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.[*].id").value(hasItem(product.getId().intValue())))
@@ -331,7 +342,7 @@ class ProductResourceIT {
         .andExpect(jsonPath("$.[*].priceNet").value(hasItem(sameNumber(DEFAULT_PRICE_NET))))
         .andExpect(jsonPath("$.[*].vat").value(hasItem(sameNumber(DEFAULT_VAT))))
         .andExpect(
-            jsonPath("$.[*].priceGross").value(hasItem(sameNumber(DEFAULT_PROPER_PRICE_GROSS))))
+            jsonPath("$.[*].priceGross").value(hasItem(sameNumber(defaultProperPriceGross))))
         .andExpect(jsonPath("$.[*].stock").value(hasItem(sameNumber(DEFAULT_STOCK))))
         .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
         .andExpect(jsonPath("$.[*].createTime").exists())
@@ -346,11 +357,11 @@ class ProductResourceIT {
   @WithMockUser(username = "user", password = "user", authorities = AuthoritiesConstants.USER)
   void getAllProductsForProductManagementByUserShouldThrowStatusForbidden() throws Exception {
     // Initialize the database
-    product.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+    product.setPriceGross(defaultProperPriceGross);
     productRepository.saveAndFlush(product);
 
     // Get all the productList
-    restProductMockMvc.perform(get(ENTITY_API_URL + "/all" + "?sort=id,desc"))
+    restProductMockMvc.perform(get(ENTITY_API_URL_ALL + "?sort=id,desc"))
         .andExpect(status().isForbidden());
   }
 
@@ -358,11 +369,11 @@ class ProductResourceIT {
   @Transactional
   void getAllProductsForProductManagementByAnyoneShouldThrowStatusUnauthorized() throws Exception {
     // Initialize the database
-    product.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+    product.setPriceGross(defaultProperPriceGross);
     productRepository.saveAndFlush(product);
 
     // Get all the productList
-    restProductMockMvc.perform(get(ENTITY_API_URL + "/all" + "?sort=id,desc"))
+    restProductMockMvc.perform(get(ENTITY_API_URL_ALL + "?sort=id,desc"))
         .andExpect(status().isUnauthorized());
   }
 
@@ -370,12 +381,12 @@ class ProductResourceIT {
   @Transactional
   void getAllProductsOnlyWithImageNamePriceGross() throws Exception {
     // Initialize the database
-    product.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+    product.setPriceGross(defaultProperPriceGross);
     productRepository.saveAndFlush(product);
 
     // Get all the productList
     restProductMockMvc
-        .perform(get(ENTITY_API_URL + "/all/imageNamePriceGross" + "?sort=id,desc"))
+        .perform(get(ENTITY_API_URL_ALL_IMAGE_NAME_PRICE_GROSS + "?sort=id,desc"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.[*].id").value(hasItem(product.getId().intValue())))
@@ -385,7 +396,7 @@ class ProductResourceIT {
         .andExpect(jsonPath("$.[*].priceNet").doesNotExist())
         .andExpect(jsonPath("$.[*].vat").doesNotExist())
         .andExpect(
-            jsonPath("$.[*].priceGross").value(hasItem(sameNumber(DEFAULT_PROPER_PRICE_GROSS))))
+            jsonPath("$.[*].priceGross").value(hasItem(sameNumber(defaultProperPriceGross))))
         .andExpect(jsonPath("$.[*].stock").doesNotExist())
         .andExpect(jsonPath("$.[*].description").doesNotExist())
         .andExpect(jsonPath("$.[*].createTime").doesNotExist())
@@ -399,12 +410,12 @@ class ProductResourceIT {
   @Transactional
   void getProduct() throws Exception {
     // Initialize the database
-    product.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
+    product.setPriceGross(defaultProperPriceGross);
     productRepository.saveAndFlush(product);
 
     // Get the product
     restProductMockMvc
-        .perform(get(ENTITY_API_URL + "/byid/{id}", product.getId()))
+        .perform(get(ENTITY_API_URL_ID_BY_ID, product.getId()))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.id").value(product.getId().intValue()))
@@ -414,7 +425,7 @@ class ProductResourceIT {
         .andExpect(jsonPath("$.quantity").value(sameNumber(DEFAULT_QUANTITY)))
         .andExpect(jsonPath("$.priceNet").value(sameNumber(DEFAULT_PRICE_NET)))
         .andExpect(jsonPath("$.vat").value(sameNumber(DEFAULT_VAT)))
-        .andExpect(jsonPath("$.priceGross").value(sameNumber(DEFAULT_PROPER_PRICE_GROSS)))
+        .andExpect(jsonPath("$.priceGross").value(sameNumber(defaultProperPriceGross)))
         .andExpect(jsonPath("$.stock").value(sameNumber(DEFAULT_STOCK)))
         .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()))
         .andExpect(jsonPath("$.createTime").exists())
@@ -427,7 +438,7 @@ class ProductResourceIT {
   @Transactional
   void getNonExistingProduct() throws Exception {
     // Get the product
-    restProductMockMvc.perform(get(ENTITY_API_URL + "/byid/{id}", Long.MAX_VALUE))
+    restProductMockMvc.perform(get(ENTITY_API_URL_ID_BY_ID, Long.MAX_VALUE))
         .andExpect(status().isNotFound());
   }
 
@@ -441,47 +452,26 @@ class ProductResourceIT {
     final int databaseSizeBeforeUpdate = productRepository.findAll().size();
 
     // Update the product
-    Product updatedProduct = productRepository.findById(product.getId()).get();
-    // Disconnect from session so that the updates on updatedProduct are not directly saved in db
-    em.detach(updatedProduct);
-    updatedProduct
-        .productCategoryEnum(UPDATED_PRODUCT_CATEGORY_ENUM)
-        .name(UPDATED_NAME)
-        .quantity(UPDATED_QUANTITY)
-        .priceNet(UPDATED_PRICE_NET)
-        .vat(UPDATED_VAT)
-        .priceGross(null)
-        .stock(UPDATED_STOCK)
-        .description(UPDATED_DESCRIPTION)
-        .createTime(UPDATED_CREATE_TIME)
-        .updateTime(UPDATED_UPDATE_TIME)
-        .image(UPDATED_IMAGE)
-        .imageContentType(UPDATED_IMAGE_CONTENT_TYPE);
-    ProductDTO productDto = productMapper.toDto(updatedProduct);
+    ProductDTO productDto = productMapper.toDto(
+        productRepository.findById(product.getId()).get());
+    productDto.setProductCategoryEnum(UPDATED_PRODUCT_CATEGORY_ENUM);
+    productDto.setName(UPDATED_NAME);
+    productDto.setQuantity(UPDATED_QUANTITY);
+    productDto.setPriceNet(UPDATED_PRICE_NET);
+    productDto.setVat(UPDATED_VAT);
+    productDto.setPriceGross(null);
+    productDto.setStock(UPDATED_STOCK);
+    productDto.setDescription(UPDATED_DESCRIPTION);
+    productDto.setCreateTime(UPDATED_CREATE_TIME);
+    productDto.setUpdateTime(UPDATED_UPDATE_TIME);
+    productDto.setImage(UPDATED_IMAGE);
+    productDto.setImageContentType(UPDATED_IMAGE_CONTENT_TYPE);
 
     // Update the Product
-    restProductMockMvc
-        .perform(put(ENTITY_API_URL_ID, productDto.getId())
+    restProductMockMvc.perform(put(ENTITY_API_URL_ID, productDto.getId())
             .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isForbidden());
-
-    // Validate the Product in the database
-    List<Product> productList = productRepository.findAll();
-    assertThat(productList).hasSize(databaseSizeBeforeUpdate);
-    Product testProduct = productList.get(productList.size() - 1);
-    assertThat(testProduct.getProductCategoryEnum()).isEqualTo(DEFAULT_PRODUCT_CATEGORY_ENUM);
-    assertThat(testProduct.getName()).isEqualTo(DEFAULT_NAME);
-    assertThat(testProduct.getQuantity()).isEqualTo(DEFAULT_QUANTITY.setScale(2));
-    assertThat(testProduct.getPriceNet()).isEqualTo(DEFAULT_PRICE_NET.setScale(2));
-    assertThat(testProduct.getVat()).isEqualTo(DEFAULT_VAT.setScale(2));
-    assertThat(testProduct.getPriceGross()).isEqualTo(DEFAULT_FAKE_PRICE_GROSS.setScale(2));
-    assertThat(testProduct.getStock()).isEqualTo(DEFAULT_STOCK.setScale(2));
-    assertThat(testProduct.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
-    assertNotNull(testProduct.getCreateTime());
-    assertNotNull(testProduct.getUpdateTime());
-    assertThat(testProduct.getImage()).isEqualTo(DEFAULT_IMAGE);
-    assertThat(testProduct.getImageContentType()).isEqualTo(DEFAULT_IMAGE_CONTENT_TYPE);
   }
 
   @Test
@@ -493,46 +483,26 @@ class ProductResourceIT {
     final int databaseSizeBeforeUpdate = productRepository.findAll().size();
 
     // Update the product
-    Product updatedProduct = productRepository.findById(product.getId()).get();
-    // Disconnect from session so that the updates on updatedProduct are not directly saved in db
-    em.detach(updatedProduct);
-    updatedProduct
-        .productCategoryEnum(UPDATED_PRODUCT_CATEGORY_ENUM)
-        .name(UPDATED_NAME)
-        .quantity(UPDATED_QUANTITY)
-        .priceNet(UPDATED_PRICE_NET)
-        .vat(UPDATED_VAT)
-        .priceGross(null)
-        .stock(UPDATED_STOCK)
-        .description(UPDATED_DESCRIPTION)
-        .createTime(UPDATED_CREATE_TIME)
-        .updateTime(UPDATED_UPDATE_TIME)
-        .image(UPDATED_IMAGE)
-        .imageContentType(UPDATED_IMAGE_CONTENT_TYPE);
-    ProductDTO productDto = productMapper.toDto(updatedProduct);
+    ProductDTO productDto = productMapper.toDto(
+        productRepository.findById(product.getId()).get());
+    productDto.setProductCategoryEnum(UPDATED_PRODUCT_CATEGORY_ENUM);
+    productDto.setName(UPDATED_NAME);
+    productDto.setQuantity(UPDATED_QUANTITY);
+    productDto.setPriceNet(UPDATED_PRICE_NET);
+    productDto.setVat(UPDATED_VAT);
+    productDto.setPriceGross(null);
+    productDto.setStock(UPDATED_STOCK);
+    productDto.setDescription(UPDATED_DESCRIPTION);
+    productDto.setCreateTime(UPDATED_CREATE_TIME);
+    productDto.setUpdateTime(UPDATED_UPDATE_TIME);
+    productDto.setImage(UPDATED_IMAGE);
+    productDto.setImageContentType(UPDATED_IMAGE_CONTENT_TYPE);
 
     // Update the Product
-    restProductMockMvc
-        .perform(put(ENTITY_API_URL_ID, productDto.getId()).contentType(MediaType.APPLICATION_JSON)
+    restProductMockMvc.perform(put(ENTITY_API_URL_ID, productDto.getId())
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isUnauthorized());
-
-    // Validate the Product in the database
-    List<Product> productList = productRepository.findAll();
-    assertThat(productList).hasSize(databaseSizeBeforeUpdate);
-    Product testProduct = productList.get(productList.size() - 1);
-    assertThat(testProduct.getProductCategoryEnum()).isEqualTo(DEFAULT_PRODUCT_CATEGORY_ENUM);
-    assertThat(testProduct.getName()).isEqualTo(DEFAULT_NAME);
-    assertThat(testProduct.getQuantity()).isEqualTo(DEFAULT_QUANTITY.setScale(2));
-    assertThat(testProduct.getPriceNet()).isEqualTo(DEFAULT_PRICE_NET.setScale(2));
-    assertThat(testProduct.getVat()).isEqualTo(DEFAULT_VAT.setScale(2));
-    assertThat(testProduct.getPriceGross()).isEqualTo(DEFAULT_FAKE_PRICE_GROSS.setScale(2));
-    assertThat(testProduct.getStock()).isEqualTo(DEFAULT_STOCK.setScale(2));
-    assertThat(testProduct.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
-    assertNotNull(testProduct.getCreateTime());
-    assertNotNull(testProduct.getUpdateTime());
-    assertThat(testProduct.getImage()).isEqualTo(DEFAULT_IMAGE);
-    assertThat(testProduct.getImageContentType()).isEqualTo(DEFAULT_IMAGE_CONTENT_TYPE);
   }
 
   @Test
@@ -545,30 +515,24 @@ class ProductResourceIT {
     final int databaseSizeBeforeUpdate = productRepository.findAll().size();
 
     // Update the product
-    Product updatedProduct = productRepository.findById(product.getId()).get();
-    // Disconnect from session so that the updates on updatedProduct are not directly saved in db
-    em.detach(updatedProduct);
-    updatedProduct
-        .productCategoryEnum(UPDATED_PRODUCT_CATEGORY_ENUM)
-        .name(UPDATED_NAME)
-        .quantity(UPDATED_QUANTITY)
-        .priceNet(UPDATED_PRICE_NET)
-        .vat(UPDATED_VAT)
-        .priceGross(null)
-        .stock(UPDATED_STOCK)
-        .description(UPDATED_DESCRIPTION)
-        .createTime(UPDATED_CREATE_TIME)
-        .updateTime(UPDATED_UPDATE_TIME)
-        .image(UPDATED_IMAGE)
-        .imageContentType(UPDATED_IMAGE_CONTENT_TYPE);
-    ProductDTO productDto = productMapper.toDto(updatedProduct);
+    ProductDTO productDto = productMapper.toDto(
+        productRepository.findById(product.getId()).get());
+    productDto.setProductCategoryEnum(UPDATED_PRODUCT_CATEGORY_ENUM);
+    productDto.setName(UPDATED_NAME);
+    productDto.setQuantity(UPDATED_QUANTITY);
+    productDto.setPriceNet(UPDATED_PRICE_NET);
+    productDto.setVat(UPDATED_VAT);
+    productDto.setPriceGross(null);
+    productDto.setStock(UPDATED_STOCK);
+    productDto.setDescription(UPDATED_DESCRIPTION);
+    productDto.setCreateTime(UPDATED_CREATE_TIME);
+    productDto.setUpdateTime(UPDATED_UPDATE_TIME);
+    productDto.setImage(UPDATED_IMAGE);
+    productDto.setImageContentType(UPDATED_IMAGE_CONTENT_TYPE);
 
-    restProductMockMvc
-        .perform(
-            put(ENTITY_API_URL_ID, productDto.getId())
+    restProductMockMvc.perform(put(ENTITY_API_URL_ID, productDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtil.convertObjectToJsonBytes(productDto))
-        )
+                .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isOk());
 
     // Validate the Product in the database
@@ -580,7 +544,7 @@ class ProductResourceIT {
     assertThat(testProduct.getQuantity()).isEqualTo(DEFAULT_QUANTITY);
     assertThat(testProduct.getPriceNet()).isEqualTo(UPDATED_PRICE_NET);
     assertThat(testProduct.getVat()).isEqualTo(UPDATED_VAT);
-    assertThat(testProduct.getPriceGross()).isEqualTo(UPDATED_PROPER_PRICE_GROSS);
+    assertThat(testProduct.getPriceGross()).isEqualTo(updatedProperPriceGross);
     assertThat(testProduct.getStock()).isEqualTo(UPDATED_STOCK);
     assertThat(testProduct.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
     assertNotNull(testProduct.getCreateTime());
@@ -600,12 +564,9 @@ class ProductResourceIT {
     ProductDTO productDto = productMapper.toDto(product);
 
     // If the entity doesn't have an ID, it will throw BadRequestAlertException
-    restProductMockMvc
-        .perform(
-            put(ENTITY_API_URL_ID, productDto.getId())
+    restProductMockMvc.perform(put(ENTITY_API_URL_ID, productDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtil.convertObjectToJsonBytes(productDto))
-        )
+                .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isBadRequest());
 
     // Validate the Product in the database
@@ -624,12 +585,9 @@ class ProductResourceIT {
     ProductDTO productDto = productMapper.toDto(product);
 
     // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-    restProductMockMvc
-        .perform(
-            put(ENTITY_API_URL_ID, count.incrementAndGet())
+    restProductMockMvc.perform(put(ENTITY_API_URL_ID, count.incrementAndGet())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtil.convertObjectToJsonBytes(productDto))
-        )
+                .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isBadRequest());
 
     // Validate the Product in the database
@@ -648,8 +606,8 @@ class ProductResourceIT {
     ProductDTO productDto = productMapper.toDto(product);
 
     // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-    restProductMockMvc
-        .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+    restProductMockMvc.perform(put(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isMethodNotAllowed());
 
@@ -666,8 +624,9 @@ class ProductResourceIT {
 
     // Create the Product
     ProductDTO productDto = productMapper.toDto(product);
-    restProductMockMvc
-        .perform(delete(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+
+    restProductMockMvc.perform(delete(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isForbidden());
 
@@ -683,8 +642,8 @@ class ProductResourceIT {
 
     // Create the Product
     ProductDTO productDto = productMapper.toDto(product);
-    restProductMockMvc
-        .perform(delete(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+    restProductMockMvc.perform(delete(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(productDto)))
         .andExpect(status().isUnauthorized());
 
@@ -703,8 +662,8 @@ class ProductResourceIT {
     int databaseSizeBeforeDelete = productRepository.findAll().size();
 
     // Delete the product
-    restProductMockMvc
-        .perform(delete(ENTITY_API_URL_ID, product.getId()).accept(MediaType.APPLICATION_JSON))
+    restProductMockMvc.perform(delete(ENTITY_API_URL_ID, product.getId())
+            .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent());
 
     // Validate the database contains one less item
