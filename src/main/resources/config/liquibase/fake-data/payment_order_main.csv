@@ -1,11 +1,5 @@
-id;name;price_net;vat;price_gross
-1;Niemcy;45636;27068;39960
-2;Chips;91121;14979;4688
-3;cross-platform calculate infrastructures;8209;24820;70919
-4;Assistant Plastic Applications;48076;40151;3193
-5;compress;46495;72081;63936
-6;orchestration infrastructures;84557;26760;86008
-7;Walk;59130;23711;59891
-8;deposit;9171;83925;61825
-9;Facilitator;47520;53470;97771
-10;Assistant synthesizing Handmade;12744;31396;5387
+id;name;price_net;vat;price_gross;order_main_id
+1;DHL bank transfer;3.0;23;3.69;1
+2;DHL cash on delivery;3.5;23;4.30;2
+3;UPS bank transfer;2.5;23;3.08;3
+4;UPS cash on delivery;2.8;23;3.44;4
