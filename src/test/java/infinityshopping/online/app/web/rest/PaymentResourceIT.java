@@ -104,11 +104,6 @@ class PaymentResourceIT implements AddVat {
     payment = createEntity(em);
   }
 
-  @Override
-  public BigDecimal addVat(BigDecimal priceNet, BigDecimal vat) {
-    return priceNet.add(priceNet.multiply(vat.movePointLeft(2)));
-  }
-
   @Test
   @Transactional
   @WithMockUser

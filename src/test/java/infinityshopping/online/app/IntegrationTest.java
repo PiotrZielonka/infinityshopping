@@ -1,6 +1,6 @@
 package infinityshopping.online.app;
 
-import infinityshopping.online.app.InfinityshoppingApp;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

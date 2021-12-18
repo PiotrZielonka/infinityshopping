@@ -256,11 +256,6 @@ public class PaymentCartServiceImplTests implements AddVat {
     paymentRepository.save(payment);
   }
 
-  @Override
-  public BigDecimal addVat(BigDecimal priceNet, BigDecimal vat) {
-    return priceNet.add(priceNet.multiply(vat.movePointLeft(2)));
-  }
-
   @Test
   @Transactional
   public void shouldFindPaymentCartById() throws Exception {

@@ -4,7 +4,6 @@ import infinityshopping.online.app.domain.OrderMain;
 import infinityshopping.online.app.domain.ProductInOrderMain;
 import infinityshopping.online.app.repository.OrderMainRepository;
 import infinityshopping.online.app.repository.ProductInOrderMainRepository;
-import infinityshopping.online.app.service.AddVat;
 import infinityshopping.online.app.service.ProductInOrderMainService;
 import infinityshopping.online.app.service.dto.ProductInOrderMainDTO;
 import infinityshopping.online.app.service.mapper.ProductInOrderMainMapper;
@@ -20,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductInOrderMainServiceImpl implements ProductInOrderMainService, AddVat {
+public class ProductInOrderMainServiceImpl implements ProductInOrderMainService {
 
   private final Logger log = LoggerFactory.getLogger(ProductInOrderMainServiceImpl.class);
 

@@ -20,8 +20,4 @@ export class ShipmentCartComponent implements OnInit {
       (shipmentCart: any) => {this.shipmentCart = shipmentCart.body;
     });
   }
-
-  trackId(index: number, item: IShipmentCart): number {
-    return item.id!;
-  }
 }

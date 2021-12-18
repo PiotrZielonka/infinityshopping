@@ -6,9 +6,9 @@
 Navbar
 ========================================================================== */
 
-.navbar-version {
-  font-size: 0.65em;
-  color: $navbar-dark-color;
+.navbar-title {
+  text-transform: lowercase;
+  font-size: 20px;
 }
 
 .profile-image {

@@ -4,9 +4,10 @@
   </div>
 
   <div class="col-md-9">
-    <h1 class="display-4"><span jhiTranslate="home.title">Welcome to InfinityShopping!</span></h1>
+    <h2><span jhiTranslate="home.title" class="welcomeToFont">Welcome to infinityshopping!</span></h2>
 
-    <p class="lead" jhiTranslate="home.subtitle">This is your homepage</p>
+    <p class="lead" jhiTranslate="home.subtitle">Choose from 21 store templates (everything will change in the whole design, buttons, background, etc.) 
+      then design this home page and an e-commerce shop is going to be yours.</p>
 
     <div [ngSwitch]="account !== null">
       <div class="alert alert-success" *ngSwitchCase="true">
@@ -29,6 +30,53 @@
         <a class="alert-link" routerLink="account/register" jhiTranslate="global.messages.info.register.link">Register a new account</a>
       </div>
     </div>
+    <p jhiTranslate="home.moreInformation">More information about Infinity Shopping:</p>
+
+    <ul>
+      <li>
+        <a href="https://www.jhipster.tech/" 
+           target="_blank" rel="noopener noreferrer" 
+           jhiTranslate="home.infinityShoppingLink.homepage"
+          >Infinity Shopping homepage</a
+        >
+      </li>
+      <li>
+        <a href="https://www.jhipster.tech/" 
+           target="_blank" rel="noopener noreferrer" 
+           jhiTranslate="home.infinityShoppingLink.gitHub"
+          >Infinity Shopping GitHub</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://stackoverflow.com/tags/jhipster/info"
+          target="_blank"
+          rel="noopener noreferrer"
+          jhiTranslate="home.infinityShoppingLink.exampleShopPage"
+          >Website of example shop of Infinity Shopping</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://stackoverflow.com/tags/jhipster/info"
+          target="_blank"
+          rel="noopener noreferrer"
+          jhiTranslate="home.infinityShoppingLink.exampleShopGitHub"
+          >GitHub of example shop of Infinity Shopping</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://stackoverflow.com/tags/jhipster/info"
+          target="_blank"
+          rel="noopener noreferrer"
+          jhiTranslate="home.infinityShoppingLink.youTube"
+          >YouTube</a
+        >
+      </li>
+    </ul>
+    
+    <p jhiTranslate="home.likeInfinityShopping">If you like Infinity Shopping, don't forget to give us a star on GitHub!</p>
 
     <p jhiTranslate="home.question">If you have any question on JHipster:</p>
 
@@ -71,8 +119,7 @@
     <p>
       <span jhiTranslate="home.like">If you like JHipster, don't forget to give us a star on</span>
       <a href="https://github.com/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer" jhiTranslate="home.github"
-        >GitHub</a
-      >!
+        >GitHub!</a>
     </p>
   </div>
 </div>

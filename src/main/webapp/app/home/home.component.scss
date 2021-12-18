@@ -2,11 +2,16 @@
 Main page styles
 ========================================================================== */
 
+.welcomeToFont {  
+  text-transform: lowercase;
+  font-size: 42px;
+}
+
 .hipster {
   display: inline-block;
   width: 347px;
   height: 497px;
-  background: url('../../content/images/jhipster_family_member_0.svg') no-repeat center top;
+  background: url('../../content/images/jhipster_family_member_0.png') no-repeat center top;
   background-size: contain;
 }
 
