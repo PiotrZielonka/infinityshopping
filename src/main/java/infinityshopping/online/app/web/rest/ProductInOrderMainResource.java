@@ -1,11 +1,11 @@
 package infinityshopping.online.app.web.rest;
 
 import infinityshopping.online.app.domain.Product;
-import infinityshopping.online.app.domain.ProductInOrderMain;
 import infinityshopping.online.app.repository.ProductInOrderMainRepository;
 import infinityshopping.online.app.repository.ProductRepository;
 import infinityshopping.online.app.service.ProductInOrderMainService;
 import infinityshopping.online.app.service.dto.ProductInOrderMainDTO;
+import infinityshopping.online.app.service.errors.ProductNotFoundException;
 import infinityshopping.online.app.web.rest.errors.BadRequestAlertException;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -105,11 +105,16 @@ public class ProductInOrderMainResource {
   }
 
   private void checkProperProductQuantity(ProductInOrderMainDTO productInOrderMainDto) {
-    product = productRepository.findById(productInOrderMainDto.getProductId()).get();
+    product = checkIfProductExist(productInOrderMainDto);
 
     if (productInOrderMainDto.getQuantity().compareTo(product.getStock()) > 0) {
       throw new BadRequestAlertException("We do not have that much of this",
           ENTITY_NAME, "inStock");
     }
+  }
+
+  private Product checkIfProductExist(ProductInOrderMainDTO productInOrderMainDto) {
+    return productRepository.findById(productInOrderMainDto.getProductId())
+        .orElseThrow(ProductNotFoundException::new);
   }
 }

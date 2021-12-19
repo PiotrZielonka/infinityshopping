@@ -1,11 +1,15 @@
 package infinityshopping.online.app.service.impl;
 
 import infinityshopping.online.app.domain.OrderMain;
+import infinityshopping.online.app.domain.ProductInCart;
 import infinityshopping.online.app.domain.ProductInOrderMain;
 import infinityshopping.online.app.repository.OrderMainRepository;
 import infinityshopping.online.app.repository.ProductInOrderMainRepository;
 import infinityshopping.online.app.service.ProductInOrderMainService;
 import infinityshopping.online.app.service.dto.ProductInOrderMainDTO;
+import infinityshopping.online.app.service.errors.OrderMainNotFoundException;
+import infinityshopping.online.app.service.errors.ProductInCartNotFoundException;
+import infinityshopping.online.app.service.errors.ProductInOrderMainNotFoundException;
 import infinityshopping.online.app.service.mapper.ProductInOrderMainMapper;
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -37,7 +41,6 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
 
   private OrderMain orderMain;
 
-  private static final String ENTITY_NAME = "product";
 
   public ProductInOrderMainServiceImpl(
       ProductInOrderMainRepository productInOrderMainRepository,
@@ -80,7 +83,7 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
   }
 
   private void setAmountOfCartNetToProperOrderMain(ProductInOrderMain productInOrderMain) {
-    orderMain = orderMainRepository.findById(productInOrderMain.getOrderMain().getId()).get();
+    orderMain = checkIfProperOrderMainExist(productInOrderMain);
 
     amountOfCartNet = BigDecimal.ZERO;
 
@@ -93,7 +96,7 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
   }
 
   private void setAmountOfCartGrossToProperOrderMain(ProductInOrderMain productInOrderMain) {
-    orderMain = orderMainRepository.findById(productInOrderMain.getOrderMain().getId()).get();
+    orderMain = checkIfProperOrderMainExist(productInOrderMain);
 
     amountOfCartGross = BigDecimal.ZERO;
 
@@ -106,7 +109,7 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
   }
 
   private void setAmountOfOrderNetToProperOrderMain(ProductInOrderMain productInOrderMain) {
-    orderMain = orderMainRepository.findById(productInOrderMain.getOrderMain().getId()).get();
+    orderMain = checkIfProperOrderMainExist(productInOrderMain);
 
     orderMain.setAmountOfOrderNet(BigDecimal.ZERO);
 
@@ -116,7 +119,7 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
   }
 
   private void setAmountOfOrderGrossToProperOrderMain(ProductInOrderMain productInOrderMain) {
-    orderMain = orderMainRepository.findById(productInOrderMain.getOrderMain().getId()).get();
+    orderMain = checkIfProperOrderMainExist(productInOrderMain);
 
     orderMain.setAmountOfOrderGross(BigDecimal.ZERO);
 
@@ -146,7 +149,7 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
   public void delete(Long id) {
     log.debug("Request to delete ProductInOrderMain : {}", id);
 
-    productInOrderMain = productInOrderMainRepository.findById(id).get();
+    productInOrderMain = checkIfProductInOrderMainExist(id);
 
     minusSelectedProductTotalPriceNetToProperOrderMain(productInOrderMain);
     minusSelectedProductTotalPriceGrossToProperOrderMain(productInOrderMain);
@@ -158,7 +161,7 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
 
   private void minusSelectedProductTotalPriceNetToProperOrderMain(
       ProductInOrderMain productInOrderMain) {
-    orderMain = orderMainRepository.findById(productInOrderMain.getOrderMain().getId()).get();
+    orderMain = checkIfProperOrderMainExist(productInOrderMain);
 
     orderMain.setAmountOfCartNet(orderMain.getAmountOfCartNet().subtract(
         productInOrderMain.getTotalPriceNet()));
@@ -167,7 +170,7 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
 
   private void minusSelectedProductTotalPriceGrossToProperOrderMain(
       ProductInOrderMain productInOrderMain) {
-    orderMain = orderMainRepository.findById(productInOrderMain.getOrderMain().getId()).get();
+    orderMain = checkIfProperOrderMainExist(productInOrderMain);
 
     orderMain.setAmountOfCartGross(orderMain.getAmountOfCartGross().subtract(
         productInOrderMain.getTotalPriceGross()));
@@ -176,7 +179,7 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
 
   private void minusSelectedProductTotalPriceNetToProperOrderMainAmountOfOrderNet(
       ProductInOrderMain productInOrderMain) {
-    orderMain = orderMainRepository.findById(productInOrderMain.getOrderMain().getId()).get();
+    orderMain = checkIfProperOrderMainExist(productInOrderMain);
 
     orderMain.setAmountOfOrderNet(orderMain.getAmountOfOrderNet().subtract(
         productInOrderMain.getTotalPriceNet()));
@@ -185,10 +188,20 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
 
   private void minusSelectedProductTotalPriceGrossToProperOrderMainAmountOfOrderGross(
       ProductInOrderMain productInOrderMain) {
-    orderMain = orderMainRepository.findById(productInOrderMain.getOrderMain().getId()).get();
+    orderMain = checkIfProperOrderMainExist(productInOrderMain);
 
     orderMain.setAmountOfOrderGross(orderMain.getAmountOfOrderGross().subtract(
         productInOrderMain.getTotalPriceGross()));
     orderMainRepository.save(orderMain);
+  }
+
+  private OrderMain checkIfProperOrderMainExist(ProductInOrderMain productInOrderMain) {
+    return orderMainRepository.findById(productInOrderMain.getOrderMain().getId())
+        .orElseThrow(OrderMainNotFoundException::new);
+  }
+
+  private ProductInOrderMain checkIfProductInOrderMainExist(Long id) {
+    return productInOrderMainRepository.findById(id)
+        .orElseThrow(ProductInOrderMainNotFoundException::new);
   }
 }

@@ -1,9 +1,13 @@
 package infinityshopping.online.app.service.impl;
 
 import infinityshopping.online.app.domain.ShipmentOrderMain;
+import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.ShipmentOrderMainRepository;
+import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.ShipmentOrderMainService;
+import infinityshopping.online.app.service.UserNotFoundException;
 import infinityshopping.online.app.service.dto.ShipmentOrderMainDTO;
+import infinityshopping.online.app.service.errors.ShipmentOrderMainNotFoundException;
 import infinityshopping.online.app.service.mapper.ShipmentOrderMainMapper;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -40,8 +44,7 @@ public class ShipmentOrderMainServiceImpl implements ShipmentOrderMainService {
 
   private void setProperOrderMainIdToShipmentOrderMainBecauseItIsNotInDto(
       ShipmentOrderMain shipmentOrderMain) {
-    shipmentOrderMain.setOrderMain(shipmentOrderMainRepository.findById(shipmentOrderMain.getId())
-        .get().getOrderMain());
+    shipmentOrderMain.setOrderMain(checkIfShipmentOrderMainExist(shipmentOrderMain).getOrderMain());
   }
 
   @Override
@@ -57,5 +60,10 @@ public class ShipmentOrderMainServiceImpl implements ShipmentOrderMainService {
     log.debug("Request to get ShipmentOrderMain by id OrderMain");
     return shipmentOrderMainRepository.findByOrderMainId(id)
         .map(shipmentOrderMainMapper::toDto);
+  }
+
+  private ShipmentOrderMain checkIfShipmentOrderMainExist(ShipmentOrderMain shipmentOrderMain) {
+    return shipmentOrderMainRepository.findById(shipmentOrderMain.getId())
+            .orElseThrow(ShipmentOrderMainNotFoundException::new);
   }
 }

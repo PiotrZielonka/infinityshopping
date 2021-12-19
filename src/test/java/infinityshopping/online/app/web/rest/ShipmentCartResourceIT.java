@@ -241,7 +241,7 @@ class ShipmentCartResourceIT {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void getShipmentCart() throws Exception {
+  void getShipmentCart() throws Exception {
     // Get the shipmentCart
     restShipmentCartMockMvc.perform(get(ENTITY_API_URL_ID, shipmentCart.getId()))
         .andExpect(status().isOk())
@@ -261,7 +261,7 @@ class ShipmentCartResourceIT {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void getShipmentCartOfCurrentLoggedUser() throws Exception {
+  void getShipmentCartOfCurrentLoggedUser() throws Exception {
     // Get only the shipmentCart of current user
     restShipmentCartMockMvc.perform(get(ENTITY_API_URL + "/userShipmentCart"))
         .andExpect(status().isOk())
@@ -280,7 +280,7 @@ class ShipmentCartResourceIT {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void checkFirstNameIsRequired() throws Exception {
+  void checkFirstNameIsRequired() throws Exception {
     final int databaseSizeBeforeUpdate = shipmentCartRepository.findAll().size();
     ShipmentCart updatedShipmentCart = shipmentCartRepository.findById(shipmentCart.getId()).get();
     em.detach(updatedShipmentCart);
@@ -429,7 +429,7 @@ class ShipmentCartResourceIT {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void userShouldNotEditAnotherShipmentCartOfAnotherUser() throws Exception {
+  void userShouldNotEditAnotherShipmentCartOfAnotherUser() throws Exception {
     final int databaseSizeBeforeUpdate = shipmentCartRepository.findAll().size();
     ShipmentCart updatedShipmentCart = shipmentCartRepository.findById(shipmentCart.getId()).get();
     updatedShipmentCart.setLastName(UPDATED_LAST_NAME);
@@ -459,7 +459,7 @@ class ShipmentCartResourceIT {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void putNewShipmentCart() throws Exception {
+  void putNewShipmentCart() throws Exception {
     final int databaseSizeBeforeUpdate = shipmentCartRepository.findAll().size();
     ShipmentCart updatedShipmentCart = shipmentCartRepository.findById(shipmentCart.getId()).get();
     updatedShipmentCart.setFirstName(UPDATED_FIRST_NAME);

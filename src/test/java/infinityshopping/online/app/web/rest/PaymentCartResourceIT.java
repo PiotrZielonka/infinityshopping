@@ -315,7 +315,7 @@ class PaymentCartResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void userShouldNotEditAnotherPaymentCartOfAnotherUser() throws Exception {
+  void userShouldNotEditAnotherPaymentCartOfAnotherUser() throws Exception {
     final int databaseSizeBeforeUpdate = paymentCartRepository.findAll().size();
     PaymentCart updatedPaymentCart = paymentCartRepository.findById(paymentCart.getId()).get();
     PaymentCartDTO paymentCartDto = paymentCartMapper.toDto(updatedPaymentCart);

@@ -23,7 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(classes = InfinityshoppingApp.class)
-public class ProductServiceImplTests {
+class ProductServiceImplTests {
 
   private static final ProductCategoryEnum DEFAULT_PRODUCT_CATEGORY_ENUM
       = ProductCategoryEnum.Vitamins;
@@ -101,7 +101,7 @@ public class ProductServiceImplTests {
 
   @Test
   @Transactional
-  public void shouldSaveProductAndSetProperPriceGrossAutomatic() throws Exception {
+  void shouldSaveProductAndSetProperPriceGrossAutomatic() throws Exception {
     // given
     final int databaseSizeBeforeSave = productRepository.findAll().size();
     ProductDTO productDto = productMapper.toDto(product);
@@ -129,7 +129,7 @@ public class ProductServiceImplTests {
 
   @Test
   @Transactional
-  public void shouldUpdateExistProductAndSetProperPriceGrossAutomatic() throws Exception {
+  void shouldUpdateExistProductAndSetProperPriceGrossAutomatic() throws Exception {
     // given
     productRepository.saveAndFlush(product);
     final int databaseSizeBeforeUpdate = productRepository.findAll().size();
@@ -172,7 +172,7 @@ public class ProductServiceImplTests {
 
   @Test
   @Transactional
-  public void shouldSetQuantityOneWhileProductIsSavedBecauseAcustomerCanBuyAlwaysAtLeastOneProduct()
+  void shouldSetQuantityOneWhileProductIsSavedBecauseAcustomerCanBuyAlwaysAtLeastOneProduct()
       throws Exception {
     // given
     final int databaseSizeBeforeSave = productRepository.findAll().size();
@@ -203,7 +203,7 @@ public class ProductServiceImplTests {
 
   @Test
   @Transactional
-  public void shouldFindProductById() throws Exception {
+  void shouldFindProductById() throws Exception {
     // given
     product.setPriceGross(DEFAULT_PROPER_PRICE_GROSS);
     productRepository.saveAndFlush(product);
@@ -230,7 +230,7 @@ public class ProductServiceImplTests {
 
   @Test
   @Transactional
-  public void shouldDeleteProduct() throws Exception {
+  void shouldDeleteProduct() throws Exception {
     // given
     productRepository.saveAndFlush(product);
 

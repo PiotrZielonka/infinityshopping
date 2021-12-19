@@ -56,9 +56,8 @@ public class CartServiceImpl implements CartService {
   }
 
   private User checkIfUserExist() {
-    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UserNotFoundException()))
-        .orElseThrow(() -> new UserNotFoundException());
-    return currentLoggedUser;
+    return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(UserNotFoundException::new))
+        .orElseThrow(UserNotFoundException::new);
   }
 }

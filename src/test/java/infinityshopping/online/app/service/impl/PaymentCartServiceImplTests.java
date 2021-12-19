@@ -37,7 +37,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(classes = InfinityshoppingApp.class)
-public class PaymentCartServiceImplTests implements AddVat {
+class PaymentCartServiceImplTests implements AddVat {
 
   private static Random random = new Random();
   private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
@@ -258,7 +258,7 @@ public class PaymentCartServiceImplTests implements AddVat {
 
   @Test
   @Transactional
-  public void shouldFindPaymentCartById() throws Exception {
+  void shouldFindPaymentCartById() throws Exception {
     // when
     Optional<PaymentCartDTO> testPaymentCart
         = paymentCartServiceImpl.findOne(paymentCart.getId());
@@ -274,7 +274,7 @@ public class PaymentCartServiceImplTests implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void shouldUpdateExistPaymentCart() throws Exception {
+  void shouldUpdateExistPaymentCart() throws Exception {
     // given
     PaymentCartDTO paymentCartDto = new PaymentCartDTO();
     paymentCartDto.setId(paymentCart.getId());
@@ -290,9 +290,10 @@ public class PaymentCartServiceImplTests implements AddVat {
     paymentCartServiceImpl.save(paymentCartDto);
 
     // then
-    assertThat(paymentCartDatabaseSizeBeforeSave).isEqualTo(paymentCartDatabaseSizeBeforeSave);
-    assertThat(cartDatabaseSizeBeforeSave).isEqualTo(cartDatabaseSizeBeforeSave);
     List<PaymentCart> paymentCartList = paymentCartRepository.findAll();
+    assertThat(paymentCartList).hasSize(paymentCartDatabaseSizeBeforeSave);
+    List<Cart> cartList = cartRepository.findAll();
+    assertThat(cartList).hasSize(cartDatabaseSizeBeforeSave);
     PaymentCart testPaymentCart = paymentCartList.get(paymentCartList.size() - 2);
     assertThat(testPaymentCart.getId()).isEqualTo(paymentCart.getId());
     assertThat(testPaymentCart.getName()).isEqualTo(DEFAULT_Payment_NAME);
@@ -306,7 +307,7 @@ public class PaymentCartServiceImplTests implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void shouldSaveCartIdInPaymentCartAfterSavingPaymentCart() throws Exception {
+  void shouldSaveCartIdInPaymentCartAfterSavingPaymentCart() throws Exception {
     // given
     PaymentCartDTO paymentCartDto = new PaymentCartDTO();
     paymentCartDto.setId(paymentCart.getId());
@@ -322,9 +323,10 @@ public class PaymentCartServiceImplTests implements AddVat {
     paymentCartServiceImpl.save(paymentCartDto);
 
     // then
-    assertThat(paymentCartDatabaseSizeBeforeSave).isEqualTo(paymentCartDatabaseSizeBeforeSave);
-    assertThat(cartDatabaseSizeBeforeSave).isEqualTo(cartDatabaseSizeBeforeSave);
+    List<PaymentCart> paymentCartList = paymentCartRepository.findAll();
+    assertThat(paymentCartList).hasSize(paymentCartDatabaseSizeBeforeSave);
     List<Cart> cartList = cartRepository.findAll();
+    assertThat(cartList).hasSize(cartDatabaseSizeBeforeSave);
     Cart testCart = cartList.get(cartList.size() - 2);
     assertThat(testCart.getPaymentCart().getCart()).isEqualTo(paymentCart.getCart());
   }
@@ -332,7 +334,7 @@ public class PaymentCartServiceImplTests implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void shouldSetAmountOfShipmentToProperCartAfterSavingPaymentCart()
+  void shouldSetAmountOfShipmentToProperCartAfterSavingPaymentCart()
       throws Exception {
     // given
     PaymentCartDTO paymentCartDto = new PaymentCartDTO();
@@ -349,9 +351,10 @@ public class PaymentCartServiceImplTests implements AddVat {
     paymentCartServiceImpl.save(paymentCartDto);
 
     // then
-    assertThat(paymentCartDatabaseSizeBeforeSave).isEqualTo(paymentCartDatabaseSizeBeforeSave);
-    assertThat(cartDatabaseSizeBeforeSave).isEqualTo(cartDatabaseSizeBeforeSave);
+    List<PaymentCart> paymentCartList = paymentCartRepository.findAll();
+    assertThat(paymentCartList).hasSize(paymentCartDatabaseSizeBeforeSave);
     List<Cart> cartList = cartRepository.findAll();
+    assertThat(cartList).hasSize(cartDatabaseSizeBeforeSave);
     Cart testCart = cartList.get(cartList.size() - 2);
     assertThat(testCart.getId()).isEqualTo(paymentCart.getCart().getId());
     assertThat(testCart.getAmountOfCartNet()).isEqualTo(DEFAULT_AMOUNT_OF_CART_NET);
@@ -363,7 +366,7 @@ public class PaymentCartServiceImplTests implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void shouldSetAmountOfOrderToProperCartAfterSavingPaymentCart()
+  void shouldSetAmountOfOrderToProperCartAfterSavingPaymentCart()
       throws Exception {
     // given
     PaymentCartDTO paymentCartDto = new PaymentCartDTO();
@@ -380,46 +383,10 @@ public class PaymentCartServiceImplTests implements AddVat {
     paymentCartServiceImpl.save(paymentCartDto);
 
     // then
-    assertThat(paymentCartDatabaseSizeBeforeSave).isEqualTo(paymentCartDatabaseSizeBeforeSave);
-    assertThat(cartDatabaseSizeBeforeSave).isEqualTo(cartDatabaseSizeBeforeSave);
+    List<PaymentCart> paymentCartList = paymentCartRepository.findAll();
+    assertThat(paymentCartList).hasSize(paymentCartDatabaseSizeBeforeSave);
     List<Cart> cartList = cartRepository.findAll();
-    Cart testCart = cartList.get(cartList.size() - 2);
-    assertThat(testCart.getId()).isEqualTo(paymentCart.getCart().getId());
-    assertThat(testCart.getAmountOfCartNet()).isEqualTo(DEFAULT_AMOUNT_OF_CART_NET);
-    assertThat(testCart.getAmountOfCartGross()).isEqualTo(DEFAULT_AMOUNT_OF_CART_GROSS);
-    assertThat(testCart.getAmountOfShipmentNet()).isEqualTo(DEFAULT_Payment_PRICE_NET);
-    assertThat(testCart.getAmountOfShipmentGross()).isEqualTo(defaultPaymentPriceGross);
-    assertThat(testCart.getAmountOfOrderNet()).isEqualTo(
-        DEFAULT_AMOUNT_OF_CART_NET.add(DEFAULT_Payment_PRICE_NET));
-    assertThat(testCart.getAmountOfOrderGross()).isEqualTo(
-        DEFAULT_AMOUNT_OF_CART_GROSS.add(defaultPaymentPriceGross));
-    assertThat(testCart.getPaymentCart().getId()).isEqualTo(paymentCart.getId());
-  }
-
-  @Test
-  @Transactional
-  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void afterSavingPaymentCartTwiceAmountsShouldBeCountProperWithoutDuplicate()
-      throws Exception {
-    // given
-    PaymentCartDTO paymentCartDto = new PaymentCartDTO();
-    paymentCartDto.setId(paymentCart.getId());
-    paymentCartDto.setName(DEFAULT_Payment_NAME);
-    paymentCartDto.setPriceNet(null);
-    paymentCartDto.setVat(null);
-    paymentCartDto.setPriceGross(null);
-
-    final int paymentCartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
-    final int cartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
-
-    // when
-    paymentCartServiceImpl.save(paymentCartDto);
-    paymentCartServiceImpl.save(paymentCartDto);
-
-    // then
-    assertThat(paymentCartDatabaseSizeBeforeSave).isEqualTo(paymentCartDatabaseSizeBeforeSave);
-    assertThat(cartDatabaseSizeBeforeSave).isEqualTo(cartDatabaseSizeBeforeSave);
-    List<Cart> cartList = cartRepository.findAll();
+    assertThat(cartList).hasSize(cartDatabaseSizeBeforeSave);
     Cart testCart = cartList.get(cartList.size() - 2);
     assertThat(testCart.getId()).isEqualTo(paymentCart.getCart().getId());
     assertThat(testCart.getAmountOfCartNet()).isEqualTo(DEFAULT_AMOUNT_OF_CART_NET);
@@ -436,7 +403,45 @@ public class PaymentCartServiceImplTests implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void everyUserShouldHaveOnlyOnePaymentCart() throws Exception {
+  void afterSavingPaymentCartTwiceAmountsShouldBeCountProperWithoutDuplicate()
+      throws Exception {
+    // given
+    PaymentCartDTO paymentCartDto = new PaymentCartDTO();
+    paymentCartDto.setId(paymentCart.getId());
+    paymentCartDto.setName(DEFAULT_Payment_NAME);
+    paymentCartDto.setPriceNet(null);
+    paymentCartDto.setVat(null);
+    paymentCartDto.setPriceGross(null);
+
+    final int paymentCartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
+    final int cartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
+
+    // when
+    paymentCartServiceImpl.save(paymentCartDto);
+    paymentCartServiceImpl.save(paymentCartDto);
+
+    // then
+    List<PaymentCart> paymentCartList = paymentCartRepository.findAll();
+    assertThat(paymentCartList).hasSize(paymentCartDatabaseSizeBeforeSave);
+    List<Cart> cartList = cartRepository.findAll();
+    assertThat(cartList).hasSize(cartDatabaseSizeBeforeSave);
+    Cart testCart = cartList.get(cartList.size() - 2);
+    assertThat(testCart.getId()).isEqualTo(paymentCart.getCart().getId());
+    assertThat(testCart.getAmountOfCartNet()).isEqualTo(DEFAULT_AMOUNT_OF_CART_NET);
+    assertThat(testCart.getAmountOfCartGross()).isEqualTo(DEFAULT_AMOUNT_OF_CART_GROSS);
+    assertThat(testCart.getAmountOfShipmentNet()).isEqualTo(DEFAULT_Payment_PRICE_NET);
+    assertThat(testCart.getAmountOfShipmentGross()).isEqualTo(defaultPaymentPriceGross);
+    assertThat(testCart.getAmountOfOrderNet()).isEqualTo(
+        DEFAULT_AMOUNT_OF_CART_NET.add(DEFAULT_Payment_PRICE_NET));
+    assertThat(testCart.getAmountOfOrderGross()).isEqualTo(
+        DEFAULT_AMOUNT_OF_CART_GROSS.add(defaultPaymentPriceGross));
+    assertThat(testCart.getPaymentCart().getId()).isEqualTo(paymentCart.getId());
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  void everyUserShouldHaveOnlyOnePaymentCart() throws Exception {
     // given
     final int paymentCartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
     final int cartDatabaseSizeBeforeSave = paymentCartRepository.findAll().size();
@@ -446,15 +451,16 @@ public class PaymentCartServiceImplTests implements AddVat {
     paymentCartRepository.save(currentLoggedUser.getCart().getPaymentCart());
 
     // then
-    assertThat(paymentCartDatabaseSizeBeforeSave).isEqualTo(paymentCartDatabaseSizeBeforeSave);
-    assertThat(cartDatabaseSizeBeforeSave).isEqualTo(cartDatabaseSizeBeforeSave);
-    List<PaymentCart> cartList = paymentCartRepository.findAll();
+    List<PaymentCart> paymentCartList = paymentCartRepository.findAll();
+    assertThat(paymentCartList).hasSize(paymentCartDatabaseSizeBeforeSave);
+    List<Cart> cartList = cartRepository.findAll();
+    assertThat(cartList).hasSize(cartDatabaseSizeBeforeSave);
   }
 
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void loggedUserShouldGetOnlyOneOwnPaymentCart() throws Exception {
+  void loggedUserShouldGetOnlyOneOwnPaymentCart() throws Exception {
     // given
     currentLoggedUser = checkIfUserExist();
 
@@ -471,9 +477,8 @@ public class PaymentCartServiceImplTests implements AddVat {
   }
 
   private User checkIfUserExist() {
-    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UserNotFoundException()))
-        .orElseThrow(() -> new UserNotFoundException());
-    return currentLoggedUser;
+    return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(UserNotFoundException::new))
+        .orElseThrow(UserNotFoundException::new);
   }
 }

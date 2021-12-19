@@ -1,6 +1,7 @@
 package infinityshopping.online.app.service.impl;
 
 import infinityshopping.online.app.domain.Cart;
+import infinityshopping.online.app.domain.PaymentCart;
 import infinityshopping.online.app.domain.ProductInCart;
 import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.CartRepository;
@@ -10,6 +11,8 @@ import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.ProductInCartService;
 import infinityshopping.online.app.service.UserNotFoundException;
 import infinityshopping.online.app.service.dto.ProductInCartDTO;
+import infinityshopping.online.app.service.errors.CartNotFoundException;
+import infinityshopping.online.app.service.errors.ProductInCartNotFoundException;
 import infinityshopping.online.app.service.mapper.ProductInCartMapper;
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -47,11 +50,6 @@ public class ProductInCartServiceImpl implements ProductInCartService {
 
   private ProductInCart productInCart;
 
-  private BigDecimal amountOfOrderNet;
-
-  private BigDecimal amountOfOrderGross;
-
-  private static final String ENTITY_NAME = "product";
 
   public ProductInCartServiceImpl(ProductInCartRepository productInCartRepository,
       ProductInCartMapper productInCartMapper,
@@ -101,7 +99,7 @@ public class ProductInCartServiceImpl implements ProductInCartService {
   }
 
   private void setAmountOfCartNetToProperCartOfUser(ProductInCart productInCart) {
-    cart = cartRepository.findById(productInCart.getCart().getId()).get();
+    cart = checkIfCartOfProperUserExist(productInCart);
 
     amountOfCartNet = BigDecimal.ZERO;
 
@@ -114,7 +112,7 @@ public class ProductInCartServiceImpl implements ProductInCartService {
   }
 
   private void setAmountOfCartGrossToProperCartOfUser(ProductInCart productInCart) {
-    cart = cartRepository.findById(productInCart.getCart().getId()).get();
+    cart = checkIfCartOfProperUserExist(productInCart);
 
     amountOfCartGross = BigDecimal.ZERO;
 
@@ -127,14 +125,14 @@ public class ProductInCartServiceImpl implements ProductInCartService {
   }
   
   private void setAmountOfOrderNetToProperCartOfUser(ProductInCart productInCart) {
-    cart = cartRepository.findById(productInCart.getCart().getId()).get();
+    cart = checkIfCartOfProperUserExist(productInCart);
 
     cart.setAmountOfOrderNet(cart.getAmountOfCartNet().add(cart.getAmountOfShipmentNet()));
     cartRepository.save(cart);
   }
 
   private void setAmountOfOrderGrossToProperCartOfUser(ProductInCart productInCart) {
-    cart = cartRepository.findById(productInCart.getCart().getId()).get();
+    cart = checkIfCartOfProperUserExist(productInCart);
 
     cart.setAmountOfOrderGross(cart.getAmountOfCartGross().add(cart.getAmountOfShipmentGross()));
     cartRepository.save(cart);
@@ -163,7 +161,7 @@ public class ProductInCartServiceImpl implements ProductInCartService {
   public void delete(Long id) {
     log.debug("Request to delete ProductInCart : {}", id);
 
-    productInCart = productInCartRepository.findById(id).get();
+    productInCart = checkIfProductInCartExist(id);
 
     minusSelectedProductTotalPriceNetToProperAmountOfCartNet(productInCart);
     minusSelectedProductTotalPriceGrossToProperAmountOfCartGross(productInCart);
@@ -175,14 +173,14 @@ public class ProductInCartServiceImpl implements ProductInCartService {
 
   private void minusSelectedProductTotalPriceNetToProperAmountOfCartNet(
       ProductInCart productInCart) {
-    cart = cartRepository.findById(productInCart.getCart().getId()).get();
+    cart = checkIfCartOfProperUserExist(productInCart);
     cart.setAmountOfCartNet(cart.getAmountOfCartNet().subtract(productInCart.getTotalPriceNet()));
     cartRepository.save(cart);
   }
 
   private void minusSelectedProductTotalPriceGrossToProperAmountOfCartGross(
       ProductInCart productInCart) {
-    cart = cartRepository.findById(productInCart.getCart().getId()).get();
+    cart = checkIfCartOfProperUserExist(productInCart);
     cart.setAmountOfCartGross(cart.getAmountOfCartGross()
         .subtract(productInCart.getTotalPriceGross()));
     cartRepository.save(cart);
@@ -190,13 +188,14 @@ public class ProductInCartServiceImpl implements ProductInCartService {
 
   private void minusSelectedProductTotalPriceNetToProperAmountOfOrderNet(
       ProductInCart productInCart) {
-    cart = cartRepository.findById(productInCart.getCart().getId()).get();
+    cart = checkIfCartOfProperUserExist(productInCart);
     cart.setAmountOfOrderNet(cart.getAmountOfOrderNet().subtract(productInCart.getTotalPriceNet()));
     cartRepository.save(cart);
   }
 
   private void minusSelectedProductTotalPriceGrossToProperAmountOfOrderGross(
       ProductInCart productInCart) {
+    cart = checkIfCartOfProperUserExist(productInCart);
     cart = cartRepository.findById(productInCart.getCart().getId()).get();
     cart.setAmountOfOrderGross(cart.getAmountOfOrderGross()
         .subtract(productInCart.getTotalPriceGross()));
@@ -204,9 +203,18 @@ public class ProductInCartServiceImpl implements ProductInCartService {
   }
 
   private User checkIfUserExist() {
-    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UserNotFoundException()))
-        .orElseThrow(() -> new UserNotFoundException());
-    return currentLoggedUser;
+    return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(UserNotFoundException::new))
+        .orElseThrow(UserNotFoundException::new);
+  }
+
+  private Cart checkIfCartOfProperUserExist(ProductInCart productInCart) {
+    return cartRepository.findById(productInCart.getCart().getId())
+        .orElseThrow(CartNotFoundException::new);
+  }
+
+  private ProductInCart checkIfProductInCartExist(Long id) {
+    return productInCartRepository.findById(id)
+        .orElseThrow(ProductInCartNotFoundException::new);
   }
 }

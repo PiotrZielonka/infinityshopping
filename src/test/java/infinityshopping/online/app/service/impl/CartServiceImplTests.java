@@ -28,7 +28,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(classes = InfinityshoppingApp.class)
-public class CartServiceImplTests {
+class CartServiceImplTests {
 
   private static final BigDecimal DEFAULT_AMOUNT_OF_CART_NET = new BigDecimal("100");
   private static final BigDecimal DEFAULT_AMOUNT_OF_CART_GROSS = new BigDecimal("123");
@@ -105,7 +105,7 @@ public class CartServiceImplTests {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void shouldGetOnlyAmountsGrossOfCurrentUser() throws Exception {
+  void shouldGetOnlyAmountsGrossOfCurrentUser() throws Exception {
     // given
     currentLoggedUser = checkIfUserExist();
 
@@ -125,7 +125,7 @@ public class CartServiceImplTests {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void shouldGetOnlyAmountOfCartGrossOfCurrentUser() throws Exception {
+  void shouldGetOnlyAmountOfCartGrossOfCurrentUser() throws Exception {
     // given
     currentLoggedUser = checkIfUserExist();
 
@@ -141,7 +141,7 @@ public class CartServiceImplTests {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void everyUserShouldHaveOnlyOneCart() throws Exception {
+  void everyUserShouldHaveOnlyOneCart() throws Exception {
     // given
     final int databaseSizeBeforeCreate = cartRepository.findAll().size();
     currentLoggedUser = checkIfUserExist();
@@ -155,9 +155,8 @@ public class CartServiceImplTests {
   }
 
   private User checkIfUserExist() {
-    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UserNotFoundException()))
-        .orElseThrow(() -> new UserNotFoundException());
-    return currentLoggedUser;
+    return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(UserNotFoundException::new))
+        .orElseThrow(UserNotFoundException::new);
   }
 }

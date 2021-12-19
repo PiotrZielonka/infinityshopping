@@ -31,7 +31,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(classes = InfinityshoppingApp.class)
-public class ShipmentCartServiceImplTests {
+class ShipmentCartServiceImplTests {
 
   // ShipmentCart
   private static final String DEFAULT_FIRST_NAME = "AAAAAAAAAA";
@@ -234,7 +234,7 @@ public class ShipmentCartServiceImplTests {
 
   @Test
   @Transactional
-  public void shouldFindShipmentCartById() throws Exception {
+  void shouldFindShipmentCartById() throws Exception {
     // when
     Optional<ShipmentCartDTO> testShipmentCart
         = shipmentCartServiceImpl.findOne(shipmentCart.getId());
@@ -254,7 +254,7 @@ public class ShipmentCartServiceImplTests {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void shouldUpdateSaveShipmentCart() throws Exception {
+  void shouldUpdateSaveShipmentCart() throws Exception {
     // given
     ShipmentCart updatedShipmentCart = shipmentCartRepository.findById(shipmentCart.getId()).get();
     updatedShipmentCart.setFirstName(UPDATED_FIRST_NAME);
@@ -274,10 +274,9 @@ public class ShipmentCartServiceImplTests {
     shipmentCartServiceImpl.save(shipmentCartDto);
 
     // then
-    assertThat(databaseSizeBeforeSave).isEqualTo(databaseSizeBeforeSave);
     List<ShipmentCart> shipmentCartList = shipmentCartRepository.findAll();
+    assertThat(shipmentCartList).hasSize(databaseSizeBeforeSave);
     ShipmentCart testShipmentCart = shipmentCartList.get(shipmentCartList.size() - 2);
-    assertThat(databaseSizeBeforeSave).isEqualTo(databaseSizeBeforeSave);
     assertThat(testShipmentCart.getId()).isEqualTo(shipmentCart.getId());
     assertThat(testShipmentCart.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
     assertThat(testShipmentCart.getLastName()).isEqualTo(UPDATED_LAST_NAME);
@@ -297,7 +296,7 @@ public class ShipmentCartServiceImplTests {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void shouldSaveCartIdInShipmentCartAfterSavingShipmentCart() throws Exception {
+  void shouldSaveCartIdInShipmentCartAfterSavingShipmentCart() throws Exception {
     // given
     ShipmentCart updatedShipmentCart = shipmentCartRepository.findById(shipmentCart.getId()).get();
     updatedShipmentCart.setFirstName(UPDATED_FIRST_NAME);
@@ -316,7 +315,7 @@ public class ShipmentCartServiceImplTests {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void loggedUserShouldGetOnlyOneOwnShipmentCart() throws Exception {
+  void loggedUserShouldGetOnlyOneOwnShipmentCart() throws Exception {
     // given
     currentLoggedUser = checkIfUserExist();
 
@@ -341,7 +340,7 @@ public class ShipmentCartServiceImplTests {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void everyUserShouldHaveOnlyOneShipmentCart() throws Exception {
+  void everyUserShouldHaveOnlyOneShipmentCart() throws Exception {
     // given
     final int databaseSizeBeforeCreate = shipmentCartRepository.findAll().size();
     currentLoggedUser = checkIfUserExist();
@@ -355,9 +354,8 @@ public class ShipmentCartServiceImplTests {
   }
 
   private User checkIfUserExist() {
-    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UserNotFoundException()))
-        .orElseThrow(() -> new UserNotFoundException());
-    return currentLoggedUser;
+    return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(UserNotFoundException::new))
+        .orElseThrow(UserNotFoundException::new);
   }
 }

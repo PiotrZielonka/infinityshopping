@@ -982,12 +982,14 @@
                                     <npmVersion>${npm.version}</npmVersion>
                                 </configuration>
                             </execution>
+                            <!--
                             <execution>
                                 <id>npm install</id>
                                 <goals>
                                     <goal>npm</goal>
                                 </goals>
                             </execution>
+                            -->
                             <execution>
                                 <id>webapp build dev</id>
                                 <goals>
@@ -1081,12 +1083,14 @@
                                     <npmVersion>${npm.version}</npmVersion>
                                 </configuration>
                             </execution>
+                            <!--
                             <execution>
                                 <id>npm install</id>
                                 <goals>
                                     <goal>npm</goal>
                                 </goals>
                             </execution>
+                            -->
                             <execution>
                                 <id>webapp build test</id>
                                 <goals>

@@ -164,7 +164,7 @@ class OrderMainResourceIT implements AddVat {
   private static final BigDecimal DEFAULT_ProductInCart_TOTAL_PRICE_NET_2
       = DEFAULT_Product_QUANTITY_2.multiply(DEFAULT_Product_PRICE_NET_2);
 
-  public final BigDecimal defaultProductInCartTotalPriceGross
+  private final BigDecimal defaultProductInCartTotalPriceGross
       = DEFAULT_Product_QUANTITY.multiply(defaultProductPriceGross);
 
   private static final BigDecimal DEFAULT_ProductInCart_PRICE_GROSS_2 =
@@ -488,16 +488,9 @@ class OrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void createOrderMain() throws Exception {
+  void createOrderMain() throws Exception {
     currentLoggedUser = checkIfUserExist();
-
     final int databaseOrderMainSizeBeforeCreate = orderMainRepository.findAll().size();
-    final int databaseProductInCartSizeBeforeCreateOrderMain
-        = productInCartRepository.findAll().size();
-    final int databaseProductInOrderMainSizeBeforeCreateOrderMain
-        = productInOrderMainRepository.findAll().size();
-    final int databasePaymentOrderMainBeforeCreate = paymentOrderMainRepository.findAll().size();
-    final int databaseShipmentOrderMainBeforeCreate = shipmentOrderMainRepository.findAll().size();
 
     // Create the OrderMain
     OrderMainDTO orderMainDto = orderMainMapper.toDto(orderMain);
@@ -527,6 +520,127 @@ class OrderMainResourceIT implements AddVat {
         .isEqualTo(OrderMainStatusEnum.valueOf(String.valueOf(DEFAULT_PaymentCart_STATUS_ENUM)));
     assertNotNull(testOrderMain.getCreateTime());
     assertNotNull(testOrderMain.getUpdateTime());
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  void shouldSetAllAmountsOfCartZeroAndNotBeProductInCartAfterCreatingOrderMain() throws Exception {
+    currentLoggedUser = checkIfUserExist();
+    final int databaseProductInCartSizeBeforeCreateOrderMain
+        = productInCartRepository.findAll().size();
+
+    // Create the OrderMain
+    OrderMainDTO orderMainDto = orderMainMapper.toDto(orderMain);
+    restOrderMainMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(orderMainDto)))
+        .andExpect(status().isCreated());
+
+    // Validate the amountOfCart of currentUser is 0.0
+    assertThat(currentLoggedUser.getCart().getAmountOfCartNet()).isEqualTo(BigDecimal.ZERO);
+    assertThat(currentLoggedUser.getCart().getAmountOfCartGross()).isEqualTo(BigDecimal.ZERO);
+    assertThat(currentLoggedUser.getCart().getAmountOfOrderNet()).isEqualTo(BigDecimal.ZERO);
+    assertThat(currentLoggedUser.getCart().getAmountOfOrderGross()).isEqualTo(BigDecimal.ZERO);
+
+    // Validate the ProductInCart in the database
+    List<ProductInCart> productInCartList = productInCartRepository.findAll();
+    assertThat(productInCartList).hasSize(databaseProductInCartSizeBeforeCreateOrderMain - 2);
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  void shouldBePaymentOrderMainAndOneToOneAfterCreatingOrderMain() throws Exception {
+    currentLoggedUser = checkIfUserExist();
+    final int databaseOrderMainSizeBeforeCreate = orderMainRepository.findAll().size();
+    final int databasePaymentOrderMainBeforeCreate = paymentOrderMainRepository.findAll().size();
+
+    // Create the OrderMain
+    OrderMainDTO orderMainDto = orderMainMapper.toDto(orderMain);
+    restOrderMainMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(orderMainDto)))
+        .andExpect(status().isCreated());
+
+    // Validate the OrderMain in the database
+    List<OrderMain> orderMainList = orderMainRepository.findAll();
+    assertThat(orderMainList).hasSize(databaseOrderMainSizeBeforeCreate + 1);
+    OrderMain testOrderMain = orderMainList.get(orderMainList.size() - 1);
+
+    // Validate the PaymentOrderMain in the database
+    List<PaymentOrderMain> paymentOrderMainList
+        = paymentOrderMainRepository.findAll();
+    assertThat(paymentOrderMainList).hasSize(databasePaymentOrderMainBeforeCreate + 1);
+    PaymentOrderMain testPaymentOrderMain
+        = paymentOrderMainList.get(paymentOrderMainList.size() - 1);
+    assertThat(testPaymentOrderMain.getId()).isNotNull();
+    assertThat(testPaymentOrderMain.getOrderMain().getId()).isEqualTo(testOrderMain.getId());
+    assertThat(testPaymentOrderMain.getName()).isEqualTo(DEFAULT_PaymentCart_NAME);
+    assertThat(testPaymentOrderMain.getPriceNet()).isEqualTo(DEFAULT_PaymentCart_PRICE_NET);
+    assertThat(testPaymentOrderMain.getVat()).isEqualTo(DEFAULT_PaymentCart_VAT);
+    assertThat(testPaymentOrderMain.getPriceGross()).isEqualTo(DEFAULT_PaymentCart_PRICE_GROSS);
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  void shouldBeShipmentOrderMainAndOneToOneAfterCreatingOrderMain() throws Exception {
+    currentLoggedUser = checkIfUserExist();
+    final int databaseOrderMainSizeBeforeCreate = orderMainRepository.findAll().size();
+    final int databaseShipmentOrderMainBeforeCreate = shipmentOrderMainRepository.findAll().size();
+
+    // Create the OrderMain
+    OrderMainDTO orderMainDto = orderMainMapper.toDto(orderMain);
+    restOrderMainMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(orderMainDto)))
+        .andExpect(status().isCreated());
+
+    // Validate the OrderMain in the database
+    List<OrderMain> orderMainList = orderMainRepository.findAll();
+    assertThat(orderMainList).hasSize(databaseOrderMainSizeBeforeCreate + 1);
+    OrderMain testOrderMain = orderMainList.get(orderMainList.size() - 1);
+
+    // Validate the ShipmentOrderMain in the database
+    List<ShipmentOrderMain> shipmentOrderMainList = shipmentOrderMainRepository.findAll();
+    assertThat(shipmentOrderMainList)
+        .hasSize(databaseShipmentOrderMainBeforeCreate + 1);
+    ShipmentOrderMain testShipmentOrderMain
+        = shipmentOrderMainList.get(shipmentOrderMainList.size() - 1);
+    assertThat(testShipmentOrderMain.getId()).isNotNull();
+    assertThat(testShipmentOrderMain.getFirstName()).isEqualTo(DEFAULT_ShipmentCart_FIRST_NAME);
+    assertThat(testShipmentOrderMain.getLastName()).isEqualTo(DEFAULT_ShipmentCart_LAST_NAME);
+    assertThat(testShipmentOrderMain.getStreet()).isEqualTo(DEFAULT_ShipmentCart_STREET);
+    assertThat(testShipmentOrderMain.getPostalCode()).isEqualTo(DEFAULT_ShipmentCart_POSTAL_CODE);
+    assertThat(testShipmentOrderMain.getCity()).isEqualTo(DEFAULT_ShipmentCart_CITY);
+    assertThat(testShipmentOrderMain.getCountry())
+        .isEqualTo(DEFAULT_ShipmentCart_COUNTRY);
+    assertThat(testShipmentOrderMain.getPhoneToTheReceiver())
+        .isEqualTo(DEFAULT_ShipmentCart_PHONE_TO_THE_RECEIVER);
+    assertThat(testShipmentOrderMain.getFirm()).isEqualTo(DEFAULT_ShipmentCart_FIRM);
+    assertThat(testShipmentOrderMain.getTaxNumber()).isEqualTo(DEFAULT_ShipmentCart_TAX_NUMBER);
+    assertThat(testShipmentOrderMain.getOrderMain().getId()).isEqualTo(testOrderMain.getId());;
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  void shouldBeFirstProductInOrderMainAndOneToManyAfterCreatingOrderMain() throws Exception {
+    currentLoggedUser = checkIfUserExist();
+    final int databaseProductInOrderMainSizeBeforeCreateOrderMain
+        = productInOrderMainRepository.findAll().size();
+
+    // Create the OrderMain
+    OrderMainDTO orderMainDto = orderMainMapper.toDto(orderMain);
+    restOrderMainMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(orderMainDto)))
+        .andExpect(status().isCreated());
+
+    // Validate the OrderMain in the database
+    List<OrderMain> orderMainList = orderMainRepository.findAll();
+    OrderMain testOrderMain = orderMainList.get(orderMainList.size() - 1);
 
     // Validate the ProductInOrderMains size in the database
     List<ProductInOrderMain> productInOrderMainList = productInOrderMainRepository.findAll();
@@ -536,6 +650,10 @@ class OrderMainResourceIT implements AddVat {
     // Validate ProductInOrderMain in the database
     ProductInOrderMain testProductInOrderMain
         = productInOrderMainList.get(productInOrderMainList.size() - 2);
+
+    // Validate id relation OneToMany between ProductInOrderMain and OrderMain
+    assertNotNull(testProductInOrderMain.getOrderMain());
+    assertThat(testProductInOrderMain.getOrderMain().getId()).isEqualTo(testOrderMain.getId());
 
     assertThat(testProductInOrderMain.getCategory()).isEqualTo(productInCart.getCategory());
     assertThat(testProductInOrderMain.getName()).isEqualTo(productInCart.getName());
@@ -554,14 +672,39 @@ class OrderMainResourceIT implements AddVat {
     assertThat(testProductInOrderMain.getImageContentType())
         .isEqualTo(productInCart.getImageContentType());
     assertThat(testProductInOrderMain.getProductId()).isEqualTo(product.getId());
+  }
 
-    // Validate id relation OneToMany between ProductInOrderMain and OrderMain
-    assertNotNull(testProductInOrderMain.getOrderMain());
-    assertThat(testProductInOrderMain.getOrderMain().getId()).isEqualTo(testOrderMain.getId());
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  void shouldBeSecondProductInOrderMainAndOneToManyAfterCreatingOrderMain() throws Exception {
+    currentLoggedUser = checkIfUserExist();
+    final int databaseProductInOrderMainSizeBeforeCreateOrderMain
+        = productInOrderMainRepository.findAll().size();
+
+    // Create the OrderMain
+    OrderMainDTO orderMainDto = orderMainMapper.toDto(orderMain);
+    restOrderMainMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(orderMainDto)))
+        .andExpect(status().isCreated());
+
+    // Validate the OrderMain in the database
+    List<OrderMain> orderMainList = orderMainRepository.findAll();
+    OrderMain testOrderMain = orderMainList.get(orderMainList.size() - 1);
+
+    // Validate the ProductInOrderMains size in the database
+    List<ProductInOrderMain> productInOrderMainList = productInOrderMainRepository.findAll();
+    assertThat(productInOrderMainList)
+        .hasSize(databaseProductInOrderMainSizeBeforeCreateOrderMain + 2);
 
     // Validate ProductInOrderMain2 in the database
     ProductInOrderMain testProductInOrderMain2
         = productInOrderMainList.get(productInOrderMainList.size() - 1);
+
+    // Validate id relation OneToMany between ProductInOrderMain2 and OrderMain
+    assertNotNull(testProductInOrderMain2.getOrderMain());
+    assertThat(testProductInOrderMain2.getOrderMain().getId()).isEqualTo(testOrderMain.getId());
 
     assertThat(testProductInOrderMain2.getCategory()).isEqualTo(productInCart2.getCategory());
     assertThat(testProductInOrderMain2.getName()).isEqualTo(productInCart2.getName());
@@ -579,58 +722,11 @@ class OrderMainResourceIT implements AddVat {
     assertThat(testProductInOrderMain2.getImageContentType())
         .isEqualTo(productInCart2.getImageContentType());
     assertThat(testProductInOrderMain2.getProductId()).isEqualTo(product2.getId());
-
-    // Validate id relation OneToMany between ProductInOrderMain2 and OrderMain
-    assertNotNull(testProductInOrderMain2.getOrderMain());
-    assertThat(testProductInOrderMain2.getOrderMain().getId()).isEqualTo(testOrderMain.getId());
-
-    // Validate the ProductInCart in the database
-    List<ProductInCart> productInCartList = productInCartRepository.findAll();
-    assertThat(productInCartList).hasSize(databaseProductInCartSizeBeforeCreateOrderMain - 2);
-
-    // Validate the amountOfCart of currentUser is 0.0
-    assertThat(currentLoggedUser.getCart().getAmountOfCartNet()).isEqualTo(BigDecimal.ZERO);
-    assertThat(currentLoggedUser.getCart().getAmountOfCartGross()).isEqualTo(BigDecimal.ZERO);
-    assertThat(currentLoggedUser.getCart().getAmountOfOrderNet()).isEqualTo(BigDecimal.ZERO);
-    assertThat(currentLoggedUser.getCart().getAmountOfOrderGross()).isEqualTo(BigDecimal.ZERO);
-
-    // Validate the PaymentOrderMain in the database
-    List<PaymentOrderMain> paymentOrderMainList
-        = paymentOrderMainRepository.findAll();
-    assertThat(paymentOrderMainList).hasSize(databasePaymentOrderMainBeforeCreate + 1);
-    PaymentOrderMain testPaymentOrderMain
-        = paymentOrderMainList.get(paymentOrderMainList.size() - 1);
-    assertThat(testPaymentOrderMain.getId()).isNotNull();
-    assertThat(testPaymentOrderMain.getOrderMain().getId()).isEqualTo(testOrderMain.getId());
-    assertThat(testPaymentOrderMain.getName()).isEqualTo(DEFAULT_PaymentCart_NAME);
-    assertThat(testPaymentOrderMain.getPriceNet()).isEqualTo(DEFAULT_PaymentCart_PRICE_NET);
-    assertThat(testPaymentOrderMain.getVat()).isEqualTo(DEFAULT_PaymentCart_VAT);
-    assertThat(testPaymentOrderMain.getPriceGross()).isEqualTo(DEFAULT_PaymentCart_PRICE_GROSS);
-
-    // Validate the ShipmentOrderMain in the database
-    List<ShipmentOrderMain> shipmentOrderMainList = shipmentOrderMainRepository.findAll();
-    assertThat(shipmentOrderMainList)
-        .hasSize(databaseShipmentOrderMainBeforeCreate + 1);
-    ShipmentOrderMain testShipmentOrderMain
-        = shipmentOrderMainList.get(paymentOrderMainList.size() - 1);
-    assertThat(testShipmentOrderMain.getId()).isNotNull();
-    assertThat(testShipmentOrderMain.getFirstName()).isEqualTo(DEFAULT_ShipmentCart_FIRST_NAME);
-    assertThat(testShipmentOrderMain.getLastName()).isEqualTo(DEFAULT_ShipmentCart_LAST_NAME);
-    assertThat(testShipmentOrderMain.getStreet()).isEqualTo(DEFAULT_ShipmentCart_STREET);
-    assertThat(testShipmentOrderMain.getPostalCode()).isEqualTo(DEFAULT_ShipmentCart_POSTAL_CODE);
-    assertThat(testShipmentOrderMain.getCity()).isEqualTo(DEFAULT_ShipmentCart_CITY);
-    assertThat(testShipmentOrderMain.getCountry())
-        .isEqualTo(DEFAULT_ShipmentCart_COUNTRY);
-    assertThat(testShipmentOrderMain.getPhoneToTheReceiver())
-        .isEqualTo(DEFAULT_ShipmentCart_PHONE_TO_THE_RECEIVER);
-    assertThat(testShipmentOrderMain.getFirm()).isEqualTo(DEFAULT_ShipmentCart_FIRM);
-    assertThat(testShipmentOrderMain.getTaxNumber()).isEqualTo(DEFAULT_ShipmentCart_TAX_NUMBER);
-    assertThat(testShipmentOrderMain.getOrderMain().getId()).isEqualTo(testOrderMain.getId());
   }
 
   @Test
   @Transactional
-  public void createOrderMainByAnyoneShouldThrowStatusUnauthorized() throws Exception {
+  void createOrderMainByAnyoneShouldThrowStatusUnauthorized() throws Exception {
     final int databaseOrderMainSizeBeforeCreate = orderMainRepository.findAll().size();
     final int databaseProductInCartSizeBeforeCreateOrderMain
         = productInCartRepository.findAll().size();
@@ -673,7 +769,7 @@ class OrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void afterCreatingOrderMainOrderMainStatusShouldBeEqualPaymentCartStatus()
+  void afterCreatingOrderMainOrderMainStatusShouldBeEqualPaymentCartStatus()
       throws Exception {
     int databaseOrderMainSizeBeforeCreate = orderMainRepository.findAll().size();
 
@@ -695,7 +791,7 @@ class OrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void ifProductDoesNotExistInStockShouldThrowExceptionWhileOrderMainIsCreated()
+  void ifProductDoesNotExistInStockShouldThrowExceptionWhileOrderMainIsCreated()
       throws Exception {
     // given ProductInCart
     productInCart.setQuantity(DEFAULT_STOCK_EXCEPTION);
@@ -713,7 +809,7 @@ class OrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void createOrderMainWithExistingId() throws Exception {
+  void createOrderMainWithExistingId() throws Exception {
     int databaseSizeBeforeCreate = orderMainRepository.findAll().size();
 
     // Create the OrderMain with an existing ID
@@ -734,7 +830,7 @@ class OrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "admin", password = "admin", authorities = AuthoritiesConstants.ADMIN)
-  public void getAllOrderMains() throws Exception {
+  void getAllOrderMains() throws Exception {
     // Initialize the database
     orderMainRepository.save(orderMain);
 
@@ -768,7 +864,7 @@ class OrderMainResourceIT implements AddVat {
 
   @Test
   @Transactional
-  public void getAllOrderMainsByAnyoneShouldThrowStatusUnauthorized() throws Exception {
+  void getAllOrderMainsByAnyoneShouldThrowStatusUnauthorized() throws Exception {
     // Initialize the database
     orderMainRepository.save(orderMain);
 
@@ -780,7 +876,7 @@ class OrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void getAllOrderMainsByUserShouldThrowStatusForbidden() throws Exception {
+  void getAllOrderMainsByUserShouldThrowStatusForbidden() throws Exception {
     // Initialize the database
     orderMainRepository.save(orderMain);
 
@@ -792,7 +888,7 @@ class OrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void getAllOrderMainByCurrentUserLogin() throws Exception {
+  void getAllOrderMainByCurrentUserLogin() throws Exception {
     // Initialize the database
     orderMainCurrentUserLogin = createEntityCurrentLogin(em);
 
@@ -830,7 +926,7 @@ class OrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void getAllOrderMainByCurrentUserLoginShouldNotGetAnotherLogin() throws Exception {
+  void getAllOrderMainByCurrentUserLoginShouldNotGetAnotherLogin() throws Exception {
     // Initialize the database
     orderMainRepository.save(orderMain);
 
@@ -858,7 +954,7 @@ class OrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "admin", password = "admin", authorities = AuthoritiesConstants.ADMIN)
-  public void getOrderMain() throws Exception {
+  void getOrderMain() throws Exception {
     // Initialize the database
     orderMainRepository.save(orderMain);
 
@@ -892,7 +988,7 @@ class OrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser
-  public void getNonExistingOrderMain() throws Exception {
+  void getNonExistingOrderMain() throws Exception {
     // Get the orderMain
     restOrderMainMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE))
         .andExpect(status().isNotFound());
@@ -1098,7 +1194,7 @@ class OrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "admin", password = "admin", authorities = AuthoritiesConstants.ADMIN)
-  public void deleteOrderMainAndAllRelationshipOrderMainByIdOrderMain() throws Exception {
+  void deleteOrderMainAndAllRelationshipOrderMainByIdOrderMain() throws Exception {
     // given OrderMain
     orderMain = createEntityOrderMain(em);
     orderMainRepository.save(orderMain);
@@ -1155,7 +1251,7 @@ class OrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser
-  public void deleteOrderMainAndAllRealationshipOrderMainByUserShouldThrowStatusForbidden()
+  void deleteOrderMainAndAllRealationshipOrderMainByUserShouldThrowStatusForbidden()
       throws Exception {
     // given OrderMain
     orderMain = createEntityOrderMain(em);
@@ -1212,7 +1308,7 @@ class OrderMainResourceIT implements AddVat {
 
   @Test
   @Transactional
-  public void deleteOrderMainAndAllRealationshipOrderMainByUserShouldThrowStatusUnauthorized()
+  void deleteOrderMainAndAllRealationshipOrderMainByUserShouldThrowStatusUnauthorized()
       throws Exception {
     // given OrderMain
     orderMain = createEntityOrderMain(em);
@@ -1268,9 +1364,8 @@ class OrderMainResourceIT implements AddVat {
   }
 
   private User checkIfUserExist() {
-    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UserNotFoundException()))
-        .orElseThrow(() -> new UserNotFoundException());
-    return currentLoggedUser;
+    return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(UserNotFoundException::new))
+        .orElseThrow(UserNotFoundException::new);
   }
 }

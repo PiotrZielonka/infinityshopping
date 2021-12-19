@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderMainServiceImpl implements OrderMainService {
   private final Logger log = LoggerFactory.getLogger(OrderMainServiceImpl.class);
 
-  private CartRepository cartRepository;
+  private final CartRepository cartRepository;
 
   private final OrderMainRepository orderMainRepository;
 
@@ -244,9 +244,8 @@ public class OrderMainServiceImpl implements OrderMainService {
   }
 
   private User checkIfUserExist() {
-    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UserNotFoundException()))
-        .orElseThrow(() -> new UserNotFoundException());
-    return currentLoggedUser;
+    return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(UserNotFoundException::new))
+        .orElseThrow(UserNotFoundException::new);
   }
 }

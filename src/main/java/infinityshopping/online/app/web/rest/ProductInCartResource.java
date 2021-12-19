@@ -1,9 +1,11 @@
 package infinityshopping.online.app.web.rest;
 
+import infinityshopping.online.app.domain.Product;
 import infinityshopping.online.app.repository.ProductInCartRepository;
 import infinityshopping.online.app.repository.ProductRepository;
 import infinityshopping.online.app.service.ProductInCartService;
 import infinityshopping.online.app.service.dto.ProductInCartDTO;
+import infinityshopping.online.app.service.errors.ProductNotFoundException;
 import infinityshopping.online.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -145,6 +147,11 @@ public class ProductInCartResource {
   private boolean userOrderedMoreProductQuantityThenIsInTheStock(
       ProductInCartDTO productInCartDto) {
     return (productInCartDto.getQuantity().compareTo(
-        productRepository.findById(productInCartDto.getProductId()).get().getStock()) > 0);
+        checkIfProductExist(productInCartDto).getStock()) > 0);
+  }
+
+  private Product checkIfProductExist(ProductInCartDTO productInCartDto) {
+    return productRepository.findById(productInCartDto.getProductId())
+        .orElseThrow(ProductNotFoundException::new);
   }
 }

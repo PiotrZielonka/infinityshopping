@@ -7,7 +7,6 @@ import infinityshopping.online.app.service.PaymentService;
 import infinityshopping.online.app.service.dto.PaymentDTO;
 import infinityshopping.online.app.service.dto.PaymentDtoNamePriceGross;
 import infinityshopping.online.app.service.mapper.PaymentMapper;
-import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;

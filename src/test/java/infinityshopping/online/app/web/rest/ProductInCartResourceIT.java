@@ -96,7 +96,7 @@ class ProductInCartResourceIT implements AddVat {
   private static final BigDecimal DEFAULT_TOTAL_PRICE_NET_2
       = DEFAULT_QUANTITY_2.multiply(DEFAULT_PRICE_NET_2);
 
-  public final BigDecimal defaultTotalPriceGross
+  private final BigDecimal defaultTotalPriceGross
       = DEFAULT_QUANTITY.multiply(defaultPriceGross);
 
   private final BigDecimal defaultTotalPriceGross2
@@ -324,7 +324,7 @@ class ProductInCartResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void createProductInCartToProperUserOfCart() throws Exception {
+  void createProductInCartToProperUserOfCart() throws Exception {
     currentLoggedUser = checkIfUserExist();
 
     // Create the ProductInCart
@@ -358,6 +358,32 @@ class ProductInCartResourceIT implements AddVat {
     assertNotNull(testProductInCart.getCart());
     assertThat(testProductInCart.getProductId()).isEqualTo(product.getId());
 
+    // Validate id relation OneToMany between Cart and ProductInCart
+    List<Cart> cartList = cartRepository.findAll();
+    assertThat(cartList).hasSize(databaseCartSizeBeforeCreate);
+    Cart testCart = cartList.get(cartList.size() - 1);
+    assertNotNull(testProductInCart.getCart().getId());
+    assertNotNull(testCart.getId());
+    assertThat(testProductInCart.getCart().getId()).isEqualTo(testCart.getId());
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  void shouldSetProperAmountsToProperUserOfCartAfterCreatingProductInCart() throws Exception {
+    currentLoggedUser = checkIfUserExist();
+
+    // Create the ProductInCart
+    final int databaseCartSizeBeforeCreate = cartRepository.findAll().size();
+    productInCart.setProductId(product.getId());
+    productInCart.setCart(currentLoggedUser.getCart());
+    ProductInCartDTO productInCartDto = productInCartMapper.toDto(productInCart);
+
+    restProductInCartMockMvc.perform(post(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(productInCartDto)))
+        .andExpect(status().isCreated());
+
     // Validate the Cart in the database
     List<Cart> cartList = cartRepository.findAll();
     assertThat(cartList).hasSize(databaseCartSizeBeforeCreate);
@@ -371,17 +397,12 @@ class ProductInCartResourceIT implements AddVat {
         .isEqualTo(DEFAULT_TOTAL_PRICE_NET.add(DEFAULT_AMOUNT_OF_SHIPMENT_NET));
     assertThat(testCart.getAmountOfOrderGross())
         .isEqualTo(defaultTotalPriceGross.add(DEFAULT_AMOUNT_OF_SHIPMENT_GROSS));
-
-    // Validate id relation OneToMany between Cart and ProductInCart
-    assertNotNull(testProductInCart.getCart().getId());
-    assertNotNull(testCart.getId());
-    assertThat(testProductInCart.getCart().getId()).isEqualTo(testCart.getId());
   }
 
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void createProductInCartToProperUserOfCartWithoutProductIdShouldThrowStatus500()
+  void createProductInCartToProperUserOfCartWithoutProductIdShouldThrowStatus500()
       throws Exception {
     // Create the ProductInCart
     ProductInCartDTO productInCartDto = productInCartMapper.toDto(productInCart);
@@ -395,7 +416,7 @@ class ProductInCartResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void createProductInCartToProperUserOfCartWithWrongQuantityShouldThrowBadRequest()
+  void createProductInCartToProperUserOfCartWithWrongQuantityShouldThrowBadRequest()
       throws Exception {
     currentLoggedUser = checkIfUserExist();
 
@@ -413,7 +434,7 @@ class ProductInCartResourceIT implements AddVat {
 
   @Test
   @Transactional
-  public void createProductInCartByAnyoneShouldThrowStatusUnauthorized401()
+  void createProductInCartByAnyoneShouldThrowStatusUnauthorized401()
       throws Exception {
     // Create the ProductInCart
     ProductInCartDTO productInCartDto = productInCartMapper.toDto(productInCart);
@@ -427,7 +448,7 @@ class ProductInCartResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void createProductInCartWithExistingId() throws Exception {
+  void createProductInCartWithExistingId() throws Exception {
     int databaseSizeBeforeCreate = productInCartRepository.findAll().size();
 
     // Create the ProductInCart with an existing ID
@@ -448,7 +469,7 @@ class ProductInCartResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void getAllProductInCartOfCurrentUser() throws Exception {
+  void getAllProductInCartOfCurrentUser() throws Exception {
     currentLoggedUser = checkIfUserExist();
 
     productInCart.setCart(currentLoggedUser.getCart());
@@ -482,7 +503,7 @@ class ProductInCartResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void getProductInCart() throws Exception {
+  void getProductInCart() throws Exception {
     productInCart.setProductId(product.getId());
     productInCartRepository.save(productInCart);
 
@@ -509,7 +530,7 @@ class ProductInCartResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void getNonExistingProductInCart() throws Exception {
+  void getNonExistingProductInCart() throws Exception {
     // Get the productInCart
     restProductInCartMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE))
         .andExpect(status().isNotFound());
@@ -518,7 +539,7 @@ class ProductInCartResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void deleteProductInCart() throws Exception {
+  void deleteProductInCart() throws Exception {
     // given Cart
     currentLoggedUser = checkIfUserExist();
     Cart cart = currentLoggedUser.getCart();
@@ -578,7 +599,7 @@ class ProductInCartResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void putNewProductInCartWithWrongValueQuantityShouldThrowStatusBadRequest()
+  void putNewProductInCartWithWrongValueQuantityShouldThrowStatusBadRequest()
       throws Exception {
     currentLoggedUser = checkIfUserExist();
 
@@ -641,7 +662,7 @@ class ProductInCartResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void putNewProductInCart() throws Exception {
+  void putNewProductInCart() throws Exception {
     currentLoggedUser = checkIfUserExist();
 
     productInCart.setCart(currentLoggedUser.getCart());
@@ -798,7 +819,7 @@ class ProductInCartResourceIT implements AddVat {
 
   @Test
   @Transactional
-  public void putNewProductInCartByAnyoneShouldThrowStatusUnauthorized401()
+  void putNewProductInCartByAnyoneShouldThrowStatusUnauthorized401()
       throws Exception {
     productInCart.setProductId(product.getId());
     productInCartRepository.saveAndFlush(productInCart);
@@ -854,9 +875,8 @@ class ProductInCartResourceIT implements AddVat {
   }
 
   private User checkIfUserExist() {
-    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UserNotFoundException()))
-        .orElseThrow(() -> new UserNotFoundException());
-    return currentLoggedUser;
+    return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(UserNotFoundException::new))
+        .orElseThrow(UserNotFoundException::new);
   }
 }

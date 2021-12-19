@@ -12,6 +12,8 @@ import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.PaymentCartService;
 import infinityshopping.online.app.service.UserNotFoundException;
 import infinityshopping.online.app.service.dto.PaymentCartDTO;
+import infinityshopping.online.app.service.errors.CartNotFoundException;
+import infinityshopping.online.app.service.errors.PaymentNotFoundException;
 import infinityshopping.online.app.service.mapper.PaymentCartMapper;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -74,7 +76,7 @@ public class PaymentCartServiceImpl implements PaymentCartService {
 
   private Payment findPaymentCartInPaymentRepositoryBecauseOnlyNameIsInDto(
       PaymentCartDTO paymentCartDto) {
-    return paymentRepository.findByName(paymentCartDto.getName()).get();
+    return checkIfPaymentExist(paymentCartDto);
   }
 
   private void setProperValuesInPaymentCartFromPaymentBecauseAreNullInDto(
@@ -91,7 +93,7 @@ public class PaymentCartServiceImpl implements PaymentCartService {
   }
 
   private void setAmountsOfShipmentToProperCartOfUser(PaymentCart paymentCartOfLoggedUser) {
-    cart = cartRepository.findById(paymentCartOfLoggedUser.getCart().getId()).get();
+    cart = checkIfCartExist(paymentCartOfLoggedUser);
 
     cart.setAmountOfShipmentNet(paymentCartOfLoggedUser.getPriceNet());
     cart.setAmountOfShipmentGross(paymentCartOfLoggedUser.getPriceGross());
@@ -100,7 +102,7 @@ public class PaymentCartServiceImpl implements PaymentCartService {
   }
 
   private void setAmountsOfOrderToProperCartOfUser(PaymentCart paymentCartOfLoggedUser) {
-    cart = cartRepository.findById(paymentCartOfLoggedUser.getCart().getId()).get();
+    cart = checkIfCartExist(paymentCartOfLoggedUser);
 
     cart.setAmountOfOrderNet(cart.getAmountOfCartNet().add(cart.getAmountOfShipmentNet()));
     cart.setAmountOfOrderGross(cart.getAmountOfCartGross().add(cart.getAmountOfShipmentGross()));
@@ -127,9 +129,18 @@ public class PaymentCartServiceImpl implements PaymentCartService {
   }
 
   private User checkIfUserExist() {
-    currentLoggedUser = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UserNotFoundException()))
-        .orElseThrow(() -> new UserNotFoundException());
-    return currentLoggedUser;
+    return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(UserNotFoundException::new))
+        .orElseThrow(UserNotFoundException::new);
+  }
+
+  private Cart checkIfCartExist(PaymentCart paymentCartOfLoggedUser) {
+    return cartRepository.findById(paymentCartOfLoggedUser.getCart().getId())
+            .orElseThrow(CartNotFoundException::new);
+  }
+
+  private Payment checkIfPaymentExist(PaymentCartDTO paymentCartDto) {
+    return paymentRepository.findByName(paymentCartDto.getName())
+        .orElseThrow(PaymentNotFoundException::new);
   }
 }

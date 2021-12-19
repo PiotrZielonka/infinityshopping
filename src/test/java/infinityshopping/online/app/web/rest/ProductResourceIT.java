@@ -132,7 +132,7 @@ class ProductResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser
-  public void createProductByUserShouldThrowStatusForbidden() throws Exception {
+  void createProductByUserShouldThrowStatusForbidden() throws Exception {
     int databaseSizeBeforeCreate = productRepository.findAll().size();
 
     // Create the Product
@@ -150,7 +150,7 @@ class ProductResourceIT implements AddVat {
 
   @Test
   @Transactional
-  public void createProductByAnyoneShouldThrowStatusUnauthorized() throws Exception {
+  void createProductByAnyoneShouldThrowStatusUnauthorized() throws Exception {
     int databaseSizeBeforeCreate = productRepository.findAll().size();
 
     // Create the Product
@@ -169,7 +169,7 @@ class ProductResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "admin", password = "admin", authorities = AuthoritiesConstants.ADMIN)
-  public void createProductAndSetProperPriceGrossAutomatic() throws Exception {
+  void createProductAndSetProperPriceGrossAutomatic() throws Exception {
     final int databaseSizeBeforeCreate = productRepository.findAll().size();
 
     // Create the Product
@@ -445,7 +445,7 @@ class ProductResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser
-  public void putNewProductByUserShouldThrowStatusForbidden() throws Exception {
+  void putNewProductByUserShouldThrowStatusForbidden() throws Exception {
     // Initialize the database
     productRepository.saveAndFlush(product);
 
@@ -476,7 +476,7 @@ class ProductResourceIT implements AddVat {
 
   @Test
   @Transactional
-  public void putNewProductByAnyoneShouldThrowStatusUnauthorized() throws Exception {
+  void putNewProductByAnyoneShouldThrowStatusUnauthorized() throws Exception {
     // Initialize the database
     productRepository.saveAndFlush(product);
 
@@ -619,7 +619,7 @@ class ProductResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser
-  public void deleteProductByUserShouldThrowStatusForbidden() throws Exception {
+  void deleteProductByUserShouldThrowStatusForbidden() throws Exception {
     int databaseSizeBeforeDelete = productRepository.findAll().size();
 
     // Create the Product
@@ -637,7 +637,7 @@ class ProductResourceIT implements AddVat {
 
   @Test
   @Transactional
-  public void deleteProductByAnyoneShouldThrowStatusUnauthorized() throws Exception {
+  void deleteProductByAnyoneShouldThrowStatusUnauthorized() throws Exception {
     int databaseSizeBeforeDelete = productRepository.findAll().size();
 
     // Create the Product

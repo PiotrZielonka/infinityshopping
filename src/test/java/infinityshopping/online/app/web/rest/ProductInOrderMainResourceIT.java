@@ -94,7 +94,7 @@ class ProductInOrderMainResourceIT implements AddVat {
   private static final BigDecimal DEFAULT_TOTAL_PRICE_NET_2
       = DEFAULT_QUANTITY_2.multiply(DEFAULT_PRICE_NET_2);
 
-  public final BigDecimal defaultTotalPriceGross
+  private final BigDecimal defaultTotalPriceGross
       = DEFAULT_QUANTITY.multiply(defaultPriceGross);
 
   private final BigDecimal defaultTotalPriceGross2
@@ -336,7 +336,7 @@ class ProductInOrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void getAllProductInOrderMainsByIdOrderMain() throws Exception {
+  void getAllProductInOrderMainsByIdOrderMain() throws Exception {
     // Get the orderMain
     restProductInOrderMainMockMvc.perform(get(ENTITY_API_URL_ORDER_DETAILS
             + "?sort=id,desc", orderMain.getId()))
@@ -380,7 +380,7 @@ class ProductInOrderMainResourceIT implements AddVat {
 
   @Test
   @Transactional
-  public void getAllProductInOrderMainsByAnyoneShouldThrowStatusUnauthorized() throws Exception {
+  void getAllProductInOrderMainsByAnyoneShouldThrowStatusUnauthorized() throws Exception {
     // Get the orderMain
     restProductInOrderMainMockMvc.perform(get(ENTITY_API_URL_ORDER_DETAILS
             + "?sort=id,desc", orderMain.getId()))
@@ -390,7 +390,7 @@ class ProductInOrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void getProductInOrderMain() throws Exception {
+  void getProductInOrderMain() throws Exception {
     // Get the productInOrderMain
     restProductInOrderMainMockMvc.perform(get(
         ENTITY_API_URL + "/byId/{id}", productInOrderMain.getId()))
@@ -414,7 +414,7 @@ class ProductInOrderMainResourceIT implements AddVat {
 
   @Test
   @Transactional
-  public void getProductInOrderMainByAnyoneShouldThrowStatusUnauthorized()throws Exception {
+  void getProductInOrderMainByAnyoneShouldThrowStatusUnauthorized()throws Exception {
     // Get the productInOrderMain
     restProductInOrderMainMockMvc.perform(get(ENTITY_API_URL_BY_ID, productInOrderMain.getId()))
         .andExpect(status().isUnauthorized());
@@ -432,7 +432,7 @@ class ProductInOrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "admin", password = "admin", authorities = AuthoritiesConstants.ADMIN)
-  public void putNewProductInOrder() throws Exception {
+  void putNewProductInOrder() throws Exception {
     final int databaseOrderMainSizeBeforeUpdate = orderMainRepository.findAll().size();
     final int databaseProductInOrderMainSizeBeforeUpdate
         = productInOrderMainRepository.findAll().size();
@@ -470,6 +470,29 @@ class ProductInOrderMainResourceIT implements AddVat {
     // Validate the OrderMain in the database
     List<OrderMain> orderMainList = orderMainRepository.findAll();
     assertThat(orderMainList).hasSize(databaseOrderMainSizeBeforeUpdate);
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "admin", password = "admin", authorities = AuthoritiesConstants.ADMIN)
+  void shouldSetProperAmountsInOrderMainAfterEditingProductInOrder() throws Exception {
+    final int databaseOrderMainSizeBeforeUpdate = orderMainRepository.findAll().size();
+    final int databaseProductInOrderMainSizeBeforeUpdate
+        = productInOrderMainRepository.findAll().size();
+
+    // Update the quantity of productInOrderMain
+    ProductInOrderMainDTO productInOrderMainDto = productInOrderMainMapper.toDto(
+        productInOrderMainRepository.findById(productInOrderMain.getId()).get());
+    productInOrderMainDto.setQuantity(UPDATED_QUANTITY);
+
+    restProductInOrderMainMockMvc.perform(put(ENTITY_API_URL_ID, productInOrderMainDto.getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(productInOrderMainDto)))
+        .andExpect(status().isOk());
+
+    // Validate the OrderMain in the database
+    List<OrderMain> orderMainList = orderMainRepository.findAll();
+    assertThat(orderMainList).hasSize(databaseOrderMainSizeBeforeUpdate);
     OrderMain testOrderMain = orderMainList.get(orderMainList.size() - 1);
     assertThat(testOrderMain.getBuyerLogin()).isEqualTo(DEFAULT_BUYER_LOGIN);
     assertThat(testOrderMain.getBuyerFirstName()).isEqualTo(DEFAULT_BUYER_FIRST_NAME);
@@ -495,12 +518,16 @@ class ProductInOrderMainResourceIT implements AddVat {
     assertThat(testOrderMain.getOrderMainStatus()).isEqualTo(DEFAULT_ORDERMAIN_STATUS);
     assertNotNull(testOrderMain.getCreateTime());
     assertNotNull(testOrderMain.getUpdateTime());
+
+    // Validate the ProductInOrderMain in the database
+    List<ProductInOrderMain> productInOrderMainList = productInOrderMainRepository.findAll();
+    assertThat(productInOrderMainList).hasSize(databaseProductInOrderMainSizeBeforeUpdate);
   }
 
   @Test
   @Transactional
   @WithMockUser(username = "admin", password = "admin", authorities = AuthoritiesConstants.ADMIN)
-  public void putNewProductInOrderMainWithHigherQuantityShouldThrowBadRequest() throws Exception {
+  void putNewProductInOrderMainWithHigherQuantityShouldThrowBadRequest() throws Exception {
     final int databaseProductInOrderMainSizeBeforeUpdate
         = productInOrderMainRepository.findAll().size();
 
@@ -522,7 +549,7 @@ class ProductInOrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void putNewProductInOrderMainByUserShouldThrowStatusForbidden() throws Exception {
+  void putNewProductInOrderMainByUserShouldThrowStatusForbidden() throws Exception {
     final int databaseProductInOrderMainSizeBeforeUpdate
         = productInOrderMainRepository.findAll().size();
 
@@ -543,7 +570,7 @@ class ProductInOrderMainResourceIT implements AddVat {
 
   @Test
   @Transactional
-  public void putNewProductInOrderMainByAnyoneShouldThrowStatusUnauthorized() throws Exception {
+  void putNewProductInOrderMainByAnyoneShouldThrowStatusUnauthorized() throws Exception {
     final int databaseProductInOrderMainSizeBeforeUpdate
         = productInOrderMainRepository.findAll().size();
 
@@ -634,7 +661,7 @@ class ProductInOrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "admin", password = "admin", authorities = AuthoritiesConstants.ADMIN)
-  public void deleteProductInOrderMain() throws Exception {
+  void deleteProductInOrderMain() throws Exception {
     int databaseProductInOrderMainSizeBeforeDelete = productInOrderMainRepository.findAll().size();
 
     // Delete the productInOrderMain
@@ -662,7 +689,7 @@ class ProductInOrderMainResourceIT implements AddVat {
   @Test
   @Transactional
   @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
-  public void deleteProductInOrderMainByUserShouldThrowStatusForbidden() throws Exception {
+  void deleteProductInOrderMainByUserShouldThrowStatusForbidden() throws Exception {
     int databaseProductInOrderMainSizeBeforeDelete = productInOrderMainRepository.findAll().size();
 
     // Delete the productInOrderMain
@@ -677,7 +704,7 @@ class ProductInOrderMainResourceIT implements AddVat {
 
   @Test
   @Transactional
-  public void deleteProductInOrderMainByAnyoneShouldThrowStatusUnauthorized() throws Exception {
+  void deleteProductInOrderMainByAnyoneShouldThrowStatusUnauthorized() throws Exception {
     int databaseProductInOrderMainSizeBeforeDelete = productInOrderMainRepository.findAll().size();
 
     // Delete the productInOrderMain
