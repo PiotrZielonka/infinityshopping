@@ -5,7 +5,7 @@ import infinityshopping.online.app.repository.PaymentCartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.PaymentCartService;
-import infinityshopping.online.app.service.UserNotFoundException;
+import infinityshopping.online.app.service.errors.UserNotFoundException;
 import infinityshopping.online.app.service.dto.PaymentCartDTO;
 import infinityshopping.online.app.web.rest.errors.BadRequestAlertException;
 import java.net.URISyntaxException;

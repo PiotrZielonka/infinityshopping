@@ -5,7 +5,7 @@ import infinityshopping.online.app.repository.CartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.CartService;
-import infinityshopping.online.app.service.UserNotFoundException;
+import infinityshopping.online.app.service.errors.UserNotFoundException;
 import infinityshopping.online.app.service.dto.CartDtoAmountOfCartGross;
 import infinityshopping.online.app.service.dto.CartDtoAmountsGross;
 import infinityshopping.online.app.service.mapper.CartMapper;

@@ -7,7 +7,7 @@ import infinityshopping.online.app.repository.ProductRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.OrderMainService;
-import infinityshopping.online.app.service.UserNotFoundException;
+import infinityshopping.online.app.service.errors.UserNotFoundException;
 import infinityshopping.online.app.service.dto.OrderMainDTO;
 import infinityshopping.online.app.web.rest.errors.BadRequestAlertException;
 import java.math.BigDecimal;

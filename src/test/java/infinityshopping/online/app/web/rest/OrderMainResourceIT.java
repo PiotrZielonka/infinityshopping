@@ -40,7 +40,7 @@ import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.AddVat;
-import infinityshopping.online.app.service.UserNotFoundException;
+import infinityshopping.online.app.service.errors.UserNotFoundException;
 import infinityshopping.online.app.service.dto.OrderMainDTO;
 import infinityshopping.online.app.service.mapper.OrderMainMapper;
 import java.math.BigDecimal;

@@ -9,7 +9,7 @@ import infinityshopping.online.app.repository.ProductInCartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.ProductInCartService;
-import infinityshopping.online.app.service.UserNotFoundException;
+import infinityshopping.online.app.service.errors.UserNotFoundException;
 import infinityshopping.online.app.service.dto.ProductInCartDTO;
 import infinityshopping.online.app.service.errors.CartNotFoundException;
 import infinityshopping.online.app.service.errors.ProductInCartNotFoundException;

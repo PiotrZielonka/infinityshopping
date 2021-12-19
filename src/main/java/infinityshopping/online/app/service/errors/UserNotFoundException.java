@@ -1,4 +1,4 @@
-package infinityshopping.online.app.service;
+package infinityshopping.online.app.service.errors;
 
 public class UserNotFoundException extends RuntimeException {
 

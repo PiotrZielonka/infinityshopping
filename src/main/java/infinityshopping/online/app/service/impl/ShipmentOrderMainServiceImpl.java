@@ -1,11 +1,8 @@
 package infinityshopping.online.app.service.impl;
 
 import infinityshopping.online.app.domain.ShipmentOrderMain;
-import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.ShipmentOrderMainRepository;
-import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.ShipmentOrderMainService;
-import infinityshopping.online.app.service.UserNotFoundException;
 import infinityshopping.online.app.service.dto.ShipmentOrderMainDTO;
 import infinityshopping.online.app.service.errors.ShipmentOrderMainNotFoundException;
 import infinityshopping.online.app.service.mapper.ShipmentOrderMainMapper;
