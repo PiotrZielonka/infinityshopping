@@ -67,7 +67,7 @@ export class OrderMainUpdateComponent implements OnInit {
   ngOnInit(): void {
     this.paymentCartService.queryPaymentCartOfCurrentLoggedUser().subscribe(
       (paymentCart: any) => {this.paymentCart = paymentCart.body;
-    });;
+    });
     this.shipmentCartService.queryShipmentCartOfCurrentLoggedUser().subscribe(
       (shipmentCart: any) => {this.shipmentCart = shipmentCart.body;
     });

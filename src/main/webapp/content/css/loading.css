@@ -2,9 +2,6 @@
   20% {
     -webkit-transform: translate(190px, 0);
     transform: translate(190px, 0);
-    opacity: 0;
-  }
-  20% {
     opacity: 1;
   }
   100% {

@@ -1,45 +1,64 @@
 <div class="row justify-content-center">
-  <div class="col-4">
+  <div class="col-8">
     <div *ngIf="productInCart">
 
 
       <jhi-alert-error></jhi-alert-error>
 
       <jhi-alert></jhi-alert>
-
-        <dd>
+      
+      <div>
+        <div class="row justify-content-center">
           <div *ngIf="productInCart.image">
             <a (click)="openFile(productInCart.image, productInCart.imageContentType)">
               <img [src]="'data:' + productInCart.imageContentType + ';base64,' + productInCart.image"
                 style="max-width: 100%" alt="productInCart image" />
             </a>
           </div>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.productInCart.name">Name</span></dt>
-        <dd>
-          <span>{{ productInCart.name }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.productInCart.category">Category</span></dt>
-        <dd>
-          <span>{{ productInCart.category }}</span>
-        </dd>
+        </div>
+        
+        <dl>
+          <dt><span jhiTranslate="infinityshoppingApp.productInCart.name">Name</span></dt>
+          <dd>
+            <span>{{ productInCart.name }}</span>
+          </dd>
+        </dl>
 
-        <dt><span jhiTranslate="infinityshoppingApp.productInCart.quantity">Quantity</span></dt>
-        <dd>
-          <span>{{ productInCart.quantity }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.productInCart.priceGross">Price Gross</span></dt>
-        <dd>
-          <span>{{ productInCart.priceGross }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.productInCart.totalPriceGross">Total Price Gross</span></dt>
-        <dd>
-          <span>{{ productInCart.totalPriceGross }}</span>
-        </dd>
-        <dt><span jhiTranslate="infinityshoppingApp.productInCart.description">Description</span></dt>
-        <dd>
-          <span>{{ productInCart.description }}</span>
-        </dd>        
+        <dl>  
+          <dt><span jhiTranslate="infinityshoppingApp.productInCart.category">Category</span></dt>
+          <dd>
+            <span>{{ productInCart.category }}</span>
+          </dd>
+        </dl>       
+
+        <dl>
+          <dt><span jhiTranslate="infinityshoppingApp.productInCart.quantity">Quantity</span></dt>
+          <dd>
+            <span>{{ productInCart.quantity }}</span>
+          </dd>
+        </dl>
+        
+        <dl>
+          <dt><span jhiTranslate="infinityshoppingApp.productInCart.priceGross">Price Gross</span></dt>
+          <dd>
+            <span>{{ productInCart.priceGross }}</span>
+          </dd>
+        </dl>
+        
+        <dl>
+          <dt><span jhiTranslate="infinityshoppingApp.productInCart.totalPriceGross">Total Price Gross</span></dt>
+          <dd>
+            <span>{{ productInCart.totalPriceGross }}</span>
+          </dd>
+        </dl>
+        
+        <dl>
+          <dt><span jhiTranslate="infinityshoppingApp.productInCart.description">Description</span></dt>
+          <dd>
+            <span>{{ productInCart.description }}</span>
+          </dd>        
+        </dl>
+      </div>     
 
       <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
         <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
