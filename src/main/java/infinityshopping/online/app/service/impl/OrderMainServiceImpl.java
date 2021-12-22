@@ -15,8 +15,8 @@ import infinityshopping.online.app.repository.ShipmentOrderMainRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.OrderMainService;
-import infinityshopping.online.app.service.errors.UserNotFoundException;
 import infinityshopping.online.app.service.dto.OrderMainDTO;
+import infinityshopping.online.app.service.errors.UserNotFoundException;
 import infinityshopping.online.app.service.mapper.OrderMainMapper;
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -188,9 +188,9 @@ public class OrderMainServiceImpl implements OrderMainService {
   private void deleteProductsFromCart() {
     currentLoggedUser = checkIfUserExist();
 
-    currentLoggedUser.getCart().getProductInCarts().forEach(productInCart -> {
-      productInCartRepository.deleteById(productInCart.getId());
-    });
+    currentLoggedUser.getCart().getProductInCarts().forEach(productInCart ->
+        productInCartRepository.deleteById(productInCart.getId())
+    );
   }
 
   private void setAmountsOfCartZero() {

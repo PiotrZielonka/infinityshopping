@@ -43,8 +43,6 @@ public class ShipmentCartDTO implements Serializable {
   @Size(max = 50)
   private String taxNumber;
 
-  private CartDTO cart;
-
   public Long getId() {
     return id;
   }

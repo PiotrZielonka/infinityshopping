@@ -8,6 +8,9 @@ import infinityshopping.online.app.repository.PaymentOrderMainRepository;
 import infinityshopping.online.app.repository.PaymentRepository;
 import infinityshopping.online.app.service.PaymentOrderMainService;
 import infinityshopping.online.app.service.dto.PaymentOrderMainDTO;
+import infinityshopping.online.app.service.errors.PaymentNotFoundException;
+import infinityshopping.online.app.service.errors.PaymentOrderMainNotFoundException;
+import infinityshopping.online.app.service.errors.OrderMainNotFoundException;
 import infinityshopping.online.app.service.mapper.PaymentOrderMainMapper;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -62,14 +65,14 @@ public class PaymentOrderMainServiceImpl implements PaymentOrderMainService {
 
   private Payment findPaymentOrderMainInPaymentRepositoryBecauseOnlyNameIsInDto(
       PaymentOrderMainDTO paymentOrderMainDto) {
-    return paymentRepository.findByName(paymentOrderMainDto.getName()).get();
+    return checkIfPaymentExist(paymentOrderMainDto);
   }
 
   private void setProperOrderMainIdToPaymentOrderMainBecauseItIsNotInDto(
       PaymentOrderMain paymentOrderMain) {
 
-    paymentOrderMain.setOrderMain(paymentOrderMainRepository.findById(paymentOrderMain.getId())
-        .get().getOrderMain());
+    paymentOrderMain.setOrderMain(checkIfPaymentOrderMainExist(paymentOrderMain.getId())
+        .getOrderMain());
   }
 
   private void setProperValuesInPaymentOrderMainFromPaymentBecauseAreNullInDto(
@@ -80,7 +83,7 @@ public class PaymentOrderMainServiceImpl implements PaymentOrderMainService {
   }
 
   private void setAmountsOfShipmentToProperOrderMain(PaymentOrderMain paymentOrderMain) {
-    orderMain = orderMainRepository.findById(paymentOrderMain.getOrderMain().getId()).get();
+    orderMain = checkIfOrderMainExist(paymentOrderMain.getOrderMain().getId());
 
     orderMain.setAmountOfShipmentNet(paymentOrderMain.getPriceNet());
     orderMain.setAmountOfShipmentGross(paymentOrderMain.getPriceGross());
@@ -89,7 +92,7 @@ public class PaymentOrderMainServiceImpl implements PaymentOrderMainService {
   }
 
   private void setAmountsOfOrderToProperOrderMain(PaymentOrderMain paymentOrderMain) {
-    orderMain = orderMainRepository.findById(paymentOrderMain.getOrderMain().getId()).get();
+    orderMain = checkIfOrderMainExist(paymentOrderMain.getOrderMain().getId());
 
     orderMain.setAmountOfOrderNet(
         orderMain.getAmountOfCartNet().add(orderMain.getAmountOfShipmentNet()));
@@ -112,5 +115,20 @@ public class PaymentOrderMainServiceImpl implements PaymentOrderMainService {
     log.debug("Request to get PaymentOrderMain by id OrderMain");
     return paymentOrderMainRepository.findByOrderMainId(id)
         .map(paymentOrderMainMapper::toDto);
+  }
+
+  private Payment checkIfPaymentExist(PaymentOrderMainDTO paymentOrderMainDto) {
+    return paymentRepository.findByName(paymentOrderMainDto.getName())
+        .orElseThrow(PaymentNotFoundException::new);
+  }
+
+  private PaymentOrderMain checkIfPaymentOrderMainExist(Long id) {
+    return paymentOrderMainRepository.findById(id)
+        .orElseThrow(PaymentOrderMainNotFoundException::new);
+  }
+
+  private OrderMain checkIfOrderMainExist(Long id) {
+    return orderMainRepository.findById(id)
+        .orElseThrow(OrderMainNotFoundException::new);
   }
 }

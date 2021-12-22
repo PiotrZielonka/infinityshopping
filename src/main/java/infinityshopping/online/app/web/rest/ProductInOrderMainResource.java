@@ -43,7 +43,6 @@ public class ProductInOrderMainResource {
 
   private final ProductRepository productRepository;
 
-  private Product product;
 
   public ProductInOrderMainResource(
       ProductInOrderMainService productInOrderMainService,
@@ -105,7 +104,7 @@ public class ProductInOrderMainResource {
   }
 
   private void checkProperProductQuantity(ProductInOrderMainDTO productInOrderMainDto) {
-    product = checkIfProductExist(productInOrderMainDto);
+    Product product = checkIfProductExist(productInOrderMainDto);
 
     if (productInOrderMainDto.getQuantity().compareTo(product.getStock()) > 0) {
       throw new BadRequestAlertException("We do not have that much of this",

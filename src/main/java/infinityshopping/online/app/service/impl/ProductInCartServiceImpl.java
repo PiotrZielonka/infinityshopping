@@ -1,7 +1,6 @@
 package infinityshopping.online.app.service.impl;
 
 import infinityshopping.online.app.domain.Cart;
-import infinityshopping.online.app.domain.PaymentCart;
 import infinityshopping.online.app.domain.ProductInCart;
 import infinityshopping.online.app.domain.User;
 import infinityshopping.online.app.repository.CartRepository;
@@ -9,10 +8,10 @@ import infinityshopping.online.app.repository.ProductInCartRepository;
 import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.ProductInCartService;
-import infinityshopping.online.app.service.errors.UserNotFoundException;
 import infinityshopping.online.app.service.dto.ProductInCartDTO;
 import infinityshopping.online.app.service.errors.CartNotFoundException;
 import infinityshopping.online.app.service.errors.ProductInCartNotFoundException;
+import infinityshopping.online.app.service.errors.UserNotFoundException;
 import infinityshopping.online.app.service.mapper.ProductInCartMapper;
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -38,17 +37,11 @@ public class ProductInCartServiceImpl implements ProductInCartService {
 
   private final CartRepository cartRepository;
 
-  private User currentLoggedUser;
-
-  private User userForFindByCartId;
-
   private Cart cart;
 
   private BigDecimal amountOfCartNet;
 
   private BigDecimal amountOfCartGross;
-
-  private ProductInCart productInCart;
 
 
   public ProductInCartServiceImpl(ProductInCartRepository productInCartRepository,
@@ -80,7 +73,7 @@ public class ProductInCartServiceImpl implements ProductInCartService {
   }
 
   private void setSelectedProductByCurrentUserToCurrentUserOfCart(ProductInCart productInCart) {
-    currentLoggedUser = checkIfUserExist();
+    User currentLoggedUser = checkIfUserExist();
     productInCart.setCart(currentLoggedUser.getCart());
     currentLoggedUser.getCart().addProductInCart(productInCart);
     productInCartRepository.save(productInCart);
@@ -103,9 +96,9 @@ public class ProductInCartServiceImpl implements ProductInCartService {
 
     amountOfCartNet = BigDecimal.ZERO;
 
-    cart.getProductInCarts().forEach(productInCartForEach -> {
-      amountOfCartNet = amountOfCartNet.add(productInCartForEach.getTotalPriceNet());
-    });
+    cart.getProductInCarts().forEach(productInCartForEach ->
+        amountOfCartNet = amountOfCartNet.add(productInCartForEach.getTotalPriceNet())
+    );
 
     cart.setAmountOfCartNet(amountOfCartNet);
     cartRepository.save(cart);
@@ -116,9 +109,9 @@ public class ProductInCartServiceImpl implements ProductInCartService {
 
     amountOfCartGross = BigDecimal.ZERO;
 
-    cart.getProductInCarts().forEach(productInCartForEach -> {
-      amountOfCartGross = amountOfCartGross.add(productInCartForEach.getTotalPriceGross());
-    });
+    cart.getProductInCarts().forEach(productInCartForEach ->
+        amountOfCartGross = amountOfCartGross.add(productInCartForEach.getTotalPriceGross())
+    );
 
     cart.setAmountOfCartGross(amountOfCartGross);
     cartRepository.save(cart);
@@ -148,7 +141,7 @@ public class ProductInCartServiceImpl implements ProductInCartService {
   @Override
   @Transactional(readOnly = true)
   public List<ProductInCartDTO> findByCartId(Pageable pageable) {
-    userForFindByCartId = checkIfUserExist();
+    User userForFindByCartId = checkIfUserExist();
     log.debug("Request to get all ProductInCart of current User");
     return productInCartRepository.findByCartId(userForFindByCartId.getCart().getId(), pageable)
         .stream()
@@ -161,7 +154,7 @@ public class ProductInCartServiceImpl implements ProductInCartService {
   public void delete(Long id) {
     log.debug("Request to delete ProductInCart : {}", id);
 
-    productInCart = checkIfProductInCartExist(id);
+    ProductInCart productInCart = checkIfProductInCartExist(id);
 
     minusSelectedProductTotalPriceNetToProperAmountOfCartNet(productInCart);
     minusSelectedProductTotalPriceGrossToProperAmountOfCartGross(productInCart);
@@ -196,7 +189,6 @@ public class ProductInCartServiceImpl implements ProductInCartService {
   private void minusSelectedProductTotalPriceGrossToProperAmountOfOrderGross(
       ProductInCart productInCart) {
     cart = checkIfCartOfProperUserExist(productInCart);
-    cart = cartRepository.findById(productInCart.getCart().getId()).get();
     cart.setAmountOfOrderGross(cart.getAmountOfOrderGross()
         .subtract(productInCart.getTotalPriceGross()));
     cartRepository.save(cart);

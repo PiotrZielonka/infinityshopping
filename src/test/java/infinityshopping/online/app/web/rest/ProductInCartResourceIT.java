@@ -31,8 +31,8 @@ import infinityshopping.online.app.repository.UserRepository;
 import infinityshopping.online.app.security.AuthoritiesConstants;
 import infinityshopping.online.app.security.SecurityUtils;
 import infinityshopping.online.app.service.AddVat;
-import infinityshopping.online.app.service.errors.UserNotFoundException;
 import infinityshopping.online.app.service.dto.ProductInCartDTO;
+import infinityshopping.online.app.service.errors.UserNotFoundException;
 import infinityshopping.online.app.service.mapper.CartMapper;
 import infinityshopping.online.app.service.mapper.ProductInCartMapper;
 import java.math.BigDecimal;
@@ -705,6 +705,38 @@ class ProductInCartResourceIT implements AddVat {
     assertNotNull(testProductInCart.getCart());
     assertThat(testProductInCart.getProductId()).isEqualTo(product.getId());
 
+    // Validate id relation OneToMany between Cart and ProductInCart
+    List<Cart> cartList = cartRepository.findAll();
+    Cart testCart = cartList.get(cartList.size() - 1);
+    assertNotNull(testProductInCart.getCart().getId());
+    assertNotNull(testCart.getId());
+    assertThat(testProductInCart.getCart().getId()).isEqualTo(testCart.getId());
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser(username = "alice", authorities = AuthoritiesConstants.USER)
+  void shouldSetProperAmountsInCartAfterPuttingNewProductInCart() throws Exception {
+    currentLoggedUser = checkIfUserExist();
+
+    productInCart.setCart(currentLoggedUser.getCart());
+    productInCart.setProductId(product.getId());
+    productInCartRepository.save(productInCart);
+    currentLoggedUser.getCart().addProductInCart(productInCart);
+    cartRepository.save(currentLoggedUser.getCart());
+
+    final int databaseCartSizeBeforeUpdate = cartRepository.findAll().size();
+
+    // Update the productInCart
+    ProductInCartDTO productInCartDto = productInCartMapper.toDto(
+        productInCartRepository.findById(productInCart.getId()).get());
+    productInCartDto.setQuantity(UPDATED_QUANTITY);
+
+    restProductInCartMockMvc.perform(put(ENTITY_API_URL_ID, productInCartDto.getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(productInCartDto)))
+        .andExpect(status().isOk());
+
     // Validate the Cart in the database
     List<Cart> cartList = cartRepository.findAll();
     assertThat(cartList).hasSize(databaseCartSizeBeforeUpdate);
@@ -720,11 +752,6 @@ class ProductInCartResourceIT implements AddVat {
         UPDATED_QUANTITY.multiply(DEFAULT_PRICE_NET).add(DEFAULT_AMOUNT_OF_SHIPMENT_NET));
     assertThat(testCart.getAmountOfOrderGross()).isEqualTo(
         UPDATED_QUANTITY.multiply(defaultPriceGross).add(DEFAULT_AMOUNT_OF_SHIPMENT_GROSS));
-
-    // Validate id relation OneToMany between Cart and ProductInCart
-    assertNotNull(testProductInCart.getCart().getId());
-    assertNotNull(testCart.getId());
-    assertThat(testProductInCart.getCart().getId()).isEqualTo(testCart.getId());
   }
 
   @Test

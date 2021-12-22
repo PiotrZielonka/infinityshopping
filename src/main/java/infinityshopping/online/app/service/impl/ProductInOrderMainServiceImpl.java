@@ -35,8 +35,6 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
 
   private BigDecimal amountOfCartGross;
 
-  private ProductInOrderMain productInOrderMain;
-
   private OrderMain orderMain;
 
 
@@ -85,9 +83,9 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
 
     amountOfCartNet = BigDecimal.ZERO;
 
-    orderMain.getProductInOrderMains().forEach(productInOrderMainForEach -> {
-      amountOfCartNet = amountOfCartNet.add(productInOrderMainForEach.getTotalPriceNet());
-    });
+    orderMain.getProductInOrderMains().forEach(productInOrderMainForEach ->
+        amountOfCartNet = amountOfCartNet.add(productInOrderMainForEach.getTotalPriceNet())
+    );
 
     orderMain.setAmountOfCartNet(amountOfCartNet);
     orderMainRepository.save(orderMain);
@@ -98,9 +96,9 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
 
     amountOfCartGross = BigDecimal.ZERO;
 
-    orderMain.getProductInOrderMains().forEach(productInOrderMainForEach -> {
-      amountOfCartGross = amountOfCartGross.add(productInOrderMainForEach.getTotalPriceGross());
-    });
+    orderMain.getProductInOrderMains().forEach(productInOrderMainForEach ->
+        amountOfCartGross = amountOfCartGross.add(productInOrderMainForEach.getTotalPriceGross())
+    );
 
     orderMain.setAmountOfCartGross(amountOfCartGross);
     orderMainRepository.save(orderMain);
@@ -147,7 +145,7 @@ public class ProductInOrderMainServiceImpl implements ProductInOrderMainService 
   public void delete(Long id) {
     log.debug("Request to delete ProductInOrderMain : {}", id);
 
-    productInOrderMain = checkIfProductInOrderMainExist(id);
+    ProductInOrderMain productInOrderMain = checkIfProductInOrderMainExist(id);
 
     minusSelectedProductTotalPriceNetToProperOrderMain(productInOrderMain);
     minusSelectedProductTotalPriceGrossToProperOrderMain(productInOrderMain);
