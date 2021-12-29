@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import infinityshopping.online.app.IntegrationTest;
 import infinityshopping.online.app.config.Constants;
-import infinityshopping.online.app.domain.Cart;
 import infinityshopping.online.app.domain.OrderMain;
 import infinityshopping.online.app.domain.Product;
 import infinityshopping.online.app.domain.ProductInOrderMain;

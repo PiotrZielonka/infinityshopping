@@ -117,10 +117,8 @@ class ProductInCartResourceIT implements AddVat {
 
   // Product
   private static final Instant DEFAULT_CREATE_TIME = Instant.ofEpochMilli(0L);
-  private static final Instant DEFAULT_CREATE_TIME2 = Instant.ofEpochMilli(0L);
 
   private static final Instant DEFAULT_UPDATE_TIME = Instant.ofEpochMilli(0L);
-  private static final Instant DEFAULT_UPDATE_TIME2 = Instant.ofEpochMilli(0L);
 
   private static final ProductCategoryEnum DEFAULT_PRODUCT_CATEGORY_ENUM_Vitamins
       = ProductCategoryEnum.Vitamins;
