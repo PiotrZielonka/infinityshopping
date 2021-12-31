@@ -26,8 +26,8 @@
         <!-- Build properties -->
         <maven.version>3.8.1</maven.version>
         <java.version>11</java.version>
-        <node.version>v12.20.0</node.version>
-        <npm.version>6.14.8</npm.version>
+        <node.version>v14.17.6</node.version>
+        <npm.version>7.24.2</npm.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -982,14 +982,12 @@
                                     <npmVersion>${npm.version}</npmVersion>
                                 </configuration>
                             </execution>
-                            <!--
                             <execution>
                                 <id>npm install</id>
                                 <goals>
                                     <goal>npm</goal>
                                 </goals>
                             </execution>
-                            -->
                             <execution>
                                 <id>webapp build dev</id>
                                 <goals>
@@ -1083,14 +1081,12 @@
                                     <npmVersion>${npm.version}</npmVersion>
                                 </configuration>
                             </execution>
-                            <!--
                             <execution>
                                 <id>npm install</id>
                                 <goals>
                                     <goal>npm</goal>
                                 </goals>
                             </execution>
-                            -->
                             <execution>
                                 <id>webapp build test</id>
                                 <goals>

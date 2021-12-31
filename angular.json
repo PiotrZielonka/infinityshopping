@@ -108,6 +108,7 @@
   },
   "defaultProject": "infinityshopping",
   "cli": {
+    "analytics": false,
     "packageManager": "npm"
   }
 }
