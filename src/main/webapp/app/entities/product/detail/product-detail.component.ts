@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-
+import { Router } from '@angular/router';
 import { IProduct } from '../product.model';
 import { DataUtils, FileLoadError } from 'app/core/util/data-util.service';
 import { ProductInCartService } from 'app/entities/product-in-cart/service/product-in-cart.service';
@@ -12,6 +12,7 @@ import { ICart } from 'app/entities/cart/cart.model';
 import { Observable } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
+import { AccountService } from 'app/core/auth/account.service';
 
 @Component({
   selector: 'jhi-product-detail',
@@ -36,6 +37,8 @@ export class ProductDetailComponent implements OnInit {
   });
 
   constructor(
+    private accountService: AccountService,
+    private router: Router,
     protected dataUtils: DataUtils,
     protected eventManager: EventManager,
     protected productInCartService: ProductInCartService,
@@ -71,14 +74,28 @@ export class ProductDetailComponent implements OnInit {
     window.history.back();
   }
 
+  isAuthenticated(): boolean {
+    return this.accountService.isAuthenticated();
+  }
+
+  login(): void {
+    this.router.navigate(['/login']);
+  }
+
   save(): void {
     this.isSaving = true;
-    const productInCart = this.createFromForm();
-    if (productInCart.id !== undefined) {
-      this.subscribeToSaveResponse(this.productInCartService.update(productInCart));
+
+    if (this.isAuthenticated()) {
+      const productInCart = this.createFromForm();
+      if (productInCart.id !== undefined) {
+        this.subscribeToSaveResponse(this.productInCartService.update(productInCart));
+      } else {
+        this.subscribeToSaveResponse(this.productInCartService.create(productInCart));
+      }
     } else {
-      this.subscribeToSaveResponse(this.productInCartService.create(productInCart));
+      this.login();
     }
+
   }
 
   trackCartById(index: number, item: ICart): number {
