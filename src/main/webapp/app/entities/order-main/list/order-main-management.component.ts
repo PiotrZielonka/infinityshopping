@@ -15,7 +15,7 @@ export class OrderMainManagementComponent implements OnInit {
   orderMains?: IOrderMain[];
   isLoading = false;
 
-  filter!: any;
+  searchOrderMain!: any;
 
   constructor(protected orderMainService: OrderMainService, protected modalService: NgbModal) {}
 

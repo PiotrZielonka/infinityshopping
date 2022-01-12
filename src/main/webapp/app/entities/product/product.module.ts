@@ -6,17 +6,20 @@ import { ProductUpdateComponent } from './update/product-update.component';
 import { ProductDeleteDialogComponent } from './delete/product-delete-dialog.component';
 import { ProductRoutingModule } from './route/product-routing.module';
 import { ProductManagementComponent } from './list/product-management.component';
-import { SearchProductPipe } from 'app/shared/pipe/search-product.pipe';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 @NgModule({
-  imports: [SharedModule, ProductRoutingModule],
+  imports: [
+    SharedModule,
+    ProductRoutingModule,
+    Ng2SearchPipeModule
+  ],
   declarations: [
     ProductComponent,
     ProductManagementComponent,
     ProductDetailComponent,
     ProductUpdateComponent,
     ProductDeleteDialogComponent,
-    SearchProductPipe,
   ],
   entryComponents: [ProductDeleteDialogComponent],
 })

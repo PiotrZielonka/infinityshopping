@@ -90,6 +90,7 @@
     "bootstrap": "4.6.0",
     "bootswatch": "4.6.0",
     "dayjs": "1.10.7",
+    "ng2-search-filter": "^0.5.1",
     "ngx-infinite-scroll": "10.0.1",
     "ngx-webstorage": "8.0.0",
     "rxjs": "6.6.7",

@@ -23,7 +23,7 @@ export class ProductManagementComponent implements OnInit {
   predicate!: string;
   ascending!: boolean;
   ngbPaginationPage = 1;
-  filter!: any;
+  searchProduct!: any;
 
   constructor(
     protected productService: ProductService,

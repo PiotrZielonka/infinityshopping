@@ -7,10 +7,14 @@ import { OrderMainDeleteDialogComponent } from './delete/order-main-delete-dialo
 import { OrderMainRoutingModule } from './route/order-main-routing.module';
 import { OrderMainManagementComponent } from './list/order-main-management.component';
 import { OrderMainUpdateStatusComponent } from './update/order-main-update-status.component';
-import { SearchOrderMainPipe } from 'app/shared/pipe/search-order-main.pipe';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 @NgModule({
-  imports: [SharedModule, OrderMainRoutingModule],
+  imports: [
+    SharedModule,
+    OrderMainRoutingModule,
+    Ng2SearchPipeModule
+  ],
   declarations: [
     OrderMainComponent,
     OrderMainManagementComponent,
@@ -18,7 +22,6 @@ import { SearchOrderMainPipe } from 'app/shared/pipe/search-order-main.pipe';
     OrderMainUpdateComponent,
     OrderMainUpdateStatusComponent,
     OrderMainDeleteDialogComponent,
-    SearchOrderMainPipe,
   ],
   entryComponents: [OrderMainDeleteDialogComponent],
 })

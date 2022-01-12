@@ -9,7 +9,7 @@
 
   <div class="col">
     <div class="form-inline my-2 my-lg-0">
-      <input type="search" class="form-control mr-sm-2" [(ngModel)]="filter" placeholder="Search" />
+      <input type="search" class="form-control mr-sm-2" [(ngModel)]="searchProduct" placeholder="Search" />
     </div>
   </div>
 
@@ -56,7 +56,7 @@
   </div>
   <div class="container">
     <div class="row card-group">
-      <div class="col-xs-6 col-md-4" *ngFor="let product of products | searchProduct: filter; trackBy: trackId" data-cy="entityTable">
+      <div class="col-xs-6 col-md-4" *ngFor="let product of products | filter: searchProduct; trackBy: trackId" data-cy="entityTable">
         <div class="card border-secondary mb-3" style="max-width: 20rem">
           <div class="card-body">
             <div class="image">

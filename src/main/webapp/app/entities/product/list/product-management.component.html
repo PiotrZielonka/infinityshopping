@@ -5,7 +5,7 @@
     </div>
     <div class="col" class="managementRow">
       <div class="form-inline my-2 my-lg-0">
-        <input type="search" class="form-control mr-sm-2" [(ngModel)]="filter" placeholder="Search" />
+        <input type="search" class="form-control mr-sm-2" [(ngModel)]="searchProduct" placeholder="Search" />
       </div>
     </div>
     <div class="col">
@@ -91,7 +91,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let product of products | searchProduct: filter; trackBy: trackId" data-cy="entityTable">
+        <tr *ngFor="let product of products | filter: searchProduct; trackBy: trackId" data-cy="entityTable">
           <td>
             <a [routerLink]="['/product', product.id, 'view']">{{ product.id }}</a>
           </td>
