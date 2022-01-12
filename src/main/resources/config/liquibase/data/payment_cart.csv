@@ -1,0 +1,3 @@
+id;name;price_net;vat;price_gross;payment_status;cart_id
+1;DHL bank transfer;3.0;23;3.69;WaitingForBankTransfer;1
+2;UPS cash on delivery;2.8;23;3.44;PreparationForShipping;2

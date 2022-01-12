@@ -1,5 +1,5 @@
 id;buyer_login;buyer_first_name;buyer_last_name;buyer_email;buyer_phone;amount_of_cart_net;amount_of_cart_gross;amount_of_shipment_net;amount_of_shipment_gross;amount_of_order_net;amount_of_order_gross;order_main_status;create_time;update_time
-1;admin;John;Smith;admin@localhost;853-962-741;106.1;130.50;3.0;3.69;109.1;134,19;Delivered;2021-10-24T20:00:21;2021-10-24T20:44:51
-2;user;Alice;Evans;user@localhost;951-357-486;1205.5;1482.77;3.5;4.3;1209,3;1487,07;Canceled;2021-10-25T02:36:00;2021-10-24T15:54:23
-3;user;Alice;Evans;user@localhost;951-357-486;133.2;163.84;2.5;3.08;135,7;166.92;Sent;2021-10-24T20:47:39;2021-10-24T12:15:49
-4;user;Alice;Evans;user@localhost;951-357-486;1113;1368.99;2.8;3.44;1116.44;1372,43;WaitingForBankTransfer;2021-10-24T22:25:00;2021-10-25T03:53:21
+1;admin;John;Smith;admin@localhost;853-962-741;106.1;130.50;3.0;3.69;109.1;134.19;Delivered;2021-10-24T20:00:21;2021-10-24T20:44:51
+2;user;Alice;Evans;user@localhost;951-357-486;1205.5;1482.77;3.5;4.3;1209.3;1487.07;Canceled;2021-10-25T02:36:00;2021-10-24T15:54:23
+3;user;Alice;Evans;user@localhost;951-357-486;133.2;163.84;2.5;3.08;135.7;166.92;Sent;2021-10-24T20:47:39;2021-10-24T12:15:49
+4;user;Alice;Evans;user@localhost;951-357-486;1113;1368.99;2.8;3.44;1116.44;1372.43;WaitingForBankTransfer;2021-10-24T22:25:00;2021-10-25T03:53:21
