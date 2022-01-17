@@ -49,6 +49,5 @@
   "pagination": "no",
   "name": "Cart",
   "skipClient": true,
-  "skipServer": true,
-  "changelogDate": "20211014181616"
+  "skipServer": true
 }

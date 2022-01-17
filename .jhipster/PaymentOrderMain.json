@@ -38,5 +38,6 @@
   "readOnly": false,
   "pagination": "no",
   "name": "PaymentOrderMain",
-  "changelogDate": "20211025120731"
+  "skipClient": true,
+  "skipServer": true
 }

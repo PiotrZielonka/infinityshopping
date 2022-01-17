@@ -44,6 +44,5 @@
   "pagination": "no",
   "name": "PaymentCart",
   "skipClient": true,
-  "skipServer": true,
-  "changelogDate": "20211018163055"
+  "skipServer": true
 }

@@ -73,6 +73,5 @@
   "pagination": "pagination",
   "name": "Product",
   "skipClient": true,
-  "skipServer": true,
-  "changelogDate": "20211012154603"
+  "skipServer": true
 }
