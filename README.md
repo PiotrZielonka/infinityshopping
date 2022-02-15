@@ -1,10 +1,12 @@
-# Infinityshopping the e-commerce shop generator Spring + Angular + Jhipster
+# InfinityShopping the e-commerce shops generator Spring + Angular + Jhipster
 
-[Infinityshopping home page](https://www.infinityshopping.online).
+[InfinityShopping home page](https://www.infinityshopping.online).
 
 [Website of example shop of infinityshopping](https://www.infinityshopping.online/example-shop).
 
 [GitHub of example shop of infinityshopping](https://www.github.com/PiotrZielonka/infinityshopping-example-shop/tree/develop)
+
+[YouTube](https://www.youtube.com/watch?v=YYEodtIGeZQ)
 
 ## Development
 
@@ -31,7 +33,7 @@ npm install -g generator-jhipster@7.3.0
 ```
 - Eclipse and Spring Tool Suite are not supported maybe it works but it was not tested. In Java / Spring environment use IntelliJ IDEA Community Edition and Visual Studio Code for Angular frontend environment
 - In IntelliJ IDEA additionally install plugin MapStruct support for IntelliJ IDEA [plugin MapStruct homepage](https://plugins.jetbrains.com/plugin/10036-mapstruct-support)
-- You can make sure if Building project automatically in Intellij is checked
+- You can make sure if building project automatically in Intellij is checked
 - When Intellij will be ready, all the project will be analyzed and indexed by Intellij. In the project directory, run the command below
 ```
 mvnw
@@ -68,7 +70,7 @@ git push
 ```
 You should see the master and the develop branch in your repository
 
-## Addons to Infinityshopping
+## Addons to InfinityShopping
 > After making the steps above you can add addons to your shop from [Jhipster marketplace](https://www.jhipster.tech/modules/marketplace/#/list) or change something in yo-rc.json file as in an existing Jhipster project.
 
 ## Questions and Contributing

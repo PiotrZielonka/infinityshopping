@@ -5,15 +5,15 @@
     "logged": {
       "message": "You are logged in as user \"{{username}}\"."
     },
-    "moreInformation": "More information about Infinity Shopping:",
+    "moreInformation": "More information about InfinityShopping:",
     "infinityShoppingLink": {
-      "homepage": "Infinity Shopping homepage",
-      "gitHub": "Infinity Shopping on GitHub",
-      "exampleShopPage": "Website of example shop of Infinity Shopping",
-      "exampleShopGitHub": "GitHub of example shop of Infinity Shopping",
+      "homepage": "InfinityShopping homepage",
+      "gitHub": "InfinityShopping on GitHub",
+      "exampleShopPage": "Website of example shop of InfinityShopping",
+      "exampleShopGitHub": "GitHub of example shop of InfinityShopping",
       "youTube": "YouTube"
     },
-    "likeInfinityShopping": "If you like Infinity Shopping, don't forget to give us a star on GitHub!",
+    "likeInfinityShopping": "If you like InfinityShopping, don't forget to give us a star on GitHub!",
     "question": "If you have any question on JHipster:",
     "link": {
       "homepage": "JHipster homepage",
