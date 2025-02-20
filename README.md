@@ -2,8 +2,6 @@
 
 ## 🌍 Overview
 
-InfinityShopping is a e-commerce shop generator built using Spring, Angular, and JHipster.
-
 - 🌐 [**InfinityShopping Home Page**](https://www.infinityshopping.online)
 - 🏪 [**Example Shop Website**](https://www.infinityshopping.online/example-shop)
 - 📂 [**Example Shop GitHub Repository**](https://www.github.com/PiotrZielonka/infinityshopping-example-shop)
@@ -17,7 +15,7 @@ To run this project locally, do the following steps::
 
 - ☕ **Java 11** (AdoptOpenJDK)
 - 🔨 **Maven** (version 3.8.1)
-- 🟢 **Node.js** ( version Fermium or 14.21.3) – [Download Here](https://nodejs.org/en/download)
+- 🟢 **Node.js** (version Fermium or 14.21.3) – [Download Here](https://nodejs.org/en/download)
 - 📦 **npm** (version 7.24.2)
   ```sh
   npm install -g npm@7.24.2
